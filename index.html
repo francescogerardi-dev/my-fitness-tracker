@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker Cloud - V.1.3</title>
+    <title>Fitness Tracker Cloud - V.1.3.1</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -13,55 +13,36 @@
         }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .container { max-width: 900px; margin: 0 auto; }
-        
-        /* Overlay Login */
-        #loginOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 9999;
-        }
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
         .btn-login { padding: 15px 30px; background: var(--primary); color: #0f172a; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-
-        /* Layout UI (V.1.2.8) */
         .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; background: var(--card); border-radius: 12px; padding: 5px; border: 1px solid #334155; }
         .tab-btn { background: none; border: none; color: #94a3b8; cursor: pointer; padding: 10px; flex: 1; border-radius: 8px; font-weight: bold; }
         .tab-btn.active { background: var(--bg); color: var(--primary); }
         .content { display: none; }
         .content.active { display: block; }
-
-        .stat-card { 
-            background: var(--card); padding: 15px 25px; border-radius: 16px; margin-bottom: 20px; 
-            width: 100%; display: flex; align-items: center; gap: 20px; border: 1px solid #334155; 
-            border-left: 6px solid var(--primary); box-sizing: border-box; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-        }
-        #moodIcon { font-size: 2.8rem; line-height: 1; }
+        .stat-card { background: var(--card); padding: 15px 25px; border-radius: 16px; margin-bottom: 20px; width: 100%; display: flex; align-items: center; gap: 20px; border: 1px solid #334155; border-left: 6px solid var(--primary); box-sizing: border-box; }
+        #moodIcon { font-size: 2.8rem; }
         .stat-text { text-align: left; }
         #costanzaVal { font-size: 1.6rem; font-weight: bold; display: block; }
-        #statusMessage { font-size: 0.85rem; color: #94a3b8; font-style: italic; display: block; margin-top: 2px; }
-
+        #statusMessage { font-size: 0.85rem; color: #94a3b8; font-style: italic; display: block; }
         .week-nav, .filter-section { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
         .nav-arrow, select { background: var(--card); border: 1px solid #334155; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
-        
         .tiles-container { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .sport-tile { background: var(--card); flex: 1; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: 1px solid #334155; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .sport-tile { background: var(--card); flex: 1; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: 1px solid #334155; text-align: center; display: flex; flex-direction: column; align-items: center; }
         .sport-tile.active { border-color: var(--primary); background: rgba(56, 189, 248, 0.1); }
         .tile-icon { font-size: 1.5rem; }
         .tile-count { font-weight: bold; font-size: 1.3rem; }
         .tile-label { font-size: 0.6rem; color: #94a3b8; text-transform: uppercase; }
-
         .chart-box { background: var(--card); padding: 15px; border-radius: 16px; border: 1px solid #334155; height: 380px; position: relative; margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .chart-box-mini { height: 260px !important; }
-
         .heatmap-container { display: grid; grid-template-columns: repeat(13, 1fr); gap: 4px; }
-        .heat-day { aspect-ratio: 1; border-radius: 3px; background: #1e293b; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #fff; font-weight: bold; }
+        .heat-day { aspect-ratio: 1; border-radius: 3px; background: #1e293b; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #fff; }
         .heat-low { background: rgba(239, 68, 68, 0.6) !important; }
         .heat-mid { background: rgba(56, 189, 248, 0.6) !important; }
         .heat-high { background: rgba(74, 222, 128, 0.7) !important; }
-
         .history-list { display: flex; flex-direction: column; gap: 10px; }
         .history-item { background: var(--card); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
-        .btn-del { background: var(--danger); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        
+        .btn-del { background: var(--danger); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
         input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
         .btn-save { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; color: #0f172a; cursor: pointer; }
         .hidden { display: none !important; }
@@ -117,6 +98,11 @@
         </div>
 
         <div id="history" class="content">
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <button class="nav-arrow" style="flex:1" onclick="exportToCSV()">📤 Export CSV</button>
+                <button class="nav-arrow" style="flex:1" onclick="document.getElementById('fileInput').click()">📥 Import CSV</button>
+                <input type="file" id="fileInput" class="hidden" accept=".csv" onchange="window.importFromCSV(event)">
+            </div>
             <div id="historyList" class="history-list"></div>
         </div>
 
@@ -139,9 +125,9 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // INCOLLA QUI IL TUO firebaseConfig
+        // CONFIGURAZIONE FIREBASE - INCOLLA I TUOI DATI QUI SOTTO
         const firebaseConfig = {
-            apiKey: "AIzaSyATggTs_IGw_KMu-y3I7Vre5HnKbeyhAm4",
+			apiKey: "AIzaSyATggTs_IGw_KMu-y3I7Vre5HnKbeyhAm4",
 			authDomain: "myfitnesstracker-f2089.firebaseapp.com",
 			projectId: "myfitnesstracker-f2089",
 			storageBucket: "myfitnesstracker-f2089.firebasestorage.app",
@@ -154,10 +140,6 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        window.currentUser = null;
-        window.fitnessDB = [];
-
-        // Gestione Accesso
         window.login = () => signInWithPopup(auth, provider);
         window.logout = () => signOut(auth);
 
@@ -165,7 +147,6 @@
             if (user) {
                 window.currentUser = user;
                 document.getElementById('loginOverlay').classList.add('hidden');
-                // Ascolto dati in tempo reale
                 const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
                 onSnapshot(q, (snapshot) => {
                     window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -178,7 +159,6 @@
             }
         });
 
-        // Funzione di salvataggio Cloud
         window.handleSave = async () => {
             if (!window.currentUser) return;
             const entry = {
@@ -186,8 +166,7 @@
                 type: document.getElementById('typeIn').value,
                 weight: parseFloat(document.getElementById('weightIn').value) || null,
                 km: parseFloat(document.getElementById('kmIn').value) || 0,
-                min: parseInt(document.getElementById('minIn').value) || 0,
-                createdAt: new Date().toISOString()
+                min: parseInt(document.getElementById('minIn').value) || 0
             };
             if(!entry.date) return alert("Data mancante!");
             await addDoc(collection(db, "users", window.currentUser.uid, "records"), entry);
@@ -198,12 +177,36 @@
             if (!window.currentUser || !confirm("Eliminare?")) return;
             await deleteDoc(doc(db, "users", window.currentUser.uid, "records", id));
         };
+
+        window.importFromCSV = (event) => {
+            const file = event.target.files[0];
+            if (!file || !window.currentUser) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const rows = e.target.result.split('\n').slice(1);
+                for (const row of rows) {
+                    const [date, type, weight, km, min] = row.split(',');
+                    if (date) {
+                        await addDoc(collection(db, "users", window.currentUser.uid, "records"), {
+                            date: date.trim(),
+                            type: type.trim(),
+                            weight: weight ? parseFloat(weight) : null,
+                            km: km ? parseFloat(km) : 0,
+                            min: min ? parseInt(min) : 0
+                        });
+                    }
+                }
+                alert("Importazione completata!");
+            };
+            reader.readAsText(file);
+        };
     </script>
 
     <script>
         let referenceDate = new Date();
         let mainChart = null, analisiChart = null;
         const icons = { 'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 'Pesi': '🏋️', 'Addominali': '🧱', 'Riposo': '💤' };
+        window.fitnessDB = [];
 
         function formatDateLocal(d) {
             const year = d.getFullYear();
@@ -228,11 +231,7 @@
             if(id === 'main') { renderChart(); renderHeatmap(); }
             if(id === 'analisi') renderAnalisi();
             if(id === 'history') renderHistory();
-            if(id === 'input') { 
-                document.getElementById('dateIn').valueAsDate = new Date(); 
-                const lastW = window.fitnessDB.filter(r => r.weight).pop();
-                if(lastW) document.getElementById('weightIn').value = lastW.weight;
-            }
+            if(id === 'input') document.getElementById('dateIn').valueAsDate = new Date();
         };
 
         window.toggleFields = () => {
@@ -244,8 +243,7 @@
         window.changeWeek = (days) => { referenceDate.setDate(referenceDate.getDate() + days); renderChart(); };
         
         function getMonday(d) {
-            d = new Date(d);
-            const day = d.getDay();
+            d = new Date(d); const day = d.getDay();
             const diff = d.getDate() - day + (day === 0 ? -6 : 1);
             return new Date(d.setDate(diff));
         }
@@ -262,8 +260,7 @@
             const monday = getMonday(referenceDate);
             const labels = [];
             for(let i=0; i<7; i++) { 
-                let d = new Date(monday); 
-                d.setDate(monday.getDate() + i); 
+                let d = new Date(monday); d.setDate(monday.getDate() + i); 
                 labels.push(formatDateLocal(d));
             }
             document.getElementById('currentWeekLabel').innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
@@ -292,7 +289,7 @@
             mainChart = new Chart(ctx, {
                 type: 'line',
                 data: { labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), datasets: [{ data: labels.map(l => grouped[l]?.weight || null), borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', fill: true, spanGaps: true, tension: 0.3 }] },
-                options: { responsive: true, maintainAspectRatio: false, layout: { padding: { left: 30, right: 30, top: 30 } }, scales: { y: { min: 73, max: 84, grid: { color: '#334155' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 73, max: 84 }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } },
                 plugins: [{ afterDraw: chart => { chart.data.datasets[0].data.forEach((v, i) => { const meta = chart.getDatasetMeta(0); if(!meta.data[i]) return; const {x, y} = meta.data[i]; const acts = grouped[labels[i]]?.activities || []; const yPos = y < 60 ? y + 25 : y - 20; acts.forEach((a, idx) => { chart.ctx.font = '14px serif'; chart.ctx.fillText(icons[a], x-7, yPos - (idx*16)); }); if(!acts.length && grouped[labels[i]]) chart.ctx.fillText('💤', x-7, yPos); }); } }]
             });
         };
@@ -301,10 +298,7 @@
             const sport = document.getElementById('sportFilter').value;
             const days = parseInt(document.getElementById('periodFilter').value);
             const labels = [];
-            for(let i = days - 1; i >= 0; i--) { 
-                let d = new Date(); d.setDate(d.getDate() - i); 
-                labels.push(formatDateLocal(d)); 
-            }
+            for(let i = days - 1; i >= 0; i--) { let d = new Date(); d.setDate(d.getDate() - i); labels.push(formatDateLocal(d)); }
             const tileContainer = document.getElementById('sportTiles'); tileContainer.innerHTML = '';
             ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Addominali'].forEach(s => {
                 const count = window.fitnessDB.filter(r => r.type === s && labels.includes(r.date)).length;
@@ -316,13 +310,11 @@
             if(analisiChart) analisiChart.destroy();
             if (sport === "Peso") {
                 const weightData = labels.map(l => { const d = window.fitnessDB.filter(r => r.date === l && r.weight); return d.length ? d[d.length-1].weight : null; });
-                const valid = weightData.filter(v => v);
-                document.getElementById('analisiTotal').innerText = valid.length ? (valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1) + " kg" : "--";
-                analisiChart = new Chart(ctx, { type: 'line', data: { labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), datasets: [{ data: weightData, borderColor: '#38bdf8', fill: false, tension: 0.3, spanGaps: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 73, max: 84 } }, plugins: { legend: { display: false } } } });
+                analisiChart = new Chart(ctx, { type: 'line', data: { labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), datasets: [{ data: weightData, borderColor: '#38bdf8', fill: false, spanGaps: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 73, max: 84 } }, plugins: { legend: { display: false } } } });
             } else {
                 const records = window.fitnessDB.filter(r => r.type === sport && labels.includes(r.date));
                 document.getElementById('analisiTotal').innerText = sport === 'Corsa' ? records.reduce((s, r) => s + (r.km || 0), 0).toFixed(1) + ' KM' : records.reduce((s, r) => s + (r.min || 0), 0) + ' MIN';
-                analisiChart = new Chart(ctx, { type: 'line', data: { labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), datasets: [{ data: labels.map(l => window.fitnessDB.some(r => r.date === l && r.type === sport) ? 5 : null), showLine: false, pointStyle: labels.map(l => window.fitnessDB.some(r => r.date === l && r.type === sport) ? iconCache[sport] : false), pointRadius: 15 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false, min: 0, max: 10 }, x: { grid: { color: '#334155' } } }, plugins: { legend: { display: false } } } });
+                analisiChart = new Chart(ctx, { type: 'line', data: { labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), datasets: [{ data: labels.map(l => window.fitnessDB.some(r => r.date === l && r.type === sport) ? 5 : null), showLine: false, pointStyle: labels.map(l => window.fitnessDB.some(r => r.date === l && r.type === sport) ? iconCache[sport] : false), pointRadius: 15 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false, min: 0, max: 10 } }, plugins: { legend: { display: false } } } });
             }
         };
 
@@ -331,10 +323,7 @@
             const currentYear = new Date().getFullYear();
             for (let w = 1; w <= 52; w++) {
                 let weekScore = 0;
-                const weekRecords = window.fitnessDB.filter(r => {
-                    const d = new Date(r.date);
-                    return d.getFullYear() === currentYear && getWeekNumber(d) === w;
-                });
+                const weekRecords = window.fitnessDB.filter(r => { const d = new Date(r.date); return d.getFullYear() === currentYear && getWeekNumber(d) === w; });
                 const daysInWeek = [...new Set(weekRecords.map(r => r.date))]; 
                 daysInWeek.forEach(day => {
                     const dayActs = weekRecords.filter(r => r.date === day);
@@ -360,6 +349,13 @@
                     </div>
                     <button class="btn-del" onclick="handleDelete('${r.id}')">ELIMINA</button>
                 </div>`).join(''); 
+        };
+
+        window.exportToCSV = () => {
+            let csv = "Data,Tipo,Peso,KM,Minuti\n";
+            window.fitnessDB.forEach(r => csv += `${r.date},${r.type},${r.weight||''},${r.km},${r.min}\n`);
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = `fitness_backup.csv`; a.click();
         };
     </script>
 </body>
