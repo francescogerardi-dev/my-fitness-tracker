@@ -40,6 +40,7 @@
         .heat-low { background: rgba(239, 68, 68, 0.6) !important; }
         .heat-mid { background: rgba(56, 189, 248, 0.6) !important; }
         .heat-high { background: rgba(74, 222, 128, 0.7) !important; }
+		.heat-ultra { background: rgba(168, 85, 247, 0.8) !important; border-color: #a855f7 !important; }
         .history-list { display: flex; flex-direction: column; gap: 10px; }
         .history-item { background: var(--card); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
         .btn-del { background: var(--danger); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
@@ -397,7 +398,9 @@
         // V.1.6: Settimana in piccolo, Punteggio in grassetto
         dayEl.innerHTML = `<span style="font-size:0.55rem; opacity:0.5;">${w}</span><b style="font-size:0.75rem;">${weekScore}</b>`;
         
-        if (weekScore >= 3.5) dayEl.classList.add('heat-high'); 
+        // Assegnazione colori in base al punteggio (V.1.7)
+        if (weekScore >= 5) dayEl.classList.add('heat-ultra'); // Nuovo colore Viola per i "Super" punteggi
+        else if (weekScore >= 3.5) dayEl.classList.add('heat-high'); 
         else if (weekScore >= 2) dayEl.classList.add('heat-mid'); 
         else if (weekScore > 0) dayEl.classList.add('heat-low');
         
