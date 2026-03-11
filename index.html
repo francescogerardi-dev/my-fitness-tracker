@@ -278,38 +278,59 @@
         };
 
         window.renderHeatmap = () => {
-            const container = document.getElementById('annualHeatmap'); container.innerHTML = '';
-            const currentYear = new Date().getFullYear();
-            for (let w = 1; w <= 52; w++) {
-                let wScore = 0;
-                const records = window.fitnessDB.filter(r => { const d = new Date(r.date); return d.getFullYear() === currentYear && getWeekNumber(d) === w; });
-                const days = [...new Set(records.map(r => r.date))];
-                days.forEach(d => {
-                    const acts = records.filter(r => r.date === d);
-                    if(acts.some(r => !['Stretching', 'Riposo'].includes(r.type))) wScore += 1;
-                    else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
-                });
-                const el = document.createElement('div'); el.className = 'heat-day';
-                el.style.display = 'flex'; el.style.flexDirection = 'column'; el.style.lineHeight = '0.9';
-                el.innerHTML = `<span style="font-size:0.55rem; opacity:0.5;">${w}</span><b style="font-size:0.75rem;">${wScore}</b>`;
-                if(wScore >= 5) el.classList.add('heat-ultra');
-                else if(wScore >= 3.5) el.classList.add('heat-high');
-                else if(wScore >= 2) el.classList.add('heat-mid');
-                else if(wScore > 0) el.classList.add('heat-low');
-                
-                // --- NAVIGAZIONE LUNEDI' ---
-                el.onclick = () => {
-                    const simple = new Date(currentYear, 0, 1);
-                    const dayOffset = (simple.getDay() === 0 ? 6 : simple.getDay() - 1);
-                    const firstMonday = new Date(currentYear, 0, 1 + (dayOffset <= 3 ? -dayOffset : 7 - dayOffset));
-                    const target = new Date(firstMonday);
-                    target.setDate(firstMonday.getDate() + (w - 1) * 7);
-                    window.referenceDate = target; window.renderChart();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                };
-                container.appendChild(el);
-            }
+    const container = document.getElementById('annualHeatmap'); 
+    container.innerHTML = '';
+    const currentYear = new Date().getFullYear();
+
+    for (let w = 1; w <= 52; w++) {
+        let wScore = 0;
+        // Filtriamo i record della settimana W
+        const records = window.fitnessDB.filter(r => { 
+            const d = new Date(r.date); 
+            return d.getFullYear() === currentYear && getWeekNumber(d) === w; 
+        });
+        
+        const days = [...new Set(records.map(r => r.date))];
+        days.forEach(d => {
+            const acts = records.filter(r => r.date === d);
+            if(acts.some(r => !['Stretching', 'Riposo'].includes(r.type))) wScore += 1;
+            else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
+        });
+
+        const el = document.createElement('div'); 
+        el.className = 'heat-day';
+        el.style.display = 'flex'; 
+        el.style.flexDirection = 'column'; 
+        el.style.lineHeight = '0.9';
+        el.innerHTML = `<span style="font-size:0.55rem; opacity:0.5;">${w}</span><b style="font-size:0.75rem;">${wScore}</b>`;
+        
+        if(wScore >= 5) el.classList.add('heat-ultra');
+        else if(wScore >= 3.5) el.classList.add('heat-high');
+        else if(wScore >= 2) el.classList.add('heat-mid');
+        else if(wScore > 0) el.classList.add('heat-low');
+        
+        // --- NAVIGAZIONE CORRETTA V.1.9.2 ---
+        el.onclick = () => {
+            // Troviamo il primo giorno dell'anno
+            let target = new Date(currentYear, 0, 1);
+            // Spostiamoci alla settimana W (usando il giovedì come ancora ISO)
+            target.setDate(target.getDate() + (w - 1) * 7);
+            
+            // Troviamo il lunedì di quella settimana specifica
+            const day = target.getDay();
+            const diff = target.getDate() - day + (day === 0 ? -6 : 1);
+            const finalMonday = new Date(target.setDate(diff));
+            
+            // Impostiamo la data di riferimento a mezzogiorno per evitare sfasamenti di fuso orario
+            finalMonday.setHours(12, 0, 0, 0);
+            
+            window.referenceDate = finalMonday; 
+            window.renderChart();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
+        container.appendChild(el);
+    }
+};
 
         window.renderAnalisi = () => {
             const sport = document.getElementById('sportFilter').value;
