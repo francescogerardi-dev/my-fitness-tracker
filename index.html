@@ -426,44 +426,62 @@ window.quickSave = async (type, minutes) => {
             }
         };
 
-        window.renderHeatmap = () => {
-    const container = document.getElementById('annualHeatmap'); 
-    container.innerHTML = ''; 
-    const currentYear = new Date().getFullYear();
-
-    for (let w = 1; w <= 52; w++) {
-        let weekScore = 0;
-        const weekRecords = window.fitnessDB.filter(r => { 
-            const d = new Date(r.date); 
-            return d.getFullYear() === currentYear && getWeekNumber(d) === w; 
-        });
-        
-        const daysInWeek = [...new Set(weekRecords.map(r => r.date))]; 
-        daysInWeek.forEach(day => {
-            const dayActs = weekRecords.filter(r => r.date === day);
-            if (dayActs.some(r => !['Stretching', 'Riposo'].includes(r.type))) weekScore += 1;
-            else if (dayActs.some(r => r.type === 'Stretching')) weekScore += 0.5;
-        });
-
-        const dayEl = document.createElement('div'); 
-        dayEl.className = 'heat-day'; 
-        dayEl.style.display = 'flex';
-        dayEl.style.flexDirection = 'column';
-        dayEl.style.justifyContent = 'center';
-        dayEl.style.lineHeight = '0.9';
-        
-        // V.1.6: Settimana in piccolo, Punteggio in grassetto
-        dayEl.innerHTML = `<span style="font-size:0.55rem; opacity:0.5;">${w}</span><b style="font-size:0.75rem;">${weekScore}</b>`;
-        
-        // Assegnazione colori in base al punteggio (V.1.7)
-        if (weekScore >= 5) dayEl.classList.add('heat-ultra'); // Nuovo colore Viola per i "Super" punteggi
-        else if (weekScore >= 3.5) dayEl.classList.add('heat-high'); 
-        else if (weekScore >= 2) dayEl.classList.add('heat-mid'); 
-        else if (weekScore > 0) dayEl.classList.add('heat-low');
-        
-        container.appendChild(dayEl);
-    }
-};
+     window.renderHeatmap = () => {
+		    const container = document.getElementById('annualHeatmap'); 
+		    container.innerHTML = ''; 
+		    const currentYear = new Date().getFullYear();
+		
+		    for (let w = 1; w <= 52; w++) {
+		        let weekScore = 0;
+		        const weekRecords = window.fitnessDB.filter(r => { 
+		            const d = new Date(r.date); 
+		            return d.getFullYear() === currentYear && getWeekNumber(d) === w; 
+		        });
+		        
+		        const daysInWeek = [...new Set(weekRecords.map(r => r.date))]; 
+		        daysInWeek.forEach(day => {
+		            const dayActs = weekRecords.filter(r => r.date === day);
+		            if (dayActs.some(r => !['Stretching', 'Riposo'].includes(r.type))) weekScore += 1;
+		            else if (dayActs.some(r => r.type === 'Stretching')) weekScore += 0.5;
+		        });
+		
+		        const dayEl = document.createElement('div'); 
+		        dayEl.className = 'heat-day'; 
+		        dayEl.style.display = 'flex';
+		        dayEl.style.flexDirection = 'column';
+		        dayEl.style.justifyContent = 'center';
+		        dayEl.style.lineHeight = '0.9';
+		        dayEl.style.cursor = 'pointer'; // Indica che è cliccabile
+		        
+		        dayEl.innerHTML = `<span style="font-size:0.55rem; opacity:0.5;">${w}</span><b style="font-size:0.75rem;">${weekScore}</b>`;
+		        
+		        // Colori (V.1.7)
+		        if (weekScore >= 5) dayEl.classList.add('heat-ultra'); 
+		        else if (weekScore >= 3.5) dayEl.classList.add('heat-high'); 
+		        else if (weekScore >= 2) dayEl.classList.add('heat-mid'); 
+		        else if (weekScore > 0) dayEl.classList.add('heat-low');
+		        
+		        // --- NOVITÀ V.1.9: Navigazione al click ---
+		        dayEl.onclick = () => {
+		            // Calcoliamo il lunedì di quella specifica settimana dell'anno corrente
+		            const janFirst = new Date(currentYear, 0, 1);
+		            const daysToMonday = (janFirst.getDay() === 0 ? 1 : 8 - janFirst.getDay());
+		            const firstMonday = new Date(currentYear, 0, daysToMonday);
+		            
+		            // Impostiamo la referenceDate alla settimana cliccata
+		            const targetDate = new Date(firstMonday);
+		            targetDate.setDate(firstMonday.getDate() + (w - 1) * 7);
+		            
+		            window.referenceDate = targetDate;
+		            window.renderChart(); // Aggiorna grafico e dashboard
+		            
+		            // Feedback visivo: un piccolo scroll verso l'alto per vedere il risultato
+		            window.scrollTo({ top: 0, behavior: 'smooth' });
+		        };
+		        
+		        container.appendChild(dayEl);
+		    }
+		};
 
         window.renderHistory = () => { 
             const list = document.getElementById('historyList'); 
