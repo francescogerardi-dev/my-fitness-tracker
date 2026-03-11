@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker Cloud - V.1.9</title>
+    <title>Fitness Tracker Cloud - V.1.9.1</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -103,9 +103,6 @@
         </div>
 
         <div id="history" class="content">
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button class="nav-arrow" style="flex:1" onclick="exportToCSV()">📤 Export CSV</button>
-            </div>
             <div id="historyList"></div>
         </div>
 
@@ -133,12 +130,12 @@
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
-			    apiKey: "AIzaSyATggTs_IGw_KMu-y3I7Vre5HnKbeyhAm4",
-				authDomain: "myfitnesstracker-f2089.firebaseapp.com",
-				projectId: "myfitnesstracker-f2089",
-				storageBucket: "myfitnesstracker-f2089.firebasestorage.app",
-				messagingSenderId: "229779508819",
-				appId: "1:229779508819:web:d62f6a5e7abe89e75000a6"
+            apiKey: "IL_TUO_API_KEY",
+            authDomain: "TUO_DOMINIO.firebaseapp.com",
+            projectId: "TUO_PROGETTO",
+            storageBucket: "TUO_STORAGE.appspot.com",
+            messagingSenderId: "TUO_ID",
+            appId: "IL_TUO_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -179,7 +176,7 @@
         };
 
         window.handleDelete = async (id) => {
-            if (confirm("Eliminare?")) await deleteDoc(doc(db, "users", window.currentUser.uid, "records", id));
+            if (confirm("Eliminare definitivamente?")) await deleteDoc(doc(db, "users", window.currentUser.uid, "records", id));
         };
 
         window.quickSave = async (type, minutes) => {
@@ -191,7 +188,7 @@
             await addDoc(collection(db, "users", window.currentUser.uid, "records"), {
                 date: formatDateLocal(new Date()), type: type, weight: lastW, km: 0, min: minutes
             });
-            alert(`${type} salvato!`);
+            alert(`${type} registrato con successo!`);
             showTab('main');
         };
     </script>
@@ -203,12 +200,21 @@
         window.fitnessDB = [];
 
         function formatDateLocal(d) { return d.toISOString().split('T')[0]; }
-        function getMonday(d) { d = new Date(d); const day = d.getDay(); const diff = d.getDate() - day + (day === 0 ? -6 : 1); return new Date(d.setDate(diff)); }
+
+        // --- CALCOLO LUNEDI' ---
+        function getMonday(d) {
+            d = new Date(d);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
+        }
+
+        // --- CALCOLO SETTIMANA ISO (Lunedì-Domenica) ---
         function getWeekNumber(d) {
             d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-            var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-            return Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
         }
 
         window.showTab = (id) => {
@@ -291,9 +297,13 @@
                 else if(wScore >= 2) el.classList.add('heat-mid');
                 else if(wScore > 0) el.classList.add('heat-low');
                 
+                // --- NAVIGAZIONE LUNEDI' ---
                 el.onclick = () => {
-                    const jan4 = new Date(currentYear, 0, 4);
-                    const target = new Date(jan4); target.setDate(jan4.getDate() + (w - 1) * 7);
+                    const simple = new Date(currentYear, 0, 1);
+                    const dayOffset = (simple.getDay() === 0 ? 6 : simple.getDay() - 1);
+                    const firstMonday = new Date(currentYear, 0, 1 + (dayOffset <= 3 ? -dayOffset : 7 - dayOffset));
+                    const target = new Date(firstMonday);
+                    target.setDate(firstMonday.getDate() + (w - 1) * 7);
                     window.referenceDate = target; window.renderChart();
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
@@ -341,15 +351,19 @@
                 const found = window.fitnessDB.filter(r => r.date === l && (sport === 'Peso' ? r.weight : r.type === sport));
                 return found.length ? (sport === 'Peso' ? found[found.length-1].weight : 5) : null;
             });
-            analisiChart = new Chart(ctx, { type: sport==='Peso'?'line':'scatter', data: { labels, datasets: [{ data: dataArr, borderColor: '#38bdf8' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            analisiChart = new Chart(ctx, { 
+                type: sport==='Peso'?'line':'scatter', 
+                data: { labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), datasets: [{ data: dataArr, borderColor: '#38bdf8', backgroundColor: '#38bdf8' }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
+            });
         };
 
         window.renderHistory = () => {
             const list = document.getElementById('historyList');
             list.innerHTML = window.fitnessDB.slice().reverse().map(r => `
                 <div style="background:var(--card); padding:10px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; border:1px solid #334155;">
-                    <div><b>${r.date}</b> - ${icons[r.type]} ${r.type} ${r.weight? ' | '+r.weight+'kg':''}</div>
-                    <button onclick="handleDelete('${r.id}')" style="background:var(--danger); border:none; color:white; border-radius:4px; cursor:pointer;">X</button>
+                    <div><b>${r.date.split('-').reverse().join('/')}</b> - ${icons[r.type]} ${r.type} ${r.weight? ' | '+r.weight+'kg':''}</div>
+                    <button onclick="handleDelete('${r.id}')" style="background:var(--danger); border:none; color:white; border-radius:4px; padding: 2px 8px; cursor:pointer;">X</button>
                 </div>`).join('');
         };
 
