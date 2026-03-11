@@ -133,6 +133,15 @@
                 <input type="number" id="weightIn" step="0.1" placeholder="Peso (kg)">
                 <button class="btn-save" onclick="handleSave()">SALVA NEL CLOUD</button>
             </div>
+			<div style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <button onclick="quickSave('Padel', 90)" style="flex: 1; padding: 12px; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); color: var(--primary); border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">
+        🎾 Padel 90'
+    </button>
+    <button onclick="quickSave('Stretching', 20)" style="flex: 1; padding: 12px; background: rgba(74, 222, 128, 0.1); border: 1px solid var(--success); color: var(--success); border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">
+        🧘 Stretch 20'
+    </button>
+</div>
+<div style="text-align: center; color: #64748b; font-size: 0.7rem; margin-bottom: 15px;">— OPPURE INSERIMENTO MANUALE —</div>
         </div>
     </div>
 
@@ -190,6 +199,38 @@
             showTab('main');
         };
 
+window.quickSave = async (type, minutes) => {
+    if (!window.currentUser) return;
+    
+    // Recuperiamo l'ultimo peso per non lasciare il campo vuoto
+    let lastWeight = null;
+    if (window.fitnessDB && window.fitnessDB.length > 0) {
+        const lastWithWeight = [...window.fitnessDB]
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .find(r => r.weight !== null && r.weight > 0);
+        if (lastWithWeight) lastWeight = lastWithWeight.weight;
+    }
+
+    const entry = {
+        date: formatDateLocal(new Date()), // Salva con la data di oggi
+        type: type,
+        weight: lastWeight,
+        km: 0,
+        min: minutes
+    };
+
+    try {
+        const { collection, addDoc, getFirestore } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        const db = getFirestore();
+        await addDoc(collection(db, "users", window.currentUser.uid, "records"), entry);
+        alert(`${type} salvato con successo!`);
+        showTab('main');
+    } catch (e) {
+        console.error("Errore salvataggio rapido:", e);
+        alert("Errore durante il salvataggio.");
+    }
+};
+		
         window.handleDelete = async (id) => {
             if (!window.currentUser || !confirm("Eliminare?")) return;
             await deleteDoc(doc(db, "users", window.currentUser.uid, "records", id));
