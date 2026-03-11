@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker Cloud - V.1.9.1</title>
+    <title>Fitness Tracker - V.1.9.5</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <style>
         :root {
             --bg: #0f172a; --card: #1e293b; --text: #f8fafc;
@@ -82,35 +81,21 @@
                     <option value="30">30gg</option><option value="60">60gg</option><option value="90">90gg</option>
                 </select>
             </div>
-            <div class="stat-card" style="padding: 10px; margin-bottom: 15px; border-left: none; justify-content: center;">
-                <div id="analisiTotal" style="font-size: 1.4rem; font-weight: bold;">--</div>
-            </div>
             <div class="tiles-container" id="sportTiles"></div>
             <div id="streakContainer" class="stat-card" style="margin-top: 15px; border-left-color: var(--warning); background: rgba(251, 191, 36, 0.05); display: flex; justify-content: space-around; padding: 10px;">
-                <div style="text-align: center;">
-                    <span style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase;">Streak Attuale</span>
-                    <span id="currentStreak" style="font-size: 1.8rem; font-weight: bold; color: var(--warning); display: block;">0</span>
-                    <span style="font-size: 0.7rem; color: #94a3b8;">giorni 🔥</span>
-                </div>
-                <div style="width: 1px; background: #334155; height: 40px; align-self: center;"></div>
-                <div style="text-align: center;">
-                    <span style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase;">Record Storico</span>
-                    <span id="bestStreak" style="font-size: 1.8rem; font-weight: bold; color: var(--success); display: block;">0</span>
-                    <span style="font-size: 0.7rem; color: #94a3b8;">giorni 🏆</span>
-                </div>
+                <div style="text-align: center;"><span style="font-size: 0.7rem; color: #94a3b8;">STREAK</span><span id="currentStreak" style="font-size: 1.8rem; font-weight: bold; color: var(--warning); display: block;">0</span></div>
+                <div style="text-align: center;"><span style="font-size: 0.7rem; color: #94a3b8;">RECORD</span><span id="bestStreak" style="font-size: 1.8rem; font-weight: bold; color: var(--success); display: block;">0</span></div>
             </div>
-            <div class="chart-box" style="height: 260px;"><canvas id="analisiChart"></canvas></div>
+            <div class="chart-box" style="height: 300px;"><canvas id="analisiChart"></canvas></div>
         </div>
 
-        <div id="history" class="content">
-            <div id="historyList"></div>
-        </div>
+        <div id="history" class="content"><div id="historyList"></div></div>
 
         <div id="input" class="content">
             <div style="background: var(--card); padding: 25px; border-radius: 16px; border: 1px solid #334155; max-width: 500px; margin: 0 auto;">
                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <button onclick="quickSave('Padel', 90)" style="flex: 1; padding: 12px; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); color: var(--primary); border-radius: 8px; font-weight: bold; cursor: pointer;">🎾 Padel 90'</button>
-                    <button onclick="quickSave('Stretching', 20)" style="flex: 1; padding: 12px; background: rgba(74, 222, 128, 0.1); border: 1px solid var(--success); color: var(--success); border-radius: 8px; font-weight: bold; cursor: pointer;">🧘 Stretch 20'</button>
+                    <button onclick="quickSave('Padel', 90)" style="flex: 1; padding: 12px; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); color: var(--primary); border-radius: 8px; font-weight: bold; cursor: pointer;">🎾 Padel</button>
+                    <button onclick="quickSave('Stretching', 20)" style="flex: 1; padding: 12px; background: rgba(74, 222, 128, 0.1); border: 1px solid var(--success); color: var(--success); border-radius: 8px; font-weight: bold; cursor: pointer;">🧘 Stretch</button>
                 </div>
                 <input type="date" id="dateIn">
                 <select id="typeIn" onchange="toggleFields()">
@@ -119,7 +104,7 @@
                 <div id="kmBox" class="hidden"><input type="number" id="kmIn" step="0.1" placeholder="KM"></div>
                 <div id="minBox" class="hidden"><input type="number" id="minIn" placeholder="Minuti"></div>
                 <input type="number" id="weightIn" step="0.1" placeholder="Peso (kg)">
-                <button class="btn-save" onclick="handleSave()">SALVA NEL CLOUD</button>
+                <button class="btn-save" onclick="handleSave()">SALVA</button>
             </div>
         </div>
     </div>
@@ -131,11 +116,11 @@
 
         const firebaseConfig = {
 			    apiKey: "AIzaSyATggTs_IGw_KMu-y3I7Vre5HnKbeyhAm4",
-                authDomain: "myfitnesstracker-f2089.firebaseapp.com",
-                projectId: "myfitnesstracker-f2089",
-                storageBucket: "myfitnesstracker-f2089.firebasestorage.app",
-                messagingSenderId: "229779508819",
-                appId: "1:229779508819:web:d62f6a5e7abe89e75000a6"
+    authDomain: "myfitnesstracker-f2089.firebaseapp.com",
+    projectId: "myfitnesstracker-f2089",
+    storageBucket: "myfitnesstracker-f2089.firebasestorage.app",
+    messagingSenderId: "229779508819",
+    appId: "1:229779508819:web:d62f6a5e7abe89e75000a6"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -156,6 +141,7 @@
                     renderChart();
                     renderHeatmap();
                     if(document.getElementById('analisi').classList.contains('active')) renderAnalisi();
+                    document.getElementById('statusMessage').innerText = "Dati aggiornati";
                 });
             } else {
                 window.currentUser = null;
@@ -176,7 +162,7 @@
         };
 
         window.handleDelete = async (id) => {
-            if (confirm("Eliminare definitivamente?")) await deleteDoc(doc(db, "users", window.currentUser.uid, "records", id));
+            if (confirm("Eliminare?")) await deleteDoc(doc(db, "users", window.currentUser.uid, "records", id));
         };
 
         window.quickSave = async (type, minutes) => {
@@ -188,7 +174,6 @@
             await addDoc(collection(db, "users", window.currentUser.uid, "records"), {
                 date: formatDateLocal(new Date()), type: type, weight: lastW, km: 0, min: minutes
             });
-            alert(`${type} registrato con successo!`);
             showTab('main');
         };
     </script>
@@ -200,21 +185,12 @@
         window.fitnessDB = [];
 
         function formatDateLocal(d) { return d.toISOString().split('T')[0]; }
-
-        // --- CALCOLO LUNEDI' ---
-        function getMonday(d) {
-            d = new Date(d);
-            const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-            return new Date(d.setDate(diff));
-        }
-
-        // --- CALCOLO SETTIMANA ISO (Lunedì-Domenica) ---
+        function getMonday(d) { d = new Date(d); const day = d.getDay(); const diff = d.getDate() - day + (day === 0 ? -6 : 1); return new Date(d.setDate(diff)); }
         function getWeekNumber(d) {
             d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-            var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
         }
 
         window.showTab = (id) => {
@@ -256,11 +232,6 @@
             });
 
             document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
-            const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
-            if(score >= 3.5) { icon.innerText = '🔥'; card.style.borderLeftColor = 'var(--success)'; msg.innerText = "Obiettivo raggiunto: ottimo lavoro!"; }
-            else if(score < 2) { icon.innerText = '⚠️'; card.style.borderLeftColor = 'var(--danger)'; msg.innerText = "Settimana fiacca, serve una scossa!"; }
-            else { icon.innerText = '⚖️'; card.style.borderLeftColor = 'var(--warning)'; msg.innerText = "Sei sulla buona strada, continua così!"; }
-
             const ctx = document.getElementById('mainChart').getContext('2d');
             if(mainChart) mainChart.destroy();
             mainChart = new Chart(ctx, {
@@ -278,273 +249,102 @@
         };
 
         window.renderHeatmap = () => {
-    const container = document.getElementById('annualHeatmap'); 
-    container.innerHTML = '';
-    const currentYear = new Date().getFullYear();
-
-    for (let w = 1; w <= 52; w++) {
-        let wScore = 0;
-        // Filtriamo i record della settimana W
-        const records = window.fitnessDB.filter(r => { 
-            const d = new Date(r.date); 
-            return d.getFullYear() === currentYear && getWeekNumber(d) === w; 
-        });
-        
-        const days = [...new Set(records.map(r => r.date))];
-        days.forEach(d => {
-            const acts = records.filter(r => r.date === d);
-            if(acts.some(r => !['Stretching', 'Riposo'].includes(r.type))) wScore += 1;
-            else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
-        });
-
-        const el = document.createElement('div'); 
-        el.className = 'heat-day';
-        el.style.display = 'flex'; 
-        el.style.flexDirection = 'column'; 
-        el.style.lineHeight = '0.9';
-        el.innerHTML = `<span style="font-size:0.55rem; opacity:0.5;">${w}</span><b style="font-size:0.75rem;">${wScore}</b>`;
-        
-        if(wScore >= 5) el.classList.add('heat-ultra');
-        else if(wScore >= 3.5) el.classList.add('heat-high');
-        else if(wScore >= 2) el.classList.add('heat-mid');
-        else if(wScore > 0) el.classList.add('heat-low');
-        
-        // --- NAVIGAZIONE CORRETTA V.1.9.2 ---
-        el.onclick = () => {
-            // Troviamo il primo giorno dell'anno
-            let target = new Date(currentYear, 0, 1);
-            // Spostiamoci alla settimana W (usando il giovedì come ancora ISO)
-            target.setDate(target.getDate() + (w - 1) * 7);
-            
-            // Troviamo il lunedì di quella settimana specifica
-            const day = target.getDay();
-            const diff = target.getDate() - day + (day === 0 ? -6 : 1);
-            const finalMonday = new Date(target.setDate(diff));
-            
-            // Impostiamo la data di riferimento a mezzogiorno per evitare sfasamenti di fuso orario
-            finalMonday.setHours(12, 0, 0, 0);
-            
-            window.referenceDate = finalMonday; 
-            window.renderChart();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const container = document.getElementById('annualHeatmap'); container.innerHTML = '';
+            const currentYear = new Date().getFullYear();
+            for (let w = 1; w <= 52; w++) {
+                let wScore = 0;
+                const records = window.fitnessDB.filter(r => { const d = new Date(r.date); return d.getFullYear() === currentYear && getWeekNumber(d) === w; });
+                const days = [...new Set(records.map(r => r.date))];
+                days.forEach(d => {
+                    const acts = records.filter(r => r.date === d);
+                    if(acts.some(r => !['Stretching', 'Riposo'].includes(r.type))) wScore += 1;
+                    else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
+                });
+                const el = document.createElement('div'); el.className = 'heat-day';
+                el.style.display = 'flex'; el.style.flexDirection = 'column'; el.style.lineHeight = '0.9';
+                el.innerHTML = `<span style="font-size:0.55rem; opacity:0.5;">${w}</span><b style="font-size:0.75rem;">${wScore}</b>`;
+                if(wScore >= 5) el.classList.add('heat-ultra');
+                else if(wScore >= 3.5) el.classList.add('heat-high');
+                else if(wScore >= 2) el.classList.add('heat-mid');
+                else if(wScore > 0) el.classList.add('heat-low');
+                el.onclick = () => {
+                    let target = new Date(currentYear, 0, 4);
+                    target.setDate(target.getDate() + (w - 1) * 7);
+                    const day = target.getDay();
+                    const diff = target.getDate() - day + (day === 0 ? -6 : 1);
+                    const finalMonday = new Date(target.setDate(diff));
+                    finalMonday.setHours(12, 0, 0, 0);
+                    window.referenceDate = finalMonday; renderChart(); window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                container.appendChild(el);
+            }
         };
-        container.appendChild(el);
-    }
-};
 
-     window.renderAnalisi = () => {
-    const sport = document.getElementById('sportFilter').value;
-    const days = parseInt(document.getElementById('periodFilter').value);
-    
-    const labelsFormatted = [];
-    const labelsRaw = [];
-    
-    for(let i = days - 1; i >= 0; i--) {
-        let d = new Date();
-        d.setDate(d.getDate() - i);
-        const raw = formatDateLocal(d);
-        labelsRaw.push(raw);
-        labelsFormatted.push(raw.split('-').reverse().slice(0, 2).join('/'));
-    }
-    
-    // Aggiornamento Tiles
-    const tileContainer = document.getElementById('sportTiles');
-    tileContainer.innerHTML = '';
-    ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Addominali'].forEach(s => {
-        const count = window.fitnessDB.filter(r => r.type === s && labelsRaw.includes(r.date)).length;
-        tileContainer.innerHTML += `<div class="sport-tile ${sport===s?'active':''}"><span>${icons[s]}</span><br><b>${count}</b><br><small>${s}</small></div>`;
-    });
-
-    // Gestione Streak (rimane invariata)
-    if(sport !== "Peso") {
-        document.getElementById('streakContainer').style.display = 'flex';
-        const sDates = [...new Set(window.fitnessDB.filter(r => r.type === sport).map(r => r.date))].sort((a, b) => new Date(b) - new Date(a));
-        let cur = 0, best = 0;
-        if(sDates.length > 0) {
-            let sorted = [...sDates].sort((a, b) => new Date(a) - new Date(b));
-            let longest = 0, count = 1;
-            for(let i = 1; i < sorted.length; i++) {
-                count = (new Date(sorted[i]) - new Date(sorted[i-1])) / 86400000 === 1 ? count + 1 : 1;
-                if(count > longest) longest = count;
+        window.renderAnalisi = () => {
+            const sport = document.getElementById('sportFilter').value;
+            const daysCount = parseInt(document.getElementById('periodFilter').value);
+            const labelsRaw = []; const labelsFmt = [];
+            for(let i=daysCount-1; i>=0; i--) {
+                let d = new Date(); d.setDate(d.getDate()-i);
+                const raw = formatDateLocal(d);
+                labelsRaw.push(raw);
+                labelsFmt.push(raw.split('-').reverse().slice(0,2).join('/'));
             }
-            best = Math.max(longest, 1);
-            if((new Date(formatDateLocal(new Date())) - new Date(sDates[0])) / 86400000 <= 1) {
-                cur = 1; for(let i = 0; i < sDates.length - 1; i++) { if((new Date(sDates[i]) - new Date(sDates[i+1])) / 86400000 === 1) cur++; else break; }
-            }
-        }
-        document.getElementById('currentStreak').innerText = cur;
-        document.getElementById('bestStreak').innerText = best;
-    } else { document.getElementById('streakContainer').style.display = 'none'; }
+            
+            const tc = document.getElementById('sportTiles'); tc.innerHTML = '';
+            ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Addominali'].forEach(s => {
+                const cnt = window.fitnessDB.filter(r => r.type === s && labelsRaw.includes(r.date)).length;
+                tc.innerHTML += `<div class="sport-tile ${sport===s?'active':''}"><span>${icons[s]}</span><br><b>${cnt}</b><br><small>${s}</small></div>`;
+            });
 
-    // Rendering Grafico con SIMBOLI
-    const ctx = document.getElementById('analisiChart').getContext('2d');
-    if(analisiChart) analisiChart.destroy();
-    
-    const dataArr = labelsRaw.map(l => {
-        const found = window.fitnessDB.filter(r => r.date === l && (sport === 'Peso' ? r.weight : r.type === sport));
-        return found.length ? (sport === 'Peso' ? found[found.length - 1].weight : 1) : null;
-    });
-
-    analisiChart = new Chart(ctx, { 
-        type: 'line', 
-        data: { 
-            labels: labelsFormatted, 
-            datasets: [{ 
-                data: dataArr, 
-                borderColor: '#38bdf8', 
-                pointRadius: sport === 'Peso' ? 3 : 0, // Mostra i punti solo per il peso
-                borderWidth: sport === 'Peso' ? 2 : 0, // Nasconde la linea se è uno sport per far risaltare i simboli
-                spanGaps: true,
-                fill: false
-            }] 
-        }, 
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false, 
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    display: sport === 'Peso',
-                    beginAtZero: false,
-                    // Se non è il peso, fissiamo un range invisibile per posizionare i simboli al centro
-                    min: sport === 'Peso' ? undefined : 0,
-                    max: sport === 'Peso' ? undefined : 2
-                },
-                x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } }
-            }
-        },
-        plugins: [{
-            afterDraw: chart => {
-                if (sport === 'Peso') return; // Se guardiamo il peso, non disegniamo icone
-                const {ctx, data, chartArea: {top, bottom, left, right}} = chart;
-                const meta = chart.getDatasetMeta(0);
-                
-                labelsRaw.forEach((date, i) => {
-                    const acts = window.fitnessDB.filter(r => r.date === date && r.type === sport);
-                    if (acts.length > 0 && meta.data[i]) {
-                        const {x, y} = meta.data[i];
-                        ctx.font = '20px serif';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(icons[sport], x, y);
+            if(sport !== "Peso") {
+                document.getElementById('streakContainer').style.display = 'flex';
+                const sDates = [...new Set(window.fitnessDB.filter(r=>r.type===sport).map(r=>r.date))].sort((a,b)=>new Date(b)-new Date(a));
+                let cur = 0, best = 0;
+                if(sDates.length > 0) {
+                    let sorted = [...sDates].sort((a,b)=>new Date(a)-new Date(b));
+                    let longest = 0, count = 1;
+                    for(let i=1; i<sorted.length; i++) {
+                        count = (new Date(sorted[i])-new Date(sorted[i-1]))/86400000 === 1 ? count+1 : 1;
+                        if(count > longest) longest = count;
                     }
-                });
-            }
-        }]
-    });
-};
-
-    analisiChart = new Chart(ctx, { 
-        type: 'line', 
-        data: { 
-            labels: labelsFormatted, 
-            datasets: [{ 
-                data: dataArr, 
-                borderColor: '#38bdf8', 
-                pointRadius: sport === 'Peso' ? 3 : 0, // Mostra i punti solo per il peso
-                borderWidth: sport === 'Peso' ? 2 : 0, // Nasconde la linea se è uno sport per far risaltare i simboli
-                spanGaps: true,
-                fill: false
-            }] 
-        }, 
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false, 
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    display: sport === 'Peso',
-                    beginAtZero: false,
-                    // Se non è il peso, fissiamo un range invisibile per posizionare i simboli al centro
-                    min: sport === 'Peso' ? undefined : 0,
-                    max: sport === 'Peso' ? undefined : 2
-                },
-                x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } }
-            }
-        },
-        plugins: [{
-            afterDraw: chart => {
-                if (sport === 'Peso') return; // Se guardiamo il peso, non disegniamo icone
-                const {ctx, data, chartArea: {top, bottom, left, right}} = chart;
-                const meta = chart.getDatasetMeta(0);
-                
-                labelsRaw.forEach((date, i) => {
-                    const acts = window.fitnessDB.filter(r => r.date === date && r.type === sport);
-                    if (acts.length > 0 && meta.data[i]) {
-                        const {x, y} = meta.data[i];
-                        ctx.font = '20px serif';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(icons[sport], x, y);
+                    best = Math.max(longest, 1);
+                    if((new Date(formatDateLocal(new Date()))-new Date(sDates[0]))/86400000 <= 1) {
+                        cur = 1; for(let i=0; i<sDates.length-1; i++) { if((new Date(sDates[i])-new Date(sDates[i+1]))/86400000===1) cur++; else break; }
                     }
-                });
-            }
-        }]
-    });
-};
-    // Gestione Streak (Solo se non è il peso)
-    if(sport !== "Peso") {
-        document.getElementById('streakContainer').style.display = 'flex';
-        const sDates = [...new Set(window.fitnessDB.filter(r => r.type === sport).map(r => r.date))].sort((a, b) => new Date(b) - new Date(a));
-        let cur = 0, best = 0;
-        if(sDates.length > 0) {
-            let sorted = [...sDates].sort((a, b) => new Date(a) - new Date(b));
-            let longest = 0, count = 1;
-            for(let i = 1; i < sorted.length; i++) {
-                count = (new Date(sorted[i]) - new Date(sorted[i-1])) / 86400000 === 1 ? count + 1 : 1;
-                if(count > longest) longest = count;
-            }
-            best = Math.max(longest, 1);
-            if((new Date(formatDateLocal(new Date())) - new Date(sDates[0])) / 86400000 <= 1) {
-                cur = 1; 
-                for(let i = 0; i < sDates.length - 1; i++) {
-                    if((new Date(sDates[i]) - new Date(sDates[i+1])) / 86400000 === 1) cur++; else break;
                 }
-            }
-        }
-        document.getElementById('currentStreak').innerText = cur;
-        document.getElementById('bestStreak').innerText = best;
-    } else { 
-        document.getElementById('streakContainer').style.display = 'none'; 
-    }
+                document.getElementById('currentStreak').innerText = cur;
+                document.getElementById('bestStreak').innerText = best;
+            } else { document.getElementById('streakContainer').style.display = 'none'; }
 
-    // Rendering Grafico Analisi
-    const ctx = document.getElementById('analisiChart').getContext('2d');
-    if(analisiChart) analisiChart.destroy();
-    
-    const dataArr = labelsRaw.map(l => {
-        const found = window.fitnessDB.filter(r => r.date === l && (sport === 'Peso' ? r.weight : r.type === sport));
-        if (found.length) {
-            return sport === 'Peso' ? found[found.length - 1].weight : 1; // 1 per indicare la presenza dell'attività
-        }
-        return null;
-    });
+            const ctx = document.getElementById('analisiChart').getContext('2d');
+            if(analisiChart) analisiChart.destroy();
+            const dataArr = labelsRaw.map(l => {
+                const f = window.fitnessDB.filter(r => r.date === l && (sport === 'Peso' ? r.weight : r.type === sport));
+                return f.length ? (sport === 'Peso' ? f[f.length-1].weight : 1) : null;
+            });
 
-    analisiChart = new Chart(ctx, { 
-        type: sport === 'Peso' ? 'line' : 'bar', 
-        data: { 
-            labels: labelsFormatted, 
-            datasets: [{ 
-                data: dataArr, 
-                borderColor: '#38bdf8', 
-                backgroundColor: sport === 'Peso' ? 'transparent' : '#38bdf8',
-                borderWidth: 2,
-                pointRadius: sport === 'Peso' ? 4 : 0,
-                tension: 0.3,
-                spanGaps: true
-            }] 
-        }, 
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false, 
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    display: sport === 'Peso', // Mostra l'asse Y solo per il peso
-                    beginAtZero: false
-                }
-            }
-        } 
-    });
-};
+            analisiChart = new Chart(ctx, { 
+                type: 'line', 
+                data: { labels: labelsFmt, datasets: [{ data: dataArr, borderColor: '#38bdf8', pointRadius: sport==='Peso'?3:0, spanGaps: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, 
+                           scales: { y: { display: sport==='Peso', min: sport==='Peso'?73:0, max: sport==='Peso'?84:2 } } 
+                },
+                plugins: [{
+                    afterDraw: chart => {
+                        if (sport === 'Peso') return;
+                        const meta = chart.getDatasetMeta(0);
+                        labelsRaw.forEach((date, i) => {
+                            const hasAct = window.fitnessDB.some(r => r.date === date && r.type === sport);
+                            if (hasAct && meta.data[i]) {
+                                const {x, y} = meta.data[i]; chart.ctx.font = '20px serif'; chart.ctx.textAlign = 'center';
+                                chart.ctx.fillText(icons[sport], x, y);
+                            }
+                        });
+                    }
+                }]
+            });
+        };
 
         window.renderHistory = () => {
             const list = document.getElementById('historyList');
