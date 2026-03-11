@@ -332,12 +332,10 @@
     }
 };
 
-        window.renderAnalisi = () => {
+       window.renderAnalisi = () => {
     const sport = document.getElementById('sportFilter').value;
     const days = parseInt(document.getElementById('periodFilter').value);
     
-    // Generiamo le date degli ultimi X giorni in formato YYYY-MM-DD (per il filtro) 
-    // e DD/MM (per le etichette del grafico)
     const labelsFormatted = [];
     const labelsRaw = [];
     
@@ -349,19 +347,91 @@
         labelsFormatted.push(raw.split('-').reverse().slice(0, 2).join('/'));
     }
     
-    // Aggiornamento Tiles (V.1.9.3)
+    // Aggiornamento Tiles
     const tileContainer = document.getElementById('sportTiles');
     tileContainer.innerHTML = '';
     ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Addominali'].forEach(s => {
         const count = window.fitnessDB.filter(r => r.type === s && labelsRaw.includes(r.date)).length;
-        tileContainer.innerHTML += `
-            <div class="sport-tile ${sport === s ? 'active' : ''}">
-                <span>${icons[s]}</span><br>
-                <b>${count}</b><br>
-                <small>${s}</small>
-            </div>`;
+        tileContainer.innerHTML += `<div class="sport-tile ${sport===s?'active':''}"><span>${icons[s]}</span><br><b>${count}</b><br><small>${s}</small></div>`;
     });
 
+    // Gestione Streak (rimane invariata)
+    if(sport !== "Peso") {
+        document.getElementById('streakContainer').style.display = 'flex';
+        const sDates = [...new Set(window.fitnessDB.filter(r => r.type === sport).map(r => r.date))].sort((a, b) => new Date(b) - new Date(a));
+        let cur = 0, best = 0;
+        if(sDates.length > 0) {
+            let sorted = [...sDates].sort((a, b) => new Date(a) - new Date(b));
+            let longest = 0, count = 1;
+            for(let i = 1; i < sorted.length; i++) {
+                count = (new Date(sorted[i]) - new Date(sorted[i-1])) / 86400000 === 1 ? count + 1 : 1;
+                if(count > longest) longest = count;
+            }
+            best = Math.max(longest, 1);
+            if((new Date(formatDateLocal(new Date())) - new Date(sDates[0])) / 86400000 <= 1) {
+                cur = 1; for(let i = 0; i < sDates.length - 1; i++) { if((new Date(sDates[i]) - new Date(sDates[i+1])) / 86400000 === 1) cur++; else break; }
+            }
+        }
+        document.getElementById('currentStreak').innerText = cur;
+        document.getElementById('bestStreak').innerText = best;
+    } else { document.getElementById('streakContainer').style.display = 'none'; }
+
+    // Rendering Grafico con SIMBOLI
+    const ctx = document.getElementById('analisiChart').getContext('2d');
+    if(analisiChart) analisiChart.destroy();
+    
+    const dataArr = labelsRaw.map(l => {
+        const found = window.fitnessDB.filter(r => r.date === l && (sport === 'Peso' ? r.weight : r.type === sport));
+        return found.length ? (sport === 'Peso' ? found[found.length - 1].weight : 1) : null;
+    });
+
+    analisiChart = new Chart(ctx, { 
+        type: 'line', 
+        data: { 
+            labels: labelsFormatted, 
+            datasets: [{ 
+                data: dataArr, 
+                borderColor: '#38bdf8', 
+                pointRadius: sport === 'Peso' ? 3 : 0, // Mostra i punti solo per il peso
+                borderWidth: sport === 'Peso' ? 2 : 0, // Nasconde la linea se è uno sport per far risaltare i simboli
+                spanGaps: true,
+                fill: false
+            }] 
+        }, 
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    display: sport === 'Peso',
+                    beginAtZero: false,
+                    // Se non è il peso, fissiamo un range invisibile per posizionare i simboli al centro
+                    min: sport === 'Peso' ? undefined : 0,
+                    max: sport === 'Peso' ? undefined : 2
+                },
+                x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } }
+            }
+        },
+        plugins: [{
+            afterDraw: chart => {
+                if (sport === 'Peso') return; // Se guardiamo il peso, non disegniamo icone
+                const {ctx, data, chartArea: {top, bottom, left, right}} = chart;
+                const meta = chart.getDatasetMeta(0);
+                
+                labelsRaw.forEach((date, i) => {
+                    const acts = window.fitnessDB.filter(r => r.date === date && r.type === sport);
+                    if (acts.length > 0 && meta.data[i]) {
+                        const {x, y} = meta.data[i];
+                        ctx.font = '20px serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(icons[sport], x, y);
+                    }
+                });
+            }
+        }]
+    });
+};
     // Gestione Streak (Solo se non è il peso)
     if(sport !== "Peso") {
         document.getElementById('streakContainer').style.display = 'flex';
