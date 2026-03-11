@@ -235,14 +235,30 @@
         const iconCache = { 'Corsa': createIconCanvas('🏃'), 'Padel': createIconCanvas('🎾'), 'Stretching': createIconCanvas('🧘'), 'Pesi': createIconCanvas('🏋️'), 'Addominali': createIconCanvas('🧱') };
 
         window.showTab = (id) => {
-            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(id === 'main') { renderChart(); renderHeatmap(); }
-            if(id === 'analisi') renderAnalisi();
-            if(id === 'history') renderHistory();
-            if(id === 'input') document.getElementById('dateIn').valueAsDate = new Date();
-        };
+		    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+		    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+		    document.getElementById(id).classList.add('active');
+		    
+		    if(id === 'main') { renderChart(); renderHeatmap(); }
+		    if(id === 'analisi') renderAnalisi();
+		    if(id === 'history') renderHistory();
+		    
+		    if(id === 'input') {
+		        document.getElementById('dateIn').valueAsDate = new Date();
+		        
+		        // --- NOVITÀ V.1.8: Recupero ultimo peso inserito ---
+		        if (window.fitnessDB && window.fitnessDB.length > 0) {
+		            // Cerchiamo l'ultimo record che ha un peso valorizzato
+		            const lastWithWeight = [...window.fitnessDB]
+		                .sort((a, b) => new Date(b.date) - new Date(a.date))
+		                .find(r => r.weight !== null && r.weight !== undefined && r.weight > 0);
+		            
+		            if (lastWithWeight) {
+		                document.getElementById('weightIn').value = lastWithWeight.weight;
+		            }
+		        }
+		    }
+		};
 
         window.toggleFields = () => {
             const t = document.getElementById('typeIn').value;
