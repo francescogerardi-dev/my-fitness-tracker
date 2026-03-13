@@ -418,7 +418,7 @@ window.updateSuggestion = () => {
 
             analisiChart = new Chart(ctx, { 
                 type: 'line', 
-                data: { labels: labelsFmt, datasets: [{ data: dataArr, borderColor: '#38bdf8', pointRadius: sport==='Peso'?3:0, spanGaps: true }] },
+                data: { labels: labelsFmt, datasets: [{ data: dataArr, borderColor: '#38bdf8', pointRadius: sport==='Peso'?3:0, spanGaps: true, showLine: sport !== 'Peso' }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, 
                            scales: { y: { display: sport==='Peso', min: sport==='Peso'?73:0, max: sport==='Peso'?84:2 } } 
                 },
