@@ -68,6 +68,14 @@
                 </div>
                 <button onclick="window.logout()" style="margin-left: auto; background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.7rem;">LOGOUT</button>
             </div>
+			<div id="suggestionCard" class="stat-card" style="border-left-color: var(--ultra); background: rgba(168, 85, 247, 0.05); margin-top: -10px; margin-bottom: 15px; padding: 10px 20px;">
+			    <span style="font-size: 1.5rem;">💡</span>
+			    <div class="stat-text">
+			        <span style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Suggerimento Coach</span>
+			        <span id="suggestionText" style="font-weight: bold; display: block; color: var(--text);">Analisi in corso...</span>
+			    </div>
+			</div>
+			
             <div class="chart-box" style="height: 380px;"><canvas id="mainChart"></canvas></div>
             <div class="chart-box"><div id="annualHeatmap" class="heatmap-container"></div></div>
         </div>
@@ -140,6 +148,7 @@
                     window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderChart();
                     renderHeatmap();
+					updateSuggestion();
                     if(document.getElementById('analisi').classList.contains('active')) renderAnalisi();
                     document.getElementById('statusMessage').innerText = "Dati aggiornati";
                 });
@@ -193,6 +202,66 @@
             return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
         }
 
+window.updateSuggestion = () => {
+    const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Addominali'];
+    const today = new Date();
+    let streaks = {};
+    let lastSeen = {};
+
+    // 1. Analisi dati
+    sports.forEach(s => {
+        const sDates = [...new Set(window.fitnessDB
+            .filter(r => r.type === s)
+            .map(r => r.date))]
+            .sort((a, b) => new Date(a) - new Date(b));
+
+        // Calcolo Streak attuale
+        let currentStreak = 0;
+        if (sDates.length > 0) {
+            let tempStreak = 0;
+            const sortedDesc = [...sDates].sort((a,b) => new Date(b) - new Date(a));
+            
+            // Verifichiamo se l'attività è recente (oggi o ieri)
+            const lastDate = new Date(sortedDesc[0]);
+            const diffDays = (today - lastDate) / (1000 * 60 * 60 * 24);
+            
+            if (diffDays <= 1.5) { // Se fatta oggi o ieri
+                tempStreak = 1;
+                for (let i = 0; i < sortedDesc.length - 1; i++) {
+                    const d1 = new Date(sortedDesc[i]);
+                    const d2 = new Date(sortedDesc[i+1]);
+                    if ((d1 - d2) / (1000 * 60 * 60 * 24) === 1) tempStreak++;
+                    else break;
+                }
+            }
+            currentStreak = tempStreak;
+            lastSeen[s] = lastDate;
+        } else {
+            lastSeen[s] = new Date(0); // Mai fatta
+        }
+        streaks[s] = currentStreak;
+    });
+
+    // 2. Elaborazione suggerimento
+    let suggestion = "";
+    const activeStreaks = Object.entries(streaks).filter(([s, val]) => val > 2);
+
+    if (activeStreaks.length > 0) {
+        // Caso Streak > 2: prendiamo il massimo
+        const maxVal = Math.max(...activeStreaks.map(x => x[1]));
+        const topSports = activeStreaks.filter(x => x[1] === maxVal).map(x => `${icons[x[0]]} ${x[0]}`);
+        suggestion = `Continua così! Mantieni lo streak di: ${topSports.join(' e ')}`;
+    } else {
+        // Caso No Streak: prendiamo l'attività più "vecchia" (trascurata)
+        const sortedByLast = Object.entries(lastSeen).sort((a, b) => a[1] - b[1]);
+        const oldestSport = sortedByLast[0][0];
+        suggestion = `È ora di riprendere: ${icons[oldestSport]} ${oldestSport} (manca da un po'!)`;
+    }
+
+    document.getElementById('suggestionText').innerText = suggestion;
+};
+
+		
         window.showTab = (id) => {
             document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -210,12 +279,12 @@
         window.changeWeek = (days) => { window.referenceDate.setDate(window.referenceDate.getDate() + days); renderChart(); };
 
        window.renderChart = () => {
-    const monday = getMonday(window.referenceDate);
-    const labels = [];
-    for(let i=0; i<7; i++) { 
-        let d = new Date(monday); d.setDate(monday.getDate() + i); 
-        labels.push(formatDateLocal(d));
-    }
+		    const monday = getMonday(window.referenceDate);
+		    const labels = [];
+		    for(let i=0; i<7; i++) { 
+		        let d = new Date(monday); d.setDate(monday.getDate() + i); 
+		        labels.push(formatDateLocal(d));
+		    }
     document.getElementById('currentWeekLabel').innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
     
     const grouped = window.fitnessDB.reduce((acc, curr) => {
