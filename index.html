@@ -118,41 +118,38 @@
         </div>
     </div>
 
-<div id="routine" class="content" style="width: 100%; box-sizing: border-box; overflow-x: hidden;">
-    <div style="width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; box-sizing: border-box !important;">
+<div id="routine" class="content">
+    <div class="stat-card" style="display: block; padding: 15px; border-left: 4px solid var(--primary); margin-bottom: 20px;">
         
-        <div style="background: var(--card); padding: 15px; border-radius: 16px; border: 1px solid #334155; box-sizing: border-box !important; width: 100% !important; margin: 0 auto;">
-            <h3 style="margin-top:0; font-size: 1rem; border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px; opacity: 0.8;">
-                Nuovo Esercizio
-            </h3>
+        <h3 style="margin-top:0; font-size: 1rem; border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px; opacity: 0.8;">
+            Nuovo Esercizio
+        </h3>
+        
+        <div id="routineForm" style="display: flex; flex-direction: column; gap: 10px;">
             
-            <div id="routineForm" style="display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box !important;">
+            <input type="text" id="exName" placeholder="Nome (es. Plank)" 
+                   style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white;">
+            
+            <div style="display: flex; gap: 10px;">
+                <input type="number" id="exDuration" placeholder="Sec" 
+                       style="flex: 1; min-width: 0; box-sizing: border-box; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white;">
                 
-                <input type="text" id="exName" placeholder="Nome (es. Plank)" 
-                       style="width: 100% !important; min-width: 0 !important; padding: 12px !important; margin: 0 !important; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box !important; display: block;">
-                
-                <div style="display: flex; gap: 10px; width: 100% !important; box-sizing: border-box !important; margin: 0 !important; padding: 0 !important;">
-                    <input type="number" id="exDuration" placeholder="Sec" 
-                           style="flex: 1 !important; min-width: 0 !important; width: 0; padding: 12px !important; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box !important;">
-                    
-                    <input type="text" id="exImg" placeholder="URL Immagine" 
-                           style="flex: 2 !important; min-width: 0 !important; width: 0; padding: 12px !important; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box !important;">
-                </div>
-                
-                <textarea id="exNote" placeholder="Note (opzionali...)" 
-                    style="width: 100% !important; min-width: 0 !important; height: 50px; background:#0f172a; color:white; border-radius:8px; border:1px solid #334155; padding:12px !important; box-sizing: border-box !important; font-family: inherit; resize: none; display: block; margin: 0 !important;"></textarea>
-                
-                <button class="btn-save" onclick="addExercise()" 
-                        style="width: 100% !important; padding: 15px !important; background: var(--primary); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; box-sizing: border-box !important; margin: 0 !important;">
-                    AGGIUNGI ALLA LISTA
-                </button>
+                <input type="text" id="exImg" placeholder="URL Immagine" 
+                       style="flex: 2; min-width: 0; box-sizing: border-box; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white;">
             </div>
+            
+            <textarea id="exNote" placeholder="Note..." 
+                style="width: 100%; box-sizing: border-box; height: 50px; background:#0f172a; color:white; border-radius:6px; border:1px solid #334155; padding:10px; font-family: inherit; resize: none;"></textarea>
+            
+            <button class="btn-save" onclick="addExercise()" 
+                    style="width: 100%; padding: 12px; background: var(--primary); color: #0f172a; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                AGGIUNGI
+            </button>
         </div>
-
-        <h3 style="font-size: 1rem; margin: 25px 0 15px 5px; opacity: 0.8;">La tua Routine</h3>
-        <div id="exerciseList" style="width: 100% !important; display: flex; flex-direction: column; gap: 10px; box-sizing: border-box !important; margin: 0 !important;">
-            </div>
     </div>
+
+    <div id="exerciseList" style="display: flex; flex-direction: column; gap: 10px;">
+        </div>
 </div>
 	
     <script type="module">
