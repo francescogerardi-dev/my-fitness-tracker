@@ -52,6 +52,7 @@
             <button class="tab-btn" onclick="showTab('analisi')">Analisi Sport</button>
             <button class="tab-btn" onclick="showTab('history')">Storico</button>
             <button class="tab-btn" onclick="showTab('input')">Nuovo</button>
+			<button class="tab-btn" onclick="showTab('routine')">Routine</button>
         </div>
 
         <div id="main" class="content active">
@@ -117,6 +118,23 @@
         </div>
     </div>
 
+	<div id="routine" class="content">
+	    <div class="chart-box">
+	        <h3 style="margin-top:0;">Gestione Esercizi</h3>
+	        <div id="routineForm" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+	            <input type="text" id="exName" placeholder="Nome esercizio (obbligatorio)">
+	            <div style="display: flex; gap: 10px;">
+	                <input type="number" id="exDuration" placeholder="Durata (sec) opz.">
+	                <input type="text" id="exImg" placeholder="URL Immagine (opz.)">
+	            </div>
+	            <textarea id="exNote" placeholder="Note / Istruzioni" style="width:100%; background:#0f172a; color:white; border-radius:8px; border:1px solid #334155; padding:10px;"></textarea>
+	            <button class="btn-save" onclick="addExercise()">Aggiungi Esercizio</button>
+	        </div>
+	        <div id="exerciseList" style="display: flex; flex-direction: column; gap: 10px;">
+	            </div>
+	    </div>
+	</div>
+	
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -151,6 +169,12 @@
 					updateSuggestion();
                     if(document.getElementById('analisi').classList.contains('active')) renderAnalisi();
                     document.getElementById('statusMessage').innerText = "Dati aggiornati";
+					// Sotto il listener di fitnessDB esistente
+					const qRoutine = query(collection(db, "users", user.uid, "routine"), orderBy("order", "asc"));
+					onSnapshot(qRoutine, (snapshot) => {
+					    window.routineDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+					    if(document.getElementById('routine').classList.contains('active')) renderRoutine();
+});
                 });
             } else {
                 window.currentUser = null;
@@ -269,6 +293,66 @@ window.updateSuggestion = () => {
     document.getElementById('suggestionText').innerText = suggestion;
 };
 
+		window.addExercise = async () => {
+    const name = document.getElementById('exName').value;
+    if(!name) { alert("Nome obbligatorio"); return; }
+    
+    const exercise = {
+        name: name,
+        duration: document.getElementById('exDuration').value || null,
+        img: document.getElementById('exImg').value || null,
+        note: document.getElementById('exNote').value || "",
+        order: (window.routineDB?.length || 0) + 1,
+        createdAt: new Date()
+    };
+    
+    await addDoc(collection(db, "users", window.currentUser.uid, "routine"), exercise);
+    // Pulizia campi
+    document.getElementById('exName').value = '';
+    document.getElementById('exDuration').value = '';
+    document.getElementById('exImg').value = '';
+    document.getElementById('exNote').value = '';
+};
+window.moveEx = async (id, direction) => {
+    const ex = window.routineDB.find(e => e.id === id);
+    const other = window.routineDB.find(e => e.order === ex.order + direction);
+    if(!other) return;
+    
+    // Switch degli ordini (implementare con updateDoc su Firebase)
+    const exRef = doc(db, "users", window.currentUser.uid, "routine", id);
+    const otherRef = doc(db, "users", window.currentUser.uid, "routine", other.id);
+    
+    await updateDoc(exRef, { order: other.order });
+    await updateDoc(otherRef, { order: ex.order });
+};
+
+window.deleteEx = async (id) => {
+    if(confirm("Eliminare esercizio?")) 
+        await deleteDoc(doc(db, "users", window.currentUser.uid, "routine", id));
+};
+window.renderRoutine = () => {
+    const list = document.getElementById('exerciseList');
+    // window.routineDB deve essere popolato da onSnapshot come fitnessDB
+    if(!window.routineDB) return;
+    
+    const sorted = [...window.routineDB].sort((a,b) => a.order - b.order);
+    
+    list.innerHTML = sorted.map((ex, index) => `
+        <div class="stat-card" style="margin-bottom:5px; padding:10px; border-left-color: var(--primary);">
+            ${ex.img ? `<img src="${ex.img}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;">` : '<span style="font-size:1.5rem;">🏋️</span>'}
+            <div style="flex-grow:1; margin-left:10px;">
+                <b style="font-size:0.9rem;">${ex.name}</b>
+                ${ex.duration ? `<br><small style="color:var(--primary);">${ex.duration} sec</small>` : ''}
+                ${ex.note ? `<br><small style="font-style:italic; opacity:0.7;">${ex.note}</small>` : ''}
+            </div>
+            <div style="display:flex; flex-direction:column; gap:5px;">
+                <button onclick="moveEx('${ex.id}', -1)" class="nav-arrow" style="padding:2px; font-size:0.6rem;">▲</button>
+                <button onclick="moveEx('${ex.id}', 1)" class="nav-arrow" style="padding:2px; font-size:0.6rem;">▼</button>
+                <button onclick="deleteEx('${ex.id}')" style="background:var(--danger); border:none; color:white; border-radius:4px; cursor:pointer; font-size:0.6rem;">X</button>
+            </div>
+        </div>
+    `).join('');
+};
 		
         window.showTab = (id) => {
             document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
@@ -282,6 +366,7 @@ window.updateSuggestion = () => {
                 const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
                 if(last) document.getElementById('weightIn').value = last.weight;
             }
+			if(id === 'routine') renderRoutine();
         };
 
         window.changeWeek = (days) => { window.referenceDate.setDate(window.referenceDate.getDate() + days); renderChart(); };
