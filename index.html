@@ -572,9 +572,20 @@ window.renderRoutine = () => {
             }
             
             const tc = document.getElementById('sportTiles'); tc.innerHTML = '';
-			    ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].forEach(s => { // Aggiornato qui
-			        const cnt = window.fitnessDB.filter(r => r.date === labelsRaw.includes(r.date) && r.type === s).length;
-			        tc.innerHTML += `<div class="sport-tile ${sport===s?'active':''}"><span>${icons[s]}</span><br><b>${cnt}</b><br><small>${s}</small></div>`;
+			    // Lista aggiornata con Routine al posto di Addominali
+			    ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].forEach(s => {
+			        // CORREZIONE QUI: Controlliamo se la data del record è nel periodo selezionato 
+			        // e se il tipo corrisponde allo sport del tile
+			        const cnt = window.fitnessDB.filter(r => 
+			            labelsRaw.includes(r.date) && r.type === s
+			        ).length;
+			        
+			        tc.innerHTML += `
+			            <div class="sport-tile ${sport === s ? 'active' : ''}">
+			                <span>${icons[s] || '⚪'}</span><br>
+			                <b>${cnt}</b><br>
+			                <small>${s}</small>
+			            </div>`;
 			    });
 
             if(sport !== "Peso") {
