@@ -242,20 +242,28 @@ window.updateSuggestion = () => {
         streaks[s] = currentStreak;
     });
 
-    // 2. Elaborazione suggerimento
+   // 2. Elaborazione suggerimento (V.2.1)
     let suggestion = "";
     const activeStreaks = Object.entries(streaks).filter(([s, val]) => val > 2);
 
     if (activeStreaks.length > 0) {
         // Caso Streak > 2: prendiamo il massimo
         const maxVal = Math.max(...activeStreaks.map(x => x[1]));
-        const topSports = activeStreaks.filter(x => x[1] === maxVal).map(x => `${icons[x[0]]} ${x[0]}`);
+        const topSports = activeStreaks
+            .filter(x => x[1] === maxVal)
+            .map(x => `${icons[x[0]]} ${x[0]} (${maxVal} giorni 🔥)`); // Aggiunto il numero dello streak
+        
         suggestion = `Continua così! Mantieni lo streak di: ${topSports.join(' e ')}`;
     } else {
-        // Caso No Streak: prendiamo l'attività più "vecchia" (trascurata)
+        // Caso No Streak: prendiamo l'attività più "vecchia"
         const sortedByLast = Object.entries(lastSeen).sort((a, b) => a[1] - b[1]);
         const oldestSport = sortedByLast[0][0];
-        suggestion = `È ora di riprendere: ${icons[oldestSport]} ${oldestSport} (manca da un po'!)`;
+        
+        // Calcoliamo da quanti giorni manca
+        const diffDays = Math.floor((today - sortedByLast[0][1]) / (1000 * 60 * 60 * 24));
+        const missingTime = diffDays > 365 ? "molto tempo" : `${diffDays} giorni`;
+        
+        suggestion = `È ora di riprendere: ${icons[oldestSport]} ${oldestSport} (manca da ${missingTime})`;
     }
 
     document.getElementById('suggestionText').innerText = suggestion;
