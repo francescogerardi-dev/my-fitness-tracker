@@ -119,9 +119,9 @@
     </div>
 
 	<div id="routine" class="content">
-    <div style="width: 100%; box-sizing: border-box;">
+    <div style="width: 100%; max-width: 100%; box-sizing: border-box; overflow-x: hidden;">
         
-        <div style="background: var(--card); padding: 20px; border-radius: 16px; border: 1px solid #334155; box-sizing: border-box;">
+        <div style="background: var(--card); padding: 15px; border-radius: 16px; border: 1px solid #334155; box-sizing: border-box; width: 100%;">
             <h3 style="margin-top:0; font-size: 1rem; border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px; opacity: 0.8;">
                 Nuovo Esercizio
             </h3>
@@ -129,23 +129,30 @@
             <div id="routineForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; box-sizing: border-box;">
                 
                 <input type="text" id="exName" placeholder="Nome (es. Plank)" 
-                       style="grid-column: span 2; width: 100%; margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white;">
+                       style="grid-column: span 2; width: 100%; padding: 12px; margin: 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box;">
                 
                 <input type="number" id="exDuration" placeholder="Secondi" 
-                       style="width: 100%; margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white;">
+                       style="width: 100%; padding: 12px; margin: 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box;">
                 
                 <input type="text" id="exImg" placeholder="URL Immagine" 
-                       style="width: 100%; margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white;">
+                       style="width: 100%; padding: 12px; margin: 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box;">
                 
                 <textarea id="exNote" placeholder="Note (opzionali...)" 
-                    style="grid-column: span 2; width:100%; height: 50px; background:#0f172a; color:white; border-radius:8px; border:1px solid #334155; padding:12px; box-sizing: border-box; margin: 0; font-family: inherit; resize: none;"></textarea>
+                    style="grid-column: span 2; width: 100%; height: 50px; background:#0f172a; color:white; border-radius:8px; border:1px solid #334155; padding:12px; box-sizing: border-box; margin: 0; font-family: inherit; resize: none;"></textarea>
                 
                 <button class="btn-save" onclick="addExercise()" 
-                        style="grid-column: span 2; width: 100%; margin: 0; padding: 15px; background: var(--primary); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        style="grid-column: span 2; width: 100%; padding: 15px; background: var(--primary); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 0; box-sizing: border-box;">
                     AGGIUNGI ALLA LISTA
                 </button>
             </div>
         </div>
+
+        <h3 style="font-size: 1rem; margin: 25px 0 15px 5px; opacity: 0.8;">La tua Routine</h3>
+        
+        <div id="exerciseList" style="display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box;">
+            </div>
+    </div>
+</div>
 
         <h3 style="font-size: 1rem; margin: 25px 0 15px 10px; opacity: 0.8; border-left: 3px solid var(--primary); padding-left: 10px;">
             La tua Routine
