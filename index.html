@@ -121,34 +121,32 @@
     </div>
 
 <div id="routine" class="content">
-    <div class="chart-box" style="padding: 15px;">
-        <h3 style="margin-top:0; font-size: 1.1rem; border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px; color: var(--primary);">
-            Nuovo Esercizio
-        </h3>
+    <div style="background: var(--card); border: 1px solid #334155; border-radius: 16px; padding: 20px;">
         
-        <div id="routineForm" style="display: flex; flex-direction: column; gap: 10px;">
-            <input type="text" id="exName" placeholder="Nome (es. Plank)" 
-                   style="width: 100% !important; box-sizing: border-box !important; margin-bottom: 0;">
+        <h3 style="margin: 0 0 20px 0; color: var(--primary); font-size: 1.1rem;">Nuovo Esercizio</h3>
+        
+        <div id="routineForm" style="display: flex; flex-direction: column; gap: 12px;">
             
-            <div style="display: flex; gap: 10px; width: 100%;">
+            <input type="text" id="exName" placeholder="Nome (es. Plank)" 
+                   style="margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit;">
+            
+            <div style="display: flex; gap: 10px;">
                 <input type="number" id="exDuration" placeholder="Sec" 
-                       style="flex: 1; min-width: 0; width: 100%; box-sizing: border-box !important; margin-bottom: 0;">
+                       style="flex: 1; min-width: 0; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit;">
                 
                 <input type="text" id="exImg" placeholder="URL Immagine" 
-                       style="flex: 2; min-width: 0; width: 100%; box-sizing: border-box !important; margin-bottom: 0;">
+                       style="flex: 2; min-width: 0; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit;">
             </div>
             
-            <textarea id="exNote" placeholder="Note / Istruzioni..." 
-                style="width: 100% !important; box-sizing: border-box !important; height: 60px; background: #0f172a; color: white; border-radius: 8px; border: 1px solid #334155; padding: 12px; font-family: inherit; resize: none; margin: 0;"></textarea>
+            <textarea id="exNote" placeholder="Note..." 
+                      style="margin: 0; padding: 12px; height: 60px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit; resize: none;"></textarea>
             
-            <button class="btn-save" onclick="addExercise()" style="margin: 0; width: 100%;">
-                AGGIUNGI ALLA ROUTINE
-            </button>
+            <button class="btn-save" onclick="addExercise()" style="margin: 0;">AGGIUNGI</button>
         </div>
     </div>
 
-    <h3 style="font-size: 1rem; margin: 20px 0 15px 5px; opacity: 0.7;">La tua Routine</h3>
-    <div id="exerciseList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    <h3 style="margin: 25px 0 15px 5px; font-size: 1rem; opacity: 0.7;">La tua Routine</h3>
+    <div id="exerciseList"></div>
 </div>
 	
     <script type="module">
