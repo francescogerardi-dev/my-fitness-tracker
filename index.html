@@ -86,8 +86,12 @@
         <div id="analisi" class="content">
             <div class="filter-section">
                 <select id="sportFilter" onchange="renderAnalisi()">
-                    <option value="Corsa">🏃 Corsa</option><option value="Padel">🎾 Padel</option><option value="Stretching">🧘 Stretching</option><option value="Pesi">🏋️ Pesi</option><option value="Addominali">🧱 Addominali</option><option value="Peso">⚖️ Peso</option>
-                </select>
+				    <option value="Corsa">🏃 Corsa</option>
+				    <option value="Padel">🎾 Padel</option>
+				    <option value="Stretching">🧘 Stretching</option>
+				    <option value="Pesi">🏋️ Pesi</option>
+				    <option value="Routine">📋 Routine</option> <option value="Peso">⚖️ Peso</option>
+				</select>
                 <select id="periodFilter" onchange="renderAnalisi()">
                     <option value="30">30gg</option><option value="60">60gg</option><option value="90">90gg</option>
                 </select>
@@ -110,8 +114,13 @@
                 </div>
                 <input type="date" id="dateIn">
                 <select id="typeIn" onchange="toggleFields()">
-                    <option value="Riposo">Solo Peso / Riposo</option><option value="Corsa">Corsa</option><option value="Padel">Padel</option><option value="Stretching">Stretching</option><option value="Pesi">Pesi</option><option value="Addominali">Addominali</option>
-                </select>
+				    <option value="Riposo">Solo Peso / Riposo</option>
+				    <option value="Corsa">Corsa</option>
+				    <option value="Padel">Padel</option>
+				    <option value="Stretching">Stretching</option>
+				    <option value="Pesi">Pesi</option>
+				    <option value="Routine">Routine</option> 
+				</select>
                 <div id="kmBox" class="hidden"><input type="number" id="kmIn" step="0.1" placeholder="KM"></div>
                 <div id="minBox" class="hidden"><input type="number" id="minIn" placeholder="Minuti"></div>
                 <input type="number" id="weightIn" step="0.1" placeholder="Peso (kg)">
@@ -239,7 +248,10 @@
     <script>
         window.referenceDate = new Date();
         let mainChart = null, analisiChart = null;
-        const icons = { 'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 'Pesi': '🏋️', 'Addominali': '🧱', 'Riposo': '💤' };
+        const icons = { 
+		    'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
+		    'Pesi': '🏋️', 'Routine': '📋', 'Riposo': '💤' 
+		};
         window.fitnessDB = [];
 
         function formatDateLocal(d) { return d.toISOString().split('T')[0]; }
@@ -252,7 +264,7 @@
         }
 
 window.updateSuggestion = () => {
-    const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Addominali'];
+    const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'];
     const today = new Date();
     let streaks = {};
     let lastSeen = {};
@@ -354,6 +366,36 @@ window.moveEx = async (id, direction) => {
     
     await updateDoc(exRef, { order: other.order });
     await updateDoc(otherRef, { order: ex.order });
+};
+
+window.completeRoutine = async () => {
+    if(!window.routineDB || window.routineDB.length === 0) {
+        alert("La tua routine è vuota! Aggiungi degli esercizi prima.");
+        return;
+    }
+    
+    if(confirm("Segnare la Routine come completata? Guadagnerai 1 punto costanza.")) {
+        let lastW = null;
+        if(window.fitnessDB.length > 0) {
+            const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
+            if(last) lastW = last.weight;
+        }
+
+        const entry = {
+            date: formatDateLocal(new Date()),
+            type: 'Routine', // Questo ora sostituisce "Addominali"
+            weight: lastW,
+            km: 0,
+            min: 0 
+        };
+
+        try {
+            await window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), entry);
+            showTab('main'); // Torna alla dashboard per vedere il nuovo punto
+        } catch (e) {
+            console.error("Errore salvataggio routine:", e);
+        }
+    }
 };
 
 window.deleteEx = async (id) => {
@@ -507,10 +549,10 @@ window.renderRoutine = () => {
             }
             
             const tc = document.getElementById('sportTiles'); tc.innerHTML = '';
-            ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Addominali'].forEach(s => {
-                const cnt = window.fitnessDB.filter(r => r.type === s && labelsRaw.includes(r.date)).length;
-                tc.innerHTML += `<div class="sport-tile ${sport===s?'active':''}"><span>${icons[s]}</span><br><b>${cnt}</b><br><small>${s}</small></div>`;
-            });
+			    ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].forEach(s => { // Aggiornato qui
+			        const cnt = window.fitnessDB.filter(r => r.date === labelsRaw.includes(r.date) && r.type === s).length;
+			        tc.innerHTML += `<div class="sport-tile ${sport===s?'active':''}"><span>${icons[s]}</span><br><b>${cnt}</b><br><small>${s}</small></div>`;
+			    });
 
             if(sport !== "Peso") {
                 document.getElementById('streakContainer').style.display = 'flex';
@@ -571,10 +613,11 @@ window.renderRoutine = () => {
         };
 
         window.toggleFields = () => {
-            const t = document.getElementById('typeIn').value;
-            document.getElementById('kmBox').classList.toggle('hidden', t !== 'Corsa');
-            document.getElementById('minBox').classList.toggle('hidden', !['Corsa','Padel','Stretching','Addominali'].includes(t));
-        };
+		    const t = document.getElementById('typeIn').value;
+		    document.getElementById('kmBox').classList.toggle('hidden', t !== 'Corsa');
+		    // Aggiungi 'Routine' nell'elenco che mostra i minuti
+		    document.getElementById('minBox').classList.toggle('hidden', !['Corsa','Padel','Stretching','Routine'].includes(t));
+		};
     </script>
 </body>
 </html>
