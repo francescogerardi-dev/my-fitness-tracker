@@ -377,30 +377,43 @@ window.moveEx = async (id, direction) => {
 
 window.completeRoutine = async () => {
     if(!window.routineDB || window.routineDB.length === 0) {
-        alert("La tua routine è vuota! Aggiungi degli esercizi prima.");
+        alert("La tua routine è vuota!");
         return;
     }
     
-    if(confirm("Segnare la Routine come completata? Guadagnerai 1 punto costanza.")) {
+    if(confirm("Registrare il completamento della Routine? (Include lo Stretching automatico)")) {
         let lastW = null;
         if(window.fitnessDB.length > 0) {
             const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
             if(last) lastW = last.weight;
         }
 
-        const entry = {
-            date: formatDateLocal(new Date()),
-            type: 'Routine', // Questo ora sostituisce "Addominali"
-            weight: lastW,
-            km: 0,
-            min: 0 
-        };
+        const today = formatDateLocal(new Date());
 
         try {
-            await window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), entry);
-            showTab('main'); // Torna alla dashboard per vedere il nuovo punto
+            // Eseguiamo entrambi i salvataggi contemporaneamente
+            await Promise.all([
+                // 1. Il record della Routine (1 punto)
+                window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), {
+                    date: today,
+                    type: 'Routine',
+                    weight: lastW,
+                    km: 0,
+                    min: 0 
+                }),
+                // 2. Il record dello Stretching (0.5 punti)
+                window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), {
+                    date: today,
+                    type: 'Stretching',
+                    weight: lastW,
+                    km: 0,
+                    min: 10 // Tempo stimato per lo stretching incluso
+                })
+            ]);
+
+            showTab('main'); 
         } catch (e) {
-            console.error("Errore salvataggio routine:", e);
+            console.error("Errore nel doppio salvataggio:", e);
         }
     }
 };
