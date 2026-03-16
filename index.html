@@ -160,6 +160,13 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.currentUser = user;
+				// Rendiamo le funzioni Firebase globali per usarle nei pulsanti
+		        window.addDoc = addDoc;
+		        window.doc = doc;
+		        window.deleteDoc = deleteDoc;
+		        window.updateDoc = updateDoc;
+		        window.collection = collection;
+		        window.db = db;
                 document.getElementById('loginOverlay').classList.add('hidden');
                 const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
                 onSnapshot(q, (snapshot) => {
@@ -296,10 +303,11 @@ window.updateSuggestion = () => {
     document.getElementById('suggestionText').innerText = suggestion;
 };
 
-		window.addExercise = async () => {
+window.addExercise = async () => {
     const name = document.getElementById('exName').value;
     if(!name) { alert("Nome obbligatorio"); return; }
     
+    // Usiamo le versioni globali window.addDoc etc.
     const exercise = {
         name: name,
         duration: document.getElementById('exDuration').value || null,
@@ -309,12 +317,16 @@ window.updateSuggestion = () => {
         createdAt: new Date()
     };
     
-    await addDoc(collection(db, "users", window.currentUser.uid, "routine"), exercise);
-    // Pulizia campi
-    document.getElementById('exName').value = '';
-    document.getElementById('exDuration').value = '';
-    document.getElementById('exImg').value = '';
-    document.getElementById('exNote').value = '';
+    try {
+        await window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "routine"), exercise);
+        // Pulizia campi
+        document.getElementById('exName').value = '';
+        document.getElementById('exDuration').value = '';
+        document.getElementById('exImg').value = '';
+        document.getElementById('exNote').value = '';
+    } catch (e) {
+        console.error("Errore salvataggio:", e);
+    }
 };
 window.moveEx = async (id, direction) => {
     const ex = window.routineDB.find(e => e.id === id);
