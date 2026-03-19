@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker - V.2.0</title>
+    <title>Fitness Tracker - V.2.1</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { box-sizing: border-box; }
@@ -15,7 +15,6 @@
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .container { max-width: 900px; margin: 0 auto; }
         
-        /* Overlay & Tabs */
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
         .btn-login { padding: 15px 30px; background: var(--primary); color: #0f172a; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; background: var(--card); border-radius: 12px; padding: 5px; border: 1px solid #334155; position: sticky; top: 10px; z-index: 100; }
@@ -25,7 +24,6 @@
         .content { display: none; }
         .content.active { display: block; }
         
-        /* Cards & Stats */
         .stat-card { background: var(--card); padding: 15px 20px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; border: 1px solid #334155; border-left: 6px solid var(--primary); }
         .stat-text { flex: 1; min-width: 0; }
         #moodIcon { font-size: 2.2rem; }
@@ -33,7 +31,6 @@
         .week-nav, .filter-section { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
         .nav-arrow, select { background: var(--card); border: 1px solid #334155; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
         
-        /* Tiles & Heatmap */
         .tiles-container { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
         .sport-tile { background: var(--card); flex: 1; min-width: 65px; padding: 10px 5px; border-radius: 12px; border: 1px solid #334155; text-align: center; font-size: 0.8rem; }
         .sport-tile.active { border-color: var(--primary); background: rgba(56, 189, 248, 0.1); }
@@ -42,13 +39,11 @@
         .heatmap-container { display: grid; grid-template-columns: repeat(13, 1fr); gap: 4px; }
         .heat-day { aspect-ratio: 1; border-radius: 3px; background: #1e293b; border: 1px solid #334155; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; line-height: 0.9; }
         
-        /* Heatmap Colors */
         .heat-low { background: rgba(239, 68, 68, 0.4) !important; }
         .heat-mid { background: rgba(56, 189, 248, 0.4) !important; }
         .heat-high { background: rgba(74, 222, 128, 0.5) !important; }
         .heat-ultra { background: rgba(168, 85, 247, 0.6) !important; border-color: var(--ultra) !important; }
 
-        /* Form & Inputs */
         .btn-save { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; color: #0f172a; cursor: pointer; margin-top: 10px; }
         input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit; }
         .hidden { display: none !important; }
@@ -83,7 +78,7 @@
                     <span id="costanzaVal" style="font-size: 1.4rem; font-weight: bold; display: block;">0 / 7 Punti</span>
                     <span id="statusMessage" style="font-size: 0.8rem; color: #94a3b8; font-style: italic;">Caricamento...</span>
                 </div>
-                <button onclick="window.logout()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.65rem; align-self: flex-start;">LOGOUT</button>
+                <button onclick="window.logout()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.65rem;">LOGOUT</button>
             </div>
 
             <div id="suggestionCard" class="stat-card" style="border-left-color: var(--ultra); background: rgba(168, 85, 247, 0.05); margin-top: -5px; padding: 12px 20px;">
@@ -196,7 +191,6 @@
                 
                 document.getElementById('loginOverlay').classList.add('hidden');
                 
-                // Listener Records
                 const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
                 onSnapshot(q, (snapshot) => {
                     window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -206,7 +200,6 @@
                     if(document.getElementById('analisi').classList.contains('active')) renderAnalisi();
                 });
 
-                // Listener Routine
                 const qRoutine = query(collection(db, "users", user.uid, "routine"), orderBy("order", "asc"));
                 onSnapshot(qRoutine, (snapshot) => {
                     window.routineDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -218,11 +211,23 @@
             }
         });
 
+        // FUNZIONE CRITICA: Recupera l'ultimo peso valido inserito nel DB
+        window.getLastValidWeight = () => {
+            const sorted = [...window.fitnessDB]
+                .filter(r => r.weight && parseFloat(r.weight) > 0)
+                .sort((a,b) => new Date(b.date) - new Date(a.date));
+            return sorted.length > 0 ? parseFloat(sorted[0].weight) : null;
+        };
+
         window.handleSave = async () => {
+            let weightInput = parseFloat(document.getElementById('weightIn').value);
+            // Se il campo è vuoto o zero, prendi l'ultimo peso noto
+            if (!weightInput || weightInput <= 0) weightInput = getLastValidWeight();
+
             const entry = {
                 date: document.getElementById('dateIn').value,
                 type: document.getElementById('typeIn').value,
-                weight: parseFloat(document.getElementById('weightIn').value) || null,
+                weight: weightInput,
                 km: parseFloat(document.getElementById('kmIn').value) || 0,
                 min: parseInt(document.getElementById('minIn').value) || 0
             };
@@ -235,12 +240,12 @@
         };
 
         window.quickSave = async (type, minutes) => {
-            let lastW = null;
-            const sorted = [...window.fitnessDB].filter(r => r.weight > 0).sort((a,b) => new Date(b.date) - new Date(a.date));
-            if(sorted.length > 0) lastW = sorted[0].weight;
-            
             await addDoc(collection(db, "users", window.currentUser.uid, "records"), {
-                date: formatDateLocal(new Date()), type: type, weight: lastW, km: 0, min: minutes
+                date: formatDateLocal(new Date()), 
+                type: type, 
+                weight: getLastValidWeight(), 
+                km: 0, 
+                min: minutes
             });
             showTab('main');
         };
@@ -287,13 +292,13 @@
             let suggestion = "";
             const activeStreaks = Object.entries(streaks).filter(([s, val]) => val >= 2);
             if (activeStreaks.length > 0) {
-                suggestion = `Serie attiva! 🔥 Continua così: ${activeStreaks.map(x => icons[x[0]] + ' ' + x[1] + 'gg').join(', ')}`;
+                suggestion = `Serie attiva! 🔥 ${activeStreaks.map(x => icons[x[0]] + ' ' + x[1] + 'gg').join(', ')}`;
             } else {
                 const oldest = Object.entries(lastSeen).sort((a, b) => a[1] - b[1])[0];
                 suggestion = `Coach: Riprendiamo con ${icons[oldest[0]]} ${oldest[0]}?`;
             }
 
-            if (window.fitnessDB.some(r => r.date === formatDateLocal(new Date()))) suggestion = "✅ Obiettivo centrato per oggi! Grande.";
+            if (window.fitnessDB.some(r => r.date === formatDateLocal(new Date()))) suggestion = "✅ Obiettivo centrato per oggi!";
             const el = document.getElementById('suggestionText'); if(el) el.innerText = suggestion;
         };
 
@@ -320,13 +325,10 @@
             if(!window.routineDB?.length) return alert("Routine vuota!");
             if(confirm("Registrare completamento? (Include Stretching)")) {
                 const today = formatDateLocal(new Date());
-                let lastW = null;
-                const lastRec = [...window.fitnessDB].filter(r => r.weight > 0).sort((a,b) => new Date(b.date)-new Date(a.date))[0];
-                if(lastRec) lastW = lastRec.weight;
-                
+                const weight = getLastValidWeight();
                 await Promise.all([
-                    window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), { date: today, type: 'Routine', weight: lastW, km: 0, min: 0 }),
-                    window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), { date: today, type: 'Stretching', weight: lastW, km: 0, min: 10 })
+                    window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), { date: today, type: 'Routine', weight: weight, km: 0, min: 0 }),
+                    window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), { date: today, type: 'Stretching', weight: weight, km: 0, min: 10 })
                 ]);
                 showTab('main');
             }
@@ -374,7 +376,9 @@
             const grouped = window.fitnessDB.reduce((acc, curr) => {
                 if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
                 if(curr.type !== 'Riposo') acc[curr.date].activities.push(curr.type);
-                if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
+                // Prendi il peso solo se è un valore reale > 0
+                if(curr.weight && parseFloat(curr.weight) > 0) acc[curr.date].weight = parseFloat(curr.weight); 
+                return acc;
             }, {});
 
             let score = 0;
@@ -386,12 +390,22 @@
 
             document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
             const ctx = document.getElementById('mainChart').getContext('2d');
+            
+            // Logica per determinare Min e Max dinamici (evita lo zero)
+            const weekWeights = labels.map(l => grouped[l]?.weight).filter(v => v !== null);
+            const minW = weekWeights.length ? Math.min(...weekWeights) - 1 : 70;
+            const maxW = weekWeights.length ? Math.max(...weekWeights) + 1 : 85;
+
             if(mainChart) mainChart.destroy();
             mainChart = new Chart(ctx, {
                 type: 'line',
                 data: { labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), 
                         datasets: [{ data: labels.map(l => grouped[l]?.weight || null), borderColor: '#38bdf8', tension: 0.3, spanGaps: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 73, max: 82 } } },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { y: { min: minW, max: maxW } } 
+                },
                 plugins: [{
                     afterDraw: chart => {
                         chart.data.datasets[0].data.forEach((v, i) => {
@@ -441,7 +455,9 @@
             const dataSeries = labelsRaw.map(date => {
                 const dayRecords = window.fitnessDB.filter(r => r.date === date);
                 if (sport === 'Peso') {
-                    const rec = dayRecords.find(r => r.weight > 0); return rec ? rec.weight : null;
+                    // Filtra solo pesi reali > 0 per l'analisi
+                    const rec = dayRecords.find(r => r.weight && parseFloat(r.weight) > 0); 
+                    return rec ? parseFloat(rec.weight) : null;
                 } else {
                     return dayRecords.filter(r => r.type === sport).reduce((sum, r) => sum + (r.min || 0), 0);
                 }
@@ -451,7 +467,11 @@
             analisiChart = new Chart(document.getElementById('analysisChart').getContext('2d'), {
                 type: 'line',
                 data: { labels: labelsFmt, datasets: [{ data: dataSeries, borderColor: '#a855f7', tension: 0.3, spanGaps: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { y: { min: sport === 'Peso' ? Math.min(...dataSeries.filter(v=>v))-1 : undefined } }
+                }
             });
 
             const tc = document.getElementById('sportTiles');
@@ -464,7 +484,7 @@
         window.renderHistory = () => {
             document.getElementById('historyList').innerHTML = [...window.fitnessDB].reverse().map(r => `
                 <div style="background:var(--card); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; border:1px solid #334155;">
-                    <div><small>${r.date}</small> <br> ${icons[r.type]} <b>${r.type}</b> ${r.weight ? ' | '+r.weight+'kg' : ''}</div>
+                    <div><small>${r.date}</small> <br> ${icons[r.type]} <b>${r.type}</b> ${r.weight > 0 ? ' | '+r.weight+'kg' : ''}</div>
                     <button onclick="handleDelete('${r.id}')" style="background:var(--danger); color:white; border:none; border-radius:5px; padding:0 10px;">X</button>
                 </div>`).join('');
         };
