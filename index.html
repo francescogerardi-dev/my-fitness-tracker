@@ -214,6 +214,7 @@
 					const qRoutine = query(collection(db, "users", user.uid, "routine"), orderBy("order", "asc"));
 					onSnapshot(qRoutine, (snapshot) => {
 					    window.routineDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+						updateSuggestion();
 					    if(document.getElementById('routine').classList.contains('active')) renderRoutine();
 });
                 });
