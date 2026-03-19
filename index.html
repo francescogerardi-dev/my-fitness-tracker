@@ -210,7 +210,7 @@
 					window.doc = doc;
 					window.db = db;
                     if(document.getElementById('analisi').classList.contains('active')) renderAnalisi();
-                    document.getElementById('statusMessage').innerText = "Dati aggiornati";
+                    // document.getElementById('statusMessage').innerText = "Dati aggiornati";
 					// Sotto il listener di fitnessDB esistente
 					const qRoutine = query(collection(db, "users", user.uid, "routine"), orderBy("order", "asc"));
 					onSnapshot(qRoutine, (snapshot) => {
