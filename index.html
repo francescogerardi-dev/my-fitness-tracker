@@ -205,7 +205,6 @@
                     window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderChart();
                     renderHeatmap();
-					renderRoutine();
 					// Forza l'aggiornamento del suggerimento
 				    if (window.updateSuggestion) window.updateSuggestion();
 					window.updateDoc = updateDoc;
@@ -217,6 +216,7 @@
 					const qRoutine = query(collection(db, "users", user.uid, "routine"), orderBy("order", "asc"));
 					onSnapshot(qRoutine, (snapshot) => {
 					    window.routineDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+						renderRoutine();
 						if(document.getElementById('routine').classList.contains('active')) renderRoutine();
 					    // Forza l'aggiornamento del suggerimento perché la routine influenza i consigli
 					    if (window.updateSuggestion) window.updateSuggestion();
