@@ -620,7 +620,7 @@ window.renderRoutine = () => {
             } else {
 				// 1. Filtriamo i record che hanno il campo "peso" (body weight)
     			const recordsConPeso = window.fitnessDB.filter(r => 
-        		labelsRaw.includes(r.date) && r.peso && parseFloat(r.peso) > 0
+        		labelsRaw.includes(r.date) && r.peso && parseFloat(r.peso) > 0;
 				// 2. Logica Specifica se l'utente seleziona "Peso" dal filtro o se vogliamo vederlo sempre
     			if (sport === 'Peso') {
 					let extraStats = "";
