@@ -643,6 +643,18 @@ window.renderRoutine = () => {
         window.analysisChart.options.spanGaps = (sport === 'Peso');
         window.analysisChart.update();
     }
+const tc = document.getElementById('sportTiles');
+    if (tc) {
+        tc.innerHTML = '';
+        ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].forEach(s => {
+            const count = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === s).length;
+            tc.innerHTML += `
+                <div class="sport-tile ${sport === s ? 'active' : ''}" style="cursor:pointer" onclick="document.getElementById('sportFilter').value='${s}'; renderAnalisi();">
+                    <span>${icons[s]}</span><br><b>${count}</b>
+                </div>`;
+        });
+    }
+			
 };
 
         window.renderHistory = () => {
