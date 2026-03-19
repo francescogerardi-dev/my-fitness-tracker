@@ -101,6 +101,7 @@
                 <div style="text-align: center;"><span style="font-size: 0.7rem; color: #94a3b8;">STREAK</span><span id="currentStreak" style="font-size: 1.8rem; font-weight: bold; color: var(--warning); display: block;">0</span></div>
                 <div style="text-align: center;"><span style="font-size: 0.7rem; color: #94a3b8;">RECORD</span><span id="bestStreak" style="font-size: 1.8rem; font-weight: bold; color: var(--success); display: block;">0</span></div>
             </div>
+			<div id="analisiStats" class="stat-grid" style="margin-bottom: 20px;"></div>
             <div class="chart-box" style="height: 300px;"><canvas id="analisiChart"></canvas></div>
         </div>
 
@@ -607,7 +608,13 @@ window.renderRoutine = () => {
             <div class="stat-card"><small>Sessioni</small><big>${filtered.length}</big></div>
             <div class="stat-card"><small>Media Minuti</small><big>${mediaMin}'</big></div>`;
     }
-    
+
+			const statsContainer = document.getElementById('analisiStats');
+		if (statsContainer) {
+		    statsContainer.innerHTML = statsHTML;
+		} else {
+		    console.warn("Elemento 'analisiStats' non trovato nell'HTML. Controlla gli ID.");
+		}
     document.getElementById('analisiStats').innerHTML = statsHTML;
 
     // 2. GRAFICO (Dati dinamici)
