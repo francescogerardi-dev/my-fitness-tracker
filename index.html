@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker - V.1.9.5</title>
+    <title>Fitness Tracker - V.2.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-		/* Aggiungi questo in cima alle regole CSS */
-		* { box-sizing: border-box; }
+        * { box-sizing: border-box; }
         :root {
             --bg: #0f172a; --card: #1e293b; --text: #f8fafc;
             --primary: #38bdf8; --danger: #ef4444; --success: #4ade80; --warning: #fbbf24;
@@ -15,29 +14,43 @@
         }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .container { max-width: 900px; margin: 0 auto; }
+        
+        /* Overlay & Tabs */
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
         .btn-login { padding: 15px 30px; background: var(--primary); color: #0f172a; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; background: var(--card); border-radius: 12px; padding: 5px; border: 1px solid #334155; }
-        .tab-btn { background: none; border: none; color: #94a3b8; cursor: pointer; padding: 10px; flex: 1; border-radius: 8px; font-weight: bold; }
+        .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; background: var(--card); border-radius: 12px; padding: 5px; border: 1px solid #334155; position: sticky; top: 10px; z-index: 100; }
+        .tab-btn { background: none; border: none; color: #94a3b8; cursor: pointer; padding: 10px; flex: 1; border-radius: 8px; font-weight: bold; font-size: 0.8rem; }
         .tab-btn.active { background: var(--bg); color: var(--primary); }
+        
         .content { display: none; }
         .content.active { display: block; }
-        .stat-card { background: var(--card); padding: 15px 25px; border-radius: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; border: 1px solid #334155; border-left: 6px solid var(--primary); }
-        #moodIcon { font-size: 2.8rem; }
+        
+        /* Cards & Stats */
+        .stat-card { background: var(--card); padding: 15px 20px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; border: 1px solid #334155; border-left: 6px solid var(--primary); }
+        .stat-text { flex: 1; min-width: 0; }
+        #moodIcon { font-size: 2.2rem; }
+        
         .week-nav, .filter-section { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
         .nav-arrow, select { background: var(--card); border: 1px solid #334155; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+        
+        /* Tiles & Heatmap */
         .tiles-container { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .sport-tile { background: var(--card); flex: 1; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: 1px solid #334155; text-align: center; }
+        .sport-tile { background: var(--card); flex: 1; min-width: 65px; padding: 10px 5px; border-radius: 12px; border: 1px solid #334155; text-align: center; font-size: 0.8rem; }
         .sport-tile.active { border-color: var(--primary); background: rgba(56, 189, 248, 0.1); }
+        
         .chart-box { background: var(--card); padding: 15px; border-radius: 16px; border: 1px solid #334155; margin-bottom: 20px; }
         .heatmap-container { display: grid; grid-template-columns: repeat(13, 1fr); gap: 4px; }
-        .heat-day { aspect-ratio: 1; border-radius: 3px; background: #1e293b; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .heat-low { background: rgba(239, 68, 68, 0.6) !important; }
-        .heat-mid { background: rgba(56, 189, 248, 0.6) !important; }
-        .heat-high { background: rgba(74, 222, 128, 0.7) !important; }
-        .heat-ultra { background: rgba(168, 85, 247, 0.8) !important; border-color: var(--ultra) !important; }
-        .btn-save { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; color: #0f172a; cursor: pointer; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        .heat-day { aspect-ratio: 1; border-radius: 3px; background: #1e293b; border: 1px solid #334155; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; line-height: 0.9; }
+        
+        /* Heatmap Colors */
+        .heat-low { background: rgba(239, 68, 68, 0.4) !important; }
+        .heat-mid { background: rgba(56, 189, 248, 0.4) !important; }
+        .heat-high { background: rgba(74, 222, 128, 0.5) !important; }
+        .heat-ultra { background: rgba(168, 85, 247, 0.6) !important; border-color: var(--ultra) !important; }
+
+        /* Form & Inputs */
+        .btn-save { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; color: #0f172a; cursor: pointer; margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -51,10 +64,10 @@
     <div class="container">
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('main')">Dashboard</button>
-            <button class="tab-btn" onclick="showTab('')"> Sport</button>
+            <button class="tab-btn" onclick="showTab('analisi')">Analisi</button>
             <button class="tab-btn" onclick="showTab('history')">Storico</button>
             <button class="tab-btn" onclick="showTab('input')">Nuovo</button>
-			<button class="tab-btn" onclick="showTab('routine')">Routine</button>
+            <button class="tab-btn" onclick="showTab('routine')">Routine</button>
         </div>
 
         <div id="main" class="content active">
@@ -63,49 +76,50 @@
                 <div id="currentWeekLabel" style="font-weight: bold;">--</div>
                 <button class="nav-arrow" onclick="changeWeek(7)">❯</button>
             </div>
+            
             <div class="stat-card" id="mainStatCard">
                 <span id="moodIcon">🌚</span>
                 <div class="stat-text">
-                    <span id="costanzaVal" style="font-size: 1.6rem; font-weight: bold; display: block;">0 / 7 Punti</span>
-                    <span id="statusMessage" style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">Sincronizzazione...</span>
+                    <span id="costanzaVal" style="font-size: 1.4rem; font-weight: bold; display: block;">0 / 7 Punti</span>
+                    <span id="statusMessage" style="font-size: 0.8rem; color: #94a3b8; font-style: italic;">Caricamento...</span>
                 </div>
-                <button onclick="window.logout()" style="margin-left: auto; background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.7rem;">LOGOUT</button>
+                <button onclick="window.logout()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.65rem; align-self: flex-start;">LOGOUT</button>
             </div>
-			<div id="suggestionCard" class="stat-card" style="border-left-color: var(--ultra); background: rgba(168, 85, 247, 0.05); margin-top: -10px; margin-bottom: 15px; padding: 10px 20px;">
-			    <span style="font-size: 1.5rem;">💡</span>
-			    <div class="stat-text">
-			        <span style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Suggerimento Coach</span>
-			        <span id="suggestionText" style="font-weight: bold; display: block; color: var(--text);">Analisi in corso...</span>
-			    </div>
-			</div>
-			
-            <div class="chart-box" style="height: 200px;"><canvas id="mainChart"></canvas></div>
+
+            <div id="suggestionCard" class="stat-card" style="border-left-color: var(--ultra); background: rgba(168, 85, 247, 0.05); margin-top: -5px; padding: 12px 20px;">
+                <span style="font-size: 1.5rem;">💡</span>
+                <div class="stat-text">
+                    <span style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Suggerimento Coach</span>
+                    <span id="suggestionText" style="font-weight: bold; display: block; color: var(--text); font-size: 0.9rem;">Analisi in corso...</span>
+                </div>
+            </div>
+            
+            <div class="chart-box" style="height: 220px;"><canvas id="mainChart"></canvas></div>
             <div class="chart-box"><div id="annualHeatmap" class="heatmap-container"></div></div>
         </div>
 
         <div id="analisi" class="content">
             <div class="filter-section">
                 <select id="sportFilter" onchange="renderAnalisi()">
-				    <option value="Corsa">🏃 Corsa</option>
-				    <option value="Padel">🎾 Padel</option>
-				    <option value="Stretching">🧘 Stretching</option>
-				    <option value="Pesi">🏋️ Pesi</option>
-				    <option value="Routine">📋 Routine</option> <option value="Peso">⚖️ Peso</option>
-				</select>
+                    <option value="Corsa">🏃 Corsa</option>
+                    <option value="Padel">🎾 Padel</option>
+                    <option value="Stretching">🧘 Stretching</option>
+                    <option value="Pesi">🏋️ Pesi</option>
+                    <option value="Routine">📋 Routine</option> 
+                    <option value="Peso">⚖️ Peso</option>
+                </select>
                 <select id="periodFilter" onchange="renderAnalisi()">
                     <option value="30">30gg</option><option value="60">60gg</option><option value="90">90gg</option>
                 </select>
             </div>
             <div class="tiles-container" id="sportTiles"></div>
-            <div id="streakContainer" class="stat-card" style="margin-top: 15px; border-left-color: var(--warning); background: rgba(251, 191, 36, 0.05); display: flex; justify-content: space-around; padding: 10px;">
-                <div style="text-align: center;"><span style="font-size: 0.7rem; color: #94a3b8;">STREAK</span><span id="currentStreak" style="font-size: 1.8rem; font-weight: bold; color: var(--warning); display: block;">0</span></div>
-                <div style="text-align: center;"><span style="font-size: 0.7rem; color: #94a3b8;">RECORD</span><span id="bestStreak" style="font-size: 1.8rem; font-weight: bold; color: var(--success); display: block;">0</span></div>
-            </div>
-			<div id="analisiStats" class="stat-grid" style="margin-bottom: 20px;"></div>
-            <div class="chart-box" style="height: 300px;"><canvas id="analysisChart"></canvas></div>
+            <div id="analisiStats" style="display: flex; gap: 10px; margin-bottom: 15px;"></div>
+            <div class="chart-box" style="height: 280px;"><canvas id="analysisChart"></canvas></div>
         </div>
 
-        <div id="history" class="content"><div id="historyList"></div></div>
+        <div id="history" class="content">
+            <div id="historyList"></div>
+        </div>
 
         <div id="input" class="content">
             <div style="background: var(--card); padding: 25px; border-radius: 16px; border: 1px solid #334155; max-width: 500px; margin: 0 auto;">
@@ -115,70 +129,55 @@
                 </div>
                 <input type="date" id="dateIn">
                 <select id="typeIn" onchange="toggleFields()">
-				    <option value="Riposo">Solo Peso / Riposo</option>
-				    <option value="Corsa">Corsa</option>
-				    <option value="Padel">Padel</option>
-				    <option value="Stretching">Stretching</option>
-				    <option value="Pesi">Pesi</option>
-				    <option value="Routine">Routine</option> 
-				</select>
+                    <option value="Riposo">Solo Peso / Riposo</option>
+                    <option value="Corsa">Corsa</option>
+                    <option value="Padel">Padel</option>
+                    <option value="Stretching">Stretching</option>
+                    <option value="Pesi">Pesi</option>
+                    <option value="Routine">Routine</option> 
+                </select>
                 <div id="kmBox" class="hidden"><input type="number" id="kmIn" step="0.1" placeholder="KM"></div>
                 <div id="minBox" class="hidden"><input type="number" id="minIn" placeholder="Minuti"></div>
                 <input type="number" id="weightIn" step="0.1" placeholder="Peso (kg)">
                 <button class="btn-save" onclick="handleSave()">SALVA</button>
             </div>
         </div>
-   
 
-<div id="routine" class="content">
-    <div style="background: var(--card); border: 1px solid #334155; border-radius: 16px; padding: 20px;">
-        
-        <h3 style="margin: 0 0 20px 0; color: var(--primary); font-size: 1.1rem;">Nuovo Esercizio</h3>
-        
-        <div id="routineForm" style="display: flex; flex-direction: column; gap: 12px;">
-            
-            <input type="text" id="exName" placeholder="Nome (es. Plank)" 
-                   style="margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit;">
-            
-            <div style="display: flex; gap: 10px;">
-                <input type="number" id="exDuration" placeholder="Sec" 
-                       style="flex: 1; min-width: 0; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit;">
-                
-                <input type="text" id="exImg" placeholder="URL Immagine" 
-                       style="flex: 2; min-width: 0; margin: 0; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit;">
+        <div id="routine" class="content">
+            <div style="background: var(--card); border: 1px solid #334155; border-radius: 16px; padding: 20px;">
+                <h3 style="margin: 0 0 15px 0; color: var(--primary); font-size: 1rem;">Nuovo Esercizio</h3>
+                <div id="routineForm">
+                    <input type="text" id="exName" placeholder="Nome (es. Plank)">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="exDuration" placeholder="Sec" style="flex: 1;">
+                        <input type="text" id="exImg" placeholder="URL Immagine" style="flex: 2;">
+                    </div>
+                    <textarea id="exNote" placeholder="Note..." style="height: 60px; resize: none;"></textarea>
+                    <button class="btn-save" onclick="addExercise()">AGGIUNGI</button>
+                </div>
             </div>
-            
-            <textarea id="exNote" placeholder="Note..." 
-                      style="margin: 0; padding: 12px; height: 60px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-family: inherit; resize: none;"></textarea>
-            
-            <button class="btn-save" onclick="addExercise()" style="margin: 0;">AGGIUNGI</button>
+            <h3 style="margin: 25px 0 15px 5px; font-size: 0.9rem; opacity: 0.7; text-transform: uppercase;">La tua Routine</h3>
+            <div id="exerciseList"></div>
+            <div style="margin: 30px 0 50px 0;">
+                <button class="btn-save" onclick="completeRoutine()" style="background: var(--success); color: #0f172a; font-size: 1rem;">
+                    ✅ FINE ALLENAMENTO
+                </button>
+            </div>
         </div>
     </div>
 
-    <h3 style="margin: 25px 0 15px 5px; font-size: 1rem; opacity: 0.7;">La tua Routine</h3>
-    <div id="exerciseList"></div>
-	<div style="margin-top: 30px; padding-bottom: 50px;">
-        <button class="btn-save" onclick="completeRoutine()" 
-                style="background: var(--success); color: #0f172a; font-size: 1.1rem;">
-            ✅ FINE ALLENAMENTO
-        </button>
-    </div>
-</div>
-</div>
-		 </div>
-	
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import  { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
-			    apiKey: "AIzaSyATggTs_IGw_KMu-y3I7Vre5HnKbeyhAm4",
-    authDomain: "myfitnesstracker-f2089.firebaseapp.com",
-    projectId: "myfitnesstracker-f2089",
-    storageBucket: "myfitnesstracker-f2089.firebasestorage.app",
-    messagingSenderId: "229779508819",
-    appId: "1:229779508819:web:d62f6a5e7abe89e75000a6"
+            apiKey: "AIzaSyATggTs_IGw_KMu-y3I7Vre5HnKbeyhAm4",
+            authDomain: "myfitnesstracker-f2089.firebaseapp.com",
+            projectId: "myfitnesstracker-f2089",
+            storageBucket: "myfitnesstracker-f2089.firebasestorage.app",
+            messagingSenderId: "229779508819",
+            appId: "1:229779508819:web:d62f6a5e7abe89e75000a6"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -192,34 +191,26 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.currentUser = user;
-				// Rendiamo le funzioni Firebase globali per usarle nei pulsanti
-		        window.addDoc = addDoc;
-		        window.doc = doc;
-		        window.deleteDoc = deleteDoc;
-		        window.updateDoc = updateDoc;
-		        window.collection = collection;
-		        window.db = db;
+                window.db = db; window.collection = collection; window.addDoc = addDoc;
+                window.doc = doc; window.deleteDoc = deleteDoc; window.updateDoc = updateDoc;
+                
                 document.getElementById('loginOverlay').classList.add('hidden');
+                
+                // Listener Records
                 const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
                 onSnapshot(q, (snapshot) => {
                     window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderChart();
                     renderHeatmap();
-					// Forza l'aggiornamento del suggerimento
-				    if (window.updateSuggestion) window.updateSuggestion();
-					window.updateDoc = updateDoc;
-					window.doc = doc;
-					window.db = db;
+                    if (window.updateSuggestion) window.updateSuggestion();
                     if(document.getElementById('analisi').classList.contains('active')) renderAnalisi();
-                    // document.getElementById('statusMessage').innerText = "Dati aggiornati";
-					// Sotto il listener di fitnessDB esistente
-					const qRoutine = query(collection(db, "users", user.uid, "routine"), orderBy("order", "asc"));
-					onSnapshot(qRoutine, (snapshot) => {
-					    window.routineDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-						if(document.getElementById('routine').classList.contains('active')) renderRoutine();
-					    // Forza l'aggiornamento del suggerimento perché la routine influenza i consigli
-					    if (window.updateSuggestion) window.updateSuggestion();
-});
+                });
+
+                // Listener Routine
+                const qRoutine = query(collection(db, "users", user.uid, "routine"), orderBy("order", "asc"));
+                onSnapshot(qRoutine, (snapshot) => {
+                    window.routineDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    if(document.getElementById('routine').classList.contains('active')) renderRoutine();
                 });
             } else {
                 window.currentUser = null;
@@ -240,15 +231,14 @@
         };
 
         window.handleDelete = async (id) => {
-            if (confirm("Eliminare?")) await deleteDoc(doc(db, "users", window.currentUser.uid, "records", id));
+            if (confirm("Eliminare definitivamente?")) await deleteDoc(doc(db, "users", window.currentUser.uid, "records", id));
         };
 
         window.quickSave = async (type, minutes) => {
             let lastW = null;
-            if(window.fitnessDB.length > 0) {
-                const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
-                if(last) lastW = last.weight;
-            }
+            const sorted = [...window.fitnessDB].filter(r => r.weight > 0).sort((a,b) => new Date(b.date) - new Date(a.date));
+            if(sorted.length > 0) lastW = sorted[0].weight;
+            
             await addDoc(collection(db, "users", window.currentUser.uid, "records"), {
                 date: formatDateLocal(new Date()), type: type, weight: lastW, km: 0, min: minutes
             });
@@ -259,10 +249,7 @@
     <script>
         window.referenceDate = new Date();
         let mainChart = null, analisiChart = null;
-        const icons = { 
-		    'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
-		    'Pesi': '🏋️', 'Routine': '📋', 'Riposo': '💤' ,'Addominali': '🧱' // Tienilo per i vecchi record così non vedi undefined
-		};
+        const icons = { 'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 'Pesi': '🏋️', 'Routine': '📋', 'Riposo': '💤' };
         window.fitnessDB = [];
 
         function formatDateLocal(d) { return d.toISOString().split('T')[0]; }
@@ -274,272 +261,149 @@
             return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
         }
 
-window.updateSuggestion = () => {
-    const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'];
-    // Normalizziamo la data di "oggi" a mezzanotte per evitare bug orari
-    const oggiMezzanotte = new Date();
-    oggiMezzanotte.setHours(0, 0, 0, 0);
-    
-    let streaks = {};
-    let lastSeen = {};
+        window.updateSuggestion = () => {
+            const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'];
+            const oggi = new Date(); oggi.setHours(0,0,0,0);
+            let streaks = {}; let lastSeen = {};
 
-    // 1. Analisi dati con normalizzazione date
-    sports.forEach(s => {
-        const sDates = [...new Set(window.fitnessDB
-            .filter(r => r.type === s)
-            .map(r => r.date))]
-            .sort((a, b) => new Date(a) - new Date(b));
+            sports.forEach(s => {
+                const sDates = [...new Set(window.fitnessDB.filter(r => r.type === s).map(r => r.date))].sort((a,b) => new Date(b) - new Date(a));
+                let currentStreak = 0;
+                if (sDates.length > 0) {
+                    const lastDate = new Date(sDates[0]); lastDate.setHours(0,0,0,0);
+                    const diff = Math.floor((oggi - lastDate) / 86400000);
+                    if (diff <= 1) {
+                        currentStreak = 1;
+                        for (let i = 0; i < sDates.length - 1; i++) {
+                            const d1 = new Date(sDates[i]); const d2 = new Date(sDates[i+1]);
+                            if ((d1 - d2) / 86400000 === 1) currentStreak++; else break;
+                        }
+                    }
+                    lastSeen[s] = lastDate;
+                } else { lastSeen[s] = new Date(0); }
+                streaks[s] = currentStreak;
+            });
 
-        let currentStreak = 0;
-        if (sDates.length > 0) {
-            const sortedDesc = [...sDates].sort((a,b) => new Date(b) - new Date(a));
-            const lastDate = new Date(sortedDesc[0]);
-            lastDate.setHours(0, 0, 0, 0);
-
-            // Calcolo differenza in giorni solari
-            const diffDays = Math.floor((oggiMezzanotte - lastDate) / (1000 * 60 * 60 * 24));
-
-            // Streak valida se fatta OGGI (0) o IERI (1)
-            if (diffDays <= 1) {
-                currentStreak = 1;
-                for (let i = 0; i < sortedDesc.length - 1; i++) {
-                    const d1 = new Date(sortedDesc[i]);
-                    const d2 = new Date(sortedDesc[i+1]);
-                    d1.setHours(0,0,0,0);
-                    d2.setHours(0,0,0,0);
-                    if ((d1 - d2) / (1000 * 60 * 60 * 24) === 1) currentStreak++;
-                    else break;
-                }
+            let suggestion = "";
+            const activeStreaks = Object.entries(streaks).filter(([s, val]) => val >= 2);
+            if (activeStreaks.length > 0) {
+                suggestion = `Serie attiva! 🔥 Continua così: ${activeStreaks.map(x => icons[x[0]] + ' ' + x[1] + 'gg').join(', ')}`;
+            } else {
+                const oldest = Object.entries(lastSeen).sort((a, b) => a[1] - b[1])[0];
+                suggestion = `Coach: Riprendiamo con ${icons[oldest[0]]} ${oldest[0]}?`;
             }
-            lastSeen[s] = lastDate;
-        } else {
-            lastSeen[s] = new Date(0);
-        }
-        streaks[s] = currentStreak;
-    });
 
-    // 2. Elaborazione suggerimento (Priorità Streak)
-    let suggestion = "";
-    
-    // Troviamo lo streak massimo
-    const maxVal = Math.max(...Object.values(streaks));
-    const activeStreaks = Object.entries(streaks).filter(([s, val]) => val === maxVal && val >= 2);
+            if (window.fitnessDB.some(r => r.date === formatDateLocal(new Date()))) suggestion = "✅ Obiettivo centrato per oggi! Grande.";
+            const el = document.getElementById('suggestionText'); if(el) el.innerText = suggestion;
+        };
 
-    // PRIORITÀ 1: Se c'è uno streak attivo (anche alle 11 di sera!), mostra quello
-    if (activeStreaks.length > 0) {
-        const topSports = activeStreaks.map(x => `${icons[x[0]] || ''} ${x[0]} (${x[1]} giorni 🔥)`);
-        suggestion = `Serie attiva! Non mollare: ${topSports.join(' e ')}`;
-    } 
-    // PRIORITÀ 2: Se non ci sono streak, suggerisci l'attività più vecchia
-    else {
-        const sortedByLast = Object.entries(lastSeen).sort((a, b) => a[1] - b[1]);
-        const oldestSport = sortedByLast[0][0];
-        const diffDays = Math.floor((oggiMezzanotte - sortedByLast[0][1]) / (1000 * 60 * 60 * 24));
-        const missingTime = diffDays > 365 ? "molto tempo" : `${diffDays} giorni`;
-        suggestion = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}? (Manca da ${missingTime})`;
-    }
+        window.addExercise = async () => {
+            const name = document.getElementById('exName').value;
+            if(!name) return alert("Nome obbligatorio");
+            await window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "routine"), {
+                name: name, duration: document.getElementById('exDuration').value || null,
+                img: document.getElementById('exImg').value || null, note: document.getElementById('exNote').value || "",
+                order: (window.routineDB?.length || 0) + 1
+            });
+            document.getElementById('routineForm').querySelectorAll('input, textarea').forEach(i => i.value = '');
+        };
 
-    // Controllo finale: se hai già fatto qualcosa OGGI, complimenti e basta
-    const todayStr = formatDateLocal(new Date());
-    if (window.fitnessDB.some(r => r.date === todayStr)) {
-        suggestion = "✅ Obiettivo centrato per oggi! Grande costanza.";
-    }
+        window.moveEx = async (id, dir) => {
+            const ex = window.routineDB.find(e => e.id === id);
+            const other = window.routineDB.find(e => e.order === ex.order + dir);
+            if(!other) return;
+            await window.updateDoc(window.doc(window.db, "users", window.currentUser.uid, "routine", id), { order: other.order });
+            await window.updateDoc(window.doc(window.db, "users", window.currentUser.uid, "routine", other.id), { order: ex.order });
+        };
 
-    const sugEl = document.getElementById('suggestionText');
-    if(sugEl) sugEl.innerText = suggestion;
-};
+        window.completeRoutine = async () => {
+            if(!window.routineDB?.length) return alert("Routine vuota!");
+            if(confirm("Registrare completamento? (Include Stretching)")) {
+                const today = formatDateLocal(new Date());
+                let lastW = null;
+                const lastRec = [...window.fitnessDB].filter(r => r.weight > 0).sort((a,b) => new Date(b.date)-new Date(a.date))[0];
+                if(lastRec) lastW = lastRec.weight;
+                
+                await Promise.all([
+                    window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), { date: today, type: 'Routine', weight: lastW, km: 0, min: 0 }),
+                    window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), { date: today, type: 'Stretching', weight: lastW, km: 0, min: 10 })
+                ]);
+                showTab('main');
+            }
+        };
 
-window.addExercise = async () => {
-    const name = document.getElementById('exName').value;
-    if(!name) { alert("Nome obbligatorio"); return; }
-    
-    // Usiamo le versioni globali window.addDoc etc.
-    const exercise = {
-        name: name,
-        duration: document.getElementById('exDuration').value || null,
-        img: document.getElementById('exImg').value || null,
-        note: document.getElementById('exNote').value || "",
-        order: (window.routineDB?.length || 0) + 1,
-        createdAt: new Date()
-    };
-    
-    try {
-        await window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "routine"), exercise);
-        // Pulizia campi
-        document.getElementById('exName').value = '';
-        document.getElementById('exDuration').value = '';
-        document.getElementById('exImg').value = '';
-        document.getElementById('exNote').value = '';
-    } catch (e) {
-        console.error("Errore salvataggio:", e);
-    }
-};
-window.moveEx = async (id, direction) => {
-    const ex = window.routineDB.find(e => e.id === id);
-    const other = window.routineDB.find(e => e.order === ex.order + direction);
-    if(!other) return;
-    
-    // Switch degli ordini (implementare con updateDoc su Firebase)
-    const exRef = doc(db, "users", window.currentUser.uid, "routine", id);
-    const otherRef = doc(db, "users", window.currentUser.uid, "routine", other.id);
-    
-    await updateDoc(exRef, { order: other.order });
-    await updateDoc(otherRef, { order: ex.order });
-};
+        window.renderRoutine = () => {
+            const list = document.getElementById('exerciseList');
+            list.innerHTML = window.routineDB.map(ex => `
+                <div class="stat-card" style="padding:12px; border-left-color: var(--primary);">
+                    <div style="width:45px; height:45px; background:rgba(255,255,255,0.05); border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                        ${ex.img ? `<img src="${ex.img}" style="width:100%; height:100%; object-fit:cover;">` : '🏋️'}
+                    </div>
+                    <div class="stat-text">
+                        <b style="font-size:0.9rem; display:block;">${ex.name}</b>
+                        ${ex.duration ? `<small style="color:var(--primary); font-weight:bold;">${ex.duration}s</small>` : ''}
+                        ${ex.note ? `<small style="color:#94a3b8; font-style:italic; margin-left:8px;">${ex.note}</small>` : ''}
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <button onclick="moveEx('${ex.id}', -1)" class="nav-arrow" style="padding:2px 8px; font-size:0.6rem;">▲</button>
+                        <button onclick="moveEx('${ex.id}', 1)" class="nav-arrow" style="padding:2px 8px; font-size:0.6rem;">▼</button>
+                    </div>
+                    <button onclick="confirm('Eliminare?') && window.deleteDoc(window.doc(window.db, 'users', window.currentUser.uid, 'routine', '${ex.id}'))" style="background:var(--danger); border:none; color:white; border-radius:4px; padding:5px 8px; cursor:pointer;">X</button>
+                </div>`).join('');
+        };
 
-window.completeRoutine = async () => {
-    if(!window.routineDB || window.routineDB.length === 0) {
-        alert("La tua routine è vuota!");
-        return;
-    }
-    
-    if(confirm("Registrare il completamento della Routine? (Include lo Stretching automatico)")) {
-        let lastW = null;
-        if(window.fitnessDB.length > 0) {
-            const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
-            if(last) lastW = last.weight;
-        }
-
-        const today = formatDateLocal(new Date());
-
-        try {
-            // Eseguiamo entrambi i salvataggi contemporaneamente
-            await Promise.all([
-                // 1. Il record della Routine (1 punto)
-                window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), {
-                    date: today,
-                    type: 'Routine',
-                    weight: lastW,
-                    km: 0,
-                    min: 0 
-                }),
-                // 2. Il record dello Stretching (0.5 punti)
-                window.addDoc(window.collection(window.db, "users", window.currentUser.uid, "records"), {
-                    date: today,
-                    type: 'Stretching',
-                    weight: lastW,
-                    km: 0,
-                    min: 10 // Tempo stimato per lo stretching incluso
-                })
-            ]);
-
-            showTab('main'); 
-        } catch (e) {
-            console.error("Errore nel doppio salvataggio:", e);
-        }
-    }
-};
-
-window.deleteEx = async (id) => {
-    if(confirm("Eliminare esercizio?")) 
-        await deleteDoc(doc(db, "users", window.currentUser.uid, "routine", id));
-};
-window.renderRoutine = () => {
-    const list = document.getElementById('exerciseList');
-    if(!window.routineDB) return;
-    const sorted = [...window.routineDB].sort((a,b) => a.order - b.order);
-    
-    list.innerHTML = sorted.map((ex) => `
-        <div class="stat-card" style="margin-bottom:10px; padding:15px; border-left-color: var(--primary); box-sizing: border-box; width: 100%;">
-            <div style="width:40px; height:40px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); border-radius:8px; overflow:hidden;">
-                ${ex.img ? `<img src="${ex.img}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="font-size:1.5rem;">🏋️</span>'}
-            </div>
-            <div style="flex-grow:1; min-width:0;">
-                <b style="font-size:0.9rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${ex.name}</b>
-                ${ex.duration ? `<small style="color:var(--primary); font-weight:bold;">${ex.duration}s</small>` : ''}
-                ${ex.note ? `<small style="color:#94a3b8; font-style:italic; margin-left:10px;">${ex.note}</small>` : ''}
-            </div>
-            <div style="display:flex; flex-direction:column; gap:5px; flex-shrink:0;">
-                <button onclick="moveEx('${ex.id}', -1)" class="nav-arrow" style="padding:2px 8px; font-size:0.6rem;">▲</button>
-                <button onclick="moveEx('${ex.id}', 1)" class="nav-arrow" style="padding:2px 8px; font-size:0.6rem;">▼</button>
-                <button onclick="deleteEx('${ex.id}')" style="background:var(--danger); border:none; color:white; border-radius:4px; cursor:pointer; font-size:0.6rem; padding:4px;">X</button>
-            </div>
-        </div>
-    `).join('');
-};
-		
         window.showTab = (id) => {
             document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            document.querySelector(`button[onclick="showTab('${id}')"]`).classList.add('active');
             if(id === 'main') { renderChart(); renderHeatmap(); }
             if(id === 'analisi') renderAnalisi();
             if(id === 'history') renderHistory();
-            if(id === 'input') {
-                document.getElementById('dateIn').valueAsDate = new Date();
-                const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
-                if(last) document.getElementById('weightIn').value = last.weight;
-            }
-			if(id === 'routine') renderRoutine();
+            if(id === 'routine') renderRoutine();
+            if(id === 'input') document.getElementById('dateIn').valueAsDate = new Date();
         };
 
         window.changeWeek = (days) => { window.referenceDate.setDate(window.referenceDate.getDate() + days); renderChart(); };
 
-       window.renderChart = () => {
-		    const monday = getMonday(window.referenceDate);
-		    const labels = [];
-		    for(let i=0; i<7; i++) { 
-		        let d = new Date(monday); d.setDate(monday.getDate() + i); 
-		        labels.push(formatDateLocal(d));
-		    }
-    document.getElementById('currentWeekLabel').innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
-    
-    const grouped = window.fitnessDB.reduce((acc, curr) => {
-        if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
-        if(curr.type !== 'Riposo') acc[curr.date].activities.push(curr.type);
-        if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
-    }, {});
+        window.renderChart = () => {
+            const monday = getMonday(window.referenceDate);
+            const labels = []; for(let i=0; i<7; i++) { let d = new Date(monday); d.setDate(monday.getDate()+i); labels.push(formatDateLocal(d)); }
+            document.getElementById('currentWeekLabel').innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
+            
+            const grouped = window.fitnessDB.reduce((acc, curr) => {
+                if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
+                if(curr.type !== 'Riposo') acc[curr.date].activities.push(curr.type);
+                if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
+            }, {});
 
-    // --- LOGICA COSTANZA E MESSAGGI ---
-    let score = 0;
-    labels.forEach(day => {
-        const acts = window.fitnessDB.filter(r => r.date === day);
-        if(acts.some(r => !['Stretching', 'Riposo'].includes(r.type))) score += 1;
-        else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
-    });
+            let score = 0;
+            labels.forEach(day => {
+                const acts = window.fitnessDB.filter(r => r.date === day);
+                if(acts.some(r => !['Stretching', 'Riposo'].includes(r.type))) score += 1;
+                else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
+            });
 
-    document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
-    const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
-    
-    if(score >= 3.5) { 
-        icon.innerText = '🔥'; card.style.borderLeftColor = 'var(--success)'; 
-        msg.innerText = "Obiettivo raggiunto: ottimo lavoro!"; 
-    }
-    else if(score < 2) { 
-        icon.innerText = '⚠️'; card.style.borderLeftColor = 'var(--danger)'; 
-        msg.innerText = "Settimana fiacca, serve una scossa!"; 
-    }
-    else { 
-        icon.innerText = '⚖️'; card.style.borderLeftColor = 'var(--warning)'; 
-        msg.innerText = "Sei sulla buona strada, continua così!"; 
-    }
+            document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if(mainChart) mainChart.destroy();
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), 
+                        datasets: [{ data: labels.map(l => grouped[l]?.weight || null), borderColor: '#38bdf8', tension: 0.3, spanGaps: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 73, max: 82 } } },
+                plugins: [{
+                    afterDraw: chart => {
+                        chart.data.datasets[0].data.forEach((v, i) => {
+                            const meta = chart.getDatasetMeta(0); if(!meta.data[i]) return;
+                            const {x, y} = meta.data[i]; const acts = grouped[labels[i]]?.activities || [];
+                            acts.forEach((a, idx) => { chart.ctx.font = '14px serif'; chart.ctx.fillText(icons[a] || '⚪', x-7, y - 20 - (idx*16)); });
+                        });
+                    }
+                }]
+            });
+        };
 
-    const ctx = document.getElementById('mainChart').getContext('2d');
-    if(mainChart) mainChart.destroy();
-    mainChart = new Chart(ctx, {
-        type: 'line',
-        data: { 
-            labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), 
-            datasets: [{ data: labels.map(l => grouped[l]?.weight || null), borderColor: '#38bdf8', tension: 0.3, spanGaps: true }] 
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 73, max: 81 } } },
-        plugins: [{ 
-            afterDraw: chart => { 
-                chart.data.datasets[0].data.forEach((v, i) => {
-                    const meta = chart.getDatasetMeta(0); if(!meta.data[i]) return;
-                    const {x, y} = meta.data[i]; const acts = grouped[labels[i]]?.activities || [];
-                    acts.forEach((a, idx) => { 
-                        chart.ctx.font = '14px serif'; 
-
-						const iconaDaDisegnare = icons[a] || '⚪'; 
-    
-                        chart.ctx.fillText(icons[a], x-7, y - 20 - (idx*16)); 
-                    });
-                });
-            }
-        }]
-    });
-};
         window.renderHeatmap = () => {
             const container = document.getElementById('annualHeatmap'); container.innerHTML = '';
             const currentYear = new Date().getFullYear();
@@ -553,125 +417,63 @@ window.renderRoutine = () => {
                     else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
                 });
                 const el = document.createElement('div'); el.className = 'heat-day';
-                el.style.display = 'flex'; el.style.flexDirection = 'column'; el.style.lineHeight = '0.9';
-                el.innerHTML = `<span style="font-size:0.55rem; opacity:0.5;">${w}</span><b style="font-size:0.75rem;">${wScore}</b>`;
-                if(wScore >= 5) el.classList.add('heat-ultra');
-                else if(wScore >= 3.5) el.classList.add('heat-high');
-                else if(wScore >= 2) el.classList.add('heat-mid');
-                else if(wScore > 0) el.classList.add('heat-low');
+                el.innerHTML = `<span style="font-size:0.5rem; opacity:0.5;">${w}</span><b>${wScore}</b>`;
+                if(wScore >= 5) el.classList.add('heat-ultra'); else if(wScore >= 3.5) el.classList.add('heat-high');
+                else if(wScore >= 2) el.classList.add('heat-mid'); else if(wScore > 0) el.classList.add('heat-low');
                 el.onclick = () => {
-                    let target = new Date(currentYear, 0, 4);
-                    target.setDate(target.getDate() + (w - 1) * 7);
-                    const day = target.getDay();
-                    const diff = target.getDate() - day + (day === 0 ? -6 : 1);
-                    const finalMonday = new Date(target.setDate(diff));
-                    finalMonday.setHours(12, 0, 0, 0);
-                    window.referenceDate = finalMonday; renderChart(); window.scrollTo({ top: 0, behavior: 'smooth' });
+                    let target = new Date(currentYear, 0, 4); target.setDate(target.getDate() + (w - 1) * 7);
+                    window.referenceDate = getMonday(target); renderChart(); window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
                 container.appendChild(el);
             }
         };
 
         window.renderAnalisi = () => {
-    const sport = document.getElementById('sportFilter').value;
-    const daysCount = parseInt(document.getElementById('periodFilter').value);
-    const labelsRaw = []; const labelsFmt = [];
-    
-    for(let i=daysCount-1; i>=0; i--) {
-        let d = new Date(); d.setDate(d.getDate()-i);
-        const raw = formatDateLocal(d);
-        labelsRaw.push(raw);
-        labelsFmt.push(raw.split('-').reverse().slice(0,2).join('/'));
-    }
+            const sport = document.getElementById('sportFilter').value;
+            const daysCount = parseInt(document.getElementById('periodFilter').value);
+            const labelsRaw = []; const labelsFmt = [];
+            for(let i=daysCount-1; i>=0; i--) {
+                let d = new Date(); d.setDate(d.getDate()-i);
+                labelsRaw.push(formatDateLocal(d));
+                labelsFmt.push(formatDateLocal(d).split('-').reverse().slice(0,2).join('/'));
+            }
 
-    // 1. STATISTICHE (I BOX IN ALTO)
-    let statsHTML = "";
-    if (sport === 'Peso') {
-        // CORREZIONE: Uso "weight" invece di "peso" per coerenza con Firebase
-        const recordsPeso = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.weight && parseFloat(r.weight) > 0);
-        if (recordsPeso.length > 0) {
-            const val = recordsPeso.map(r => parseFloat(r.weight));
-            const media = (val.reduce((a, b) => a + b, 0) / val.length).toFixed(1);
-            const delta = (val[val.length-1] - val[0]).toFixed(1);
-            statsHTML = `
-                <div class="stat-card" style="flex:1"><small>Media Peso</small><br><big>${media} kg</big></div>
-                <div class="stat-card" style="flex:1"><small>Variazione</small><br><big>${delta > 0 ? '+' : ''}${delta} kg</big></div>`;
-        } else {
-            statsHTML = `<div class="stat-card" style="width:100%">Nessun dato peso nel periodo</div>`;
-        }
-    } else {
-        const filtered = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && (sport === 'All' || r.type === sport));
-        const totalMin = filtered.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
-        const mediaMin = filtered.length > 0 ? (totalMin / filtered.length).toFixed(0) : 0;
-        statsHTML = `
-            <div class="stat-card" style="flex:1"><small>Sessioni</small><br><big>${filtered.length}</big></div>
-            <div class="stat-card" style="flex:1"><small>Media Minuti</small><br><big>${mediaMin}'</big></div>`;
-    }
+            const dataSeries = labelsRaw.map(date => {
+                const dayRecords = window.fitnessDB.filter(r => r.date === date);
+                if (sport === 'Peso') {
+                    const rec = dayRecords.find(r => r.weight > 0); return rec ? rec.weight : null;
+                } else {
+                    return dayRecords.filter(r => r.type === sport).reduce((sum, r) => sum + (r.min || 0), 0);
+                }
+            });
 
-    const statsContainer = document.getElementById('analisiStats');
-    if (statsContainer) {
-        statsContainer.style.display = "flex";
-        statsContainer.style.gap = "10px";
-        statsContainer.innerHTML = statsHTML;
-    }
+            if(analisiChart) analisiChart.destroy();
+            analisiChart = new Chart(document.getElementById('analysisChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: labelsFmt, datasets: [{ data: dataSeries, borderColor: '#a855f7', tension: 0.3, spanGaps: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
 
-    // 2. LOGICA GRAFICO
-    const dataSeries = labelsRaw.map(date => {
-        const dayRecords = window.fitnessDB.filter(r => r.date === date);
-        if (sport === 'Peso') {
-            const rec = dayRecords.find(r => r.weight && parseFloat(r.weight) > 0);
-            return rec ? parseFloat(rec.weight) : null;
-        } else {
-            const f = sport === 'All' ? dayRecords : dayRecords.filter(r => r.type === sport);
-            return f.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
-        }
-    });
-
-    const ctx = document.getElementById('analysisChart').getContext('2d');
-    
-    // Inizializza il grafico se non esiste
-    if (!window.analysisChart) {
-        window.analysisChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: labelsFmt, datasets: [{ data: dataSeries, borderColor: '#a855f7', tension: 0.3 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-    } else {
-        window.analysisChart.data.labels = labelsFmt;
-        window.analysisChart.data.datasets[0].data = dataSeries;
-        window.analysisChart.data.datasets[0].label = sport === 'Peso' ? 'Peso (kg)' : 'Minuti';
-        window.analysisChart.options.spanGaps = (sport === 'Peso');
-        window.analysisChart.update();
-    }
-const tc = document.getElementById('sportTiles');
-    if (tc) {
-        tc.innerHTML = '';
-        ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].forEach(s => {
-            const count = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === s).length;
-            tc.innerHTML += `
-                <div class="sport-tile ${sport === s ? 'active' : ''}" style="cursor:pointer" onclick="document.getElementById('sportFilter').value='${s}'; renderAnalisi();">
-                    <span>${icons[s]}</span><br><b>${count}</b>
-                </div>`;
-        });
-    }
-			
-};
+            const tc = document.getElementById('sportTiles');
+            tc.innerHTML = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].map(s => `
+                <div class="sport-tile ${sport === s ? 'active' : ''}" onclick="document.getElementById('sportFilter').value='${s}'; renderAnalisi();">
+                    <span>${icons[s]}</span><br><b>${window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === s).length}</b>
+                </div>`).join('');
+        };
 
         window.renderHistory = () => {
-            const list = document.getElementById('historyList');
-            list.innerHTML = window.fitnessDB.slice().reverse().map(r => `
-                <div style="background:var(--card); padding:10px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; border:1px solid #334155;">
-                    <div><b>${r.date.split('-').reverse().join('/')}</b> - ${icons[r.type]} ${r.type} ${r.weight? ' | '+r.weight+'kg':''}</div>
-                    <button onclick="handleDelete('${r.id}')" style="background:var(--danger); border:none; color:white; border-radius:4px; padding: 2px 8px; cursor:pointer;">X</button>
+            document.getElementById('historyList').innerHTML = [...window.fitnessDB].reverse().map(r => `
+                <div style="background:var(--card); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; border:1px solid #334155;">
+                    <div><small>${r.date}</small> <br> ${icons[r.type]} <b>${r.type}</b> ${r.weight ? ' | '+r.weight+'kg' : ''}</div>
+                    <button onclick="handleDelete('${r.id}')" style="background:var(--danger); color:white; border:none; border-radius:5px; padding:0 10px;">X</button>
                 </div>`).join('');
         };
 
         window.toggleFields = () => {
-		    const t = document.getElementById('typeIn').value;
-		    document.getElementById('kmBox').classList.toggle('hidden', t !== 'Corsa');
-		    // Aggiungi 'Routine' nell'elenco che mostra i minuti
-		    document.getElementById('minBox').classList.toggle('hidden', !['Corsa','Padel','Stretching','Routine'].includes(t));
-		};
+            const t = document.getElementById('typeIn').value;
+            document.getElementById('kmBox').classList.toggle('hidden', t !== 'Corsa');
+            document.getElementById('minBox').classList.toggle('hidden', !['Corsa','Padel','Stretching','Routine'].includes(t));
+        };
     </script>
 </body>
 </html>
