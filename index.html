@@ -274,14 +274,6 @@
         }
 
 window.updateSuggestion = () => {
-	const sugEl = document.getElementById('suggestion');
-    if (!sugEl) return; // Protezione se l'elemento non esiste nel DOM
-
-    // Se i dati non sono ancora arrivati, mostra un caricamento neutro invece di nulla
-    if (!window.fitnessDB || window.fitnessDB.length === 0) {
-        sugEl.innerHTML = "Analisi dati in corso...";
-        return;
-    }
     const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'];
     const today = new Date();
     let streaks = {};
