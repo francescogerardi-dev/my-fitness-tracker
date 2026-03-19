@@ -622,31 +622,41 @@ window.renderRoutine = () => {
     			const recordsConPeso = window.fitnessDB.filter(r => 
         		labelsRaw.includes(r.date) && r.peso && parseFloat(r.peso) > 0
 				// 2. Logica Specifica se l'utente seleziona "Peso" dal filtro o se vogliamo vederlo sempre
-    if (sport === 'Peso') {
-        if (recordsConPeso.length > 0) {
-            const pesi = recordsConPeso.map(r => parseFloat(r.peso));
-            const minP = Math.min(...pesi);
-            const maxP = Math.max(...pesi);
-            const mediaP = (pesi.reduce((a, b) => a + b, 0) / pesi.length).toFixed(1);
-            const delta = (pesi[pesi.length - 1] - pesi[0]).toFixed(1);
+    			if (sport === 'Peso') {
+					let extraStats = "";
+        i			if (recordsConPeso.length > 0) {
+		            const pesi = recordsConPeso.map(r => parseFloat(r.peso));
+		            const minP = Math.min(...pesi);
+		            const maxP = Math.max(...pesi);
+		            const mediaP = (pesi.reduce((a, b) => a + b, 0) / pesi.length).toFixed(1);
+		            const delta = (pesi[pesi.length - 1] - pesi[0]).toFixed(1);
 
-            extraStats = `
-                <div class="stat-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="stat-card"><small>Media</small><big>${mediaP} <small>kg</small></big></div>
-                    <div class="stat-card"><small>Variazione</small><big>${delta > 0 ? '+' : ''}${delta} <small>kg</small></big></div>
-                    <div class="stat-card"><small>Min</small><big>${minP} <small>kg</small></big></div>
-                    <div class="stat-card"><small>Max</small><big>${maxP} <small>kg</small></big></div>
-                </div>`;
-        } else {
-            extraStats = `<div class="stat-card">Nessun dato peso nel periodo selezionato</div>`;
-        }
-				}		
+		            extraStats = `
+		                <div class="stat-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+		                    <div class="stat-card"><small>Media</small><big>${mediaP} <small>kg</small></big></div>
+		                    <div class="stat-card"><small>Variazione</small><big>${delta > 0 ? '+' : ''}${delta} <small>kg</small></big></div>
+		                    <div class="stat-card"><small>Min</small><big>${minP} <small>kg</small></big></div>
+		                    <div class="stat-card"><small>Max</small><big>${maxP} <small>kg</small></big></div>
+		                </div>`;
+       		 		}	else {
+            		extraStats = `<div class="stat-card">Nessun dato peso nel periodo selezionato</div>`;
+        			}
+				}
+			}	
     );
 
-    let extraStats = "";
-				
-			}
-
+			// Iniezione nel DOM
+		    const statsContainer = document.getElementById('analisiStats');
+		    if (statsContainer) statsContainer.innerHTML = extraStats;
+		
+		    // 3. Aggiornamento Grafico per il Peso
+		    if (sport === 'Peso' && recordsConPeso.length > 0) {
+		        // Qui istruiamo il grafico a mostrare la linea del peso invece dei minuti
+		        renderWeightChart(labelsRaw, labelsFmt, recordsConPeso);
+		    } else {
+		        // Render classico degli sport
+		        renderStandardChart(labelsRaw, labelsFmt);
+		    }
             const ctx = document.getElementById('analisiChart').getContext('2d');
             if(analisiChart) analisiChart.destroy();
             const dataArr = labelsRaw.map(l => {
