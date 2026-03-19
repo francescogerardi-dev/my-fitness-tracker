@@ -275,69 +275,77 @@
 
 window.updateSuggestion = () => {
     const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'];
-    const today = new Date();
+    // Normalizziamo la data di "oggi" a mezzanotte per evitare bug orari
+    const oggiMezzanotte = new Date();
+    oggiMezzanotte.setHours(0, 0, 0, 0);
+    
     let streaks = {};
     let lastSeen = {};
 
-    // 1. Analisi dati
+    // 1. Analisi dati con normalizzazione date
     sports.forEach(s => {
         const sDates = [...new Set(window.fitnessDB
             .filter(r => r.type === s)
             .map(r => r.date))]
             .sort((a, b) => new Date(a) - new Date(b));
 
-        // Calcolo Streak attuale
         let currentStreak = 0;
         if (sDates.length > 0) {
-            let tempStreak = 0;
             const sortedDesc = [...sDates].sort((a,b) => new Date(b) - new Date(a));
-            
-            // Verifichiamo se l'attività è recente (oggi o ieri)
             const lastDate = new Date(sortedDesc[0]);
-            const diffDays = (today - lastDate) / (1000 * 60 * 60 * 24);
-            
-            if (diffDays <= 1.5) { // Se fatta oggi o ieri
-                tempStreak = 1;
+            lastDate.setHours(0, 0, 0, 0);
+
+            // Calcolo differenza in giorni solari
+            const diffDays = Math.floor((oggiMezzanotte - lastDate) / (1000 * 60 * 60 * 24));
+
+            // Streak valida se fatta OGGI (0) o IERI (1)
+            if (diffDays <= 1) {
+                currentStreak = 1;
                 for (let i = 0; i < sortedDesc.length - 1; i++) {
                     const d1 = new Date(sortedDesc[i]);
                     const d2 = new Date(sortedDesc[i+1]);
-                    if ((d1 - d2) / (1000 * 60 * 60 * 24) === 1) tempStreak++;
+                    d1.setHours(0,0,0,0);
+                    d2.setHours(0,0,0,0);
+                    if ((d1 - d2) / (1000 * 60 * 60 * 24) === 1) currentStreak++;
                     else break;
                 }
             }
-            currentStreak = tempStreak;
             lastSeen[s] = lastDate;
         } else {
-            lastSeen[s] = new Date(0); // Mai fatta
+            lastSeen[s] = new Date(0);
         }
         streaks[s] = currentStreak;
     });
 
-   // 2. Elaborazione suggerimento (V.2.1)
+    // 2. Elaborazione suggerimento (Priorità Streak)
     let suggestion = "";
-    const activeStreaks = Object.entries(streaks).filter(([s, val]) => val > 2);
+    
+    // Troviamo lo streak massimo
+    const maxVal = Math.max(...Object.values(streaks));
+    const activeStreaks = Object.entries(streaks).filter(([s, val]) => val === maxVal && val >= 2);
 
+    // PRIORITÀ 1: Se c'è uno streak attivo (anche alle 11 di sera!), mostra quello
     if (activeStreaks.length > 0) {
-        // Caso Streak > 2: prendiamo il massimo
-        const maxVal = Math.max(...activeStreaks.map(x => x[1]));
-        const topSports = activeStreaks
-            .filter(x => x[1] === maxVal)
-            .map(x => `${icons[x[0]]} ${x[0]} (${maxVal} giorni 🔥)`); // Aggiunto il numero dello streak
-        
-        suggestion = `Continua così! Mantieni lo streak di: ${topSports.join(' e ')}`;
-    } else {
-        // Caso No Streak: prendiamo l'attività più "vecchia"
+        const topSports = activeStreaks.map(x => `${icons[x[0]] || ''} ${x[0]} (${x[1]} giorni 🔥)`);
+        suggestion = `Serie attiva! Non mollare: ${topSports.join(' e ')}`;
+    } 
+    // PRIORITÀ 2: Se non ci sono streak, suggerisci l'attività più vecchia
+    else {
         const sortedByLast = Object.entries(lastSeen).sort((a, b) => a[1] - b[1]);
         const oldestSport = sortedByLast[0][0];
-        
-        // Calcoliamo da quanti giorni manca
-        const diffDays = Math.floor((today - sortedByLast[0][1]) / (1000 * 60 * 60 * 24));
+        const diffDays = Math.floor((oggiMezzanotte - sortedByLast[0][1]) / (1000 * 60 * 60 * 24));
         const missingTime = diffDays > 365 ? "molto tempo" : `${diffDays} giorni`;
-        
-        suggestion = `È ora di riprendere: ${icons[oldestSport]} ${oldestSport} (manca da ${missingTime})`;
+        suggestion = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}? (Manca da ${missingTime})`;
     }
 
-    document.getElementById('suggestionText').innerText = suggestion;
+    // Controllo finale: se hai già fatto qualcosa OGGI, complimenti e basta
+    const todayStr = formatDateLocal(new Date());
+    if (window.fitnessDB.some(r => r.date === todayStr)) {
+        suggestion = "✅ Obiettivo centrato per oggi! Grande costanza.";
+    }
+
+    const sugEl = document.getElementById('suggestionText');
+    if(sugEl) sugEl.innerText = suggestion;
 };
 
 window.addExercise = async () => {
