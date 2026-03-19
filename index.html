@@ -459,19 +459,27 @@ window.renderRoutine = () => {
 };
 		
         window.showTab = (id) => {
-            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(id === 'main') { renderChart(); renderHeatmap(); }
-            if(id === 'analisi') renderAnalisi();
-            if(id === 'history') renderHistory();
-            if(id === 'input') {
-                document.getElementById('dateIn').valueAsDate = new Date();
-                const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
-                if(last) document.getElementById('weightIn').value = last.weight;
-            }
-			if(id === 'routine') renderRoutine();
-        };
+		    // 1. Nascondi tutti i contenuti e rimuovi i focus dai tasti
+		    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+		    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+		
+		    // 2. Mostra il contenuto richiesto
+		    const targetContent = document.getElementById(id);
+		    if (targetContent) {
+		        targetContent.classList.add('active');
+		    }
+		
+		    // 3. Evidenzia il pulsante (con controllo di sicurezza)
+		    const targetBtn = document.querySelector(`button[onclick*="${id}"]`);
+		    if (targetBtn) {
+		        targetBtn.classList.add('active');
+		    }
+		
+		    // 4. Trigger dei grafici solo se necessario
+		    if(id === 'main' && typeof renderChart === 'function') renderChart();
+		    if(id === 'analisi' && typeof renderAnalisi === 'function') renderAnalisi();
+		    if(id === 'history' && typeof renderHistory === 'function') renderHistory();
+		};
 
         window.changeWeek = (days) => { window.referenceDate.setDate(window.referenceDate.getDate() + days); renderChart(); };
 
