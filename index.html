@@ -580,54 +580,91 @@ window.renderRoutine = () => {
             }
         };
 
-       window.renderAnalisi = () => {
-    const canvas = document.getElementById('analysisChart');
-    if (!canvas) { console.error("Canvas analysisChart non trovato!"); return; }
-
+  window.renderAnalisi = () => {
     const sport = document.getElementById('sportFilter').value;
     const daysCount = parseInt(document.getElementById('periodFilter').value);
+    const labelsRaw = []; const labelsFmt = [];
     
-    const labelsRaw = [];
-    const labelsFmt = [];
     for(let i=daysCount-1; i>=0; i--) {
         let d = new Date(); d.setDate(d.getDate()-i);
-        const raw = d.toISOString().split('T')[0];
+        const raw = formatDateLocal(d);
         labelsRaw.push(raw);
         labelsFmt.push(raw.split('-').reverse().slice(0,2).join('/'));
     }
 
+    // 1. STATISTICHE (I BOX IN ALTO)
+    let statsHTML = "";
+    if (sport === 'Peso') {
+        // CORREZIONE: Uso "weight" invece di "peso" per coerenza con Firebase
+        const recordsPeso = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.weight && parseFloat(r.weight) > 0);
+        if (recordsPeso.length > 0) {
+            const val = recordsPeso.map(r => parseFloat(r.weight));
+            const media = (val.reduce((a, b) => a + b, 0) / val.length).toFixed(1);
+            const delta = (val[val.length-1] - val[0]).toFixed(1);
+            statsHTML = `
+                <div class="stat-card" style="flex:1"><small>Media Peso</small><br><big>${media} kg</big></div>
+                <div class="stat-card" style="flex:1"><small>Variazione</small><br><big>${delta > 0 ? '+' : ''}${delta} kg</big></div>`;
+        } else {
+            statsHTML = `<div class="stat-card" style="width:100%">Nessun dato peso nel periodo</div>`;
+        }
+    } else {
+        const filtered = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && (sport === 'All' || r.type === sport));
+        const totalMin = filtered.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
+        const mediaMin = filtered.length > 0 ? (totalMin / filtered.length).toFixed(0) : 0;
+        statsHTML = `
+            <div class="stat-card" style="flex:1"><small>Sessioni</small><br><big>${filtered.length}</big></div>
+            <div class="stat-card" style="flex:1"><small>Media Minuti</small><br><big>${mediaMin}'</big></div>`;
+    }
+
+    const statsContainer = document.getElementById('analisiStats');
+    if (statsContainer) {
+        statsContainer.style.display = "flex";
+        statsContainer.style.gap = "10px";
+        statsContainer.innerHTML = statsHTML;
+    }
+
+    // 2. LOGICA GRAFICO
     const dataSeries = labelsRaw.map(date => {
         const dayRecords = window.fitnessDB.filter(r => r.date === date);
         if (sport === 'Peso') {
             const rec = dayRecords.find(r => r.weight && parseFloat(r.weight) > 0);
             return rec ? parseFloat(rec.weight) : null;
         } else {
-            return dayRecords.filter(r => r.type === sport).reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
+            const f = sport === 'All' ? dayRecords : dayRecords.filter(r => r.type === sport);
+            return f.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
         }
     });
 
-    if (window.analysisChart) window.analysisChart.destroy();
-
-    window.analysisChart = new Chart(canvas.getContext('2d'), {
-        type: 'line',
-        data: { 
-            labels: labelsFmt, 
-            datasets: [{ 
-                data: dataSeries, 
-                borderColor: '#a855f7', 
-                spanGaps: true,
-                tension: 0.3 
-            }] 
-        },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: sport !== 'Peso' } }
-        }
-    });
+    const ctx = document.getElementById('analysisChart').getContext('2d');
     
-    console.log("Grafico renderizzato per:", sport, dataSeries);
+    // Inizializza il grafico se non esiste
+    if (!window.analysisChart) {
+        window.analysisChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: labelsFmt, datasets: [{ data: dataSeries, borderColor: '#a855f7', tension: 0.3 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+    } else {
+        window.analysisChart.data.labels = labelsFmt;
+        window.analysisChart.data.datasets[0].data = dataSeries;
+        window.analysisChart.data.datasets[0].label = sport === 'Peso' ? 'Peso (kg)' : 'Minuti';
+        window.analysisChart.options.spanGaps = (sport === 'Peso');
+        window.analysisChart.update();
+    }
+const tc = document.getElementById('sportTiles');
+    if (tc) {
+        tc.innerHTML = '';
+        ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].forEach(s => {
+            const count = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === s).length;
+            tc.innerHTML += `
+                <div class="sport-tile ${sport === s ? 'active' : ''}" style="cursor:pointer" onclick="document.getElementById('sportFilter').value='${s}'; renderAnalisi();">
+                    <span>${icons[s]}</span><br><b>${count}</b>
+                </div>`;
+        });
+    }
+			
 };
+
         window.renderHistory = () => {
             const list = document.getElementById('historyList');
             list.innerHTML = window.fitnessDB.slice().reverse().map(r => `
