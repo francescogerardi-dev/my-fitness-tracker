@@ -617,7 +617,35 @@ window.renderRoutine = () => {
                 }
                 document.getElementById('currentStreak').innerText = cur;
                 document.getElementById('bestStreak').innerText = best;
-            } else { document.getElementById('streakContainer').style.display = 'none'; }
+            } else {
+				// 1. Filtriamo i record che hanno il campo "peso" (body weight)
+    			const recordsConPeso = window.fitnessDB.filter(r => 
+        		labelsRaw.includes(r.date) && r.peso && parseFloat(r.peso) > 0
+				// 2. Logica Specifica se l'utente seleziona "Peso" dal filtro o se vogliamo vederlo sempre
+    if (sport === 'Peso') {
+        if (recordsConPeso.length > 0) {
+            const pesi = recordsConPeso.map(r => parseFloat(r.peso));
+            const minP = Math.min(...pesi);
+            const maxP = Math.max(...pesi);
+            const mediaP = (pesi.reduce((a, b) => a + b, 0) / pesi.length).toFixed(1);
+            const delta = (pesi[pesi.length - 1] - pesi[0]).toFixed(1);
+
+            extraStats = `
+                <div class="stat-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="stat-card"><small>Media</small><big>${mediaP} <small>kg</small></big></div>
+                    <div class="stat-card"><small>Variazione</small><big>${delta > 0 ? '+' : ''}${delta} <small>kg</small></big></div>
+                    <div class="stat-card"><small>Min</small><big>${minP} <small>kg</small></big></div>
+                    <div class="stat-card"><small>Max</small><big>${maxP} <small>kg</small></big></div>
+                </div>`;
+        } else {
+            extraStats = `<div class="stat-card">Nessun dato peso nel periodo selezionato</div>`;
+        }
+				}		
+    );
+
+    let extraStats = "";
+				
+			}
 
             const ctx = document.getElementById('analisiChart').getContext('2d');
             if(analisiChart) analisiChart.destroy();
