@@ -577,7 +577,6 @@ window.renderRoutine = () => {
     const daysCount = parseInt(document.getElementById('periodFilter').value);
     const labelsRaw = []; const labelsFmt = [];
     
-    // Generazione date per l'asse X
     for(let i=daysCount-1; i>=0; i--) {
         let d = new Date(); d.setDate(d.getDate()-i);
         const raw = formatDateLocal(d);
@@ -587,56 +586,60 @@ window.renderRoutine = () => {
 
     // 1. STATISTICHE (I BOX IN ALTO)
     let statsHTML = "";
-    
     if (sport === 'Peso') {
-        const recordsPeso = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.peso && parseFloat(r.peso) > 0);
+        // CORREZIONE: Uso "weight" invece di "peso" per coerenza con Firebase
+        const recordsPeso = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.weight && parseFloat(r.weight) > 0);
         if (recordsPeso.length > 0) {
-            const val = recordsPeso.map(r => parseFloat(r.peso));
+            const val = recordsPeso.map(r => parseFloat(r.weight));
             const media = (val.reduce((a, b) => a + b, 0) / val.length).toFixed(1);
             const delta = (val[val.length-1] - val[0]).toFixed(1);
             statsHTML = `
-                <div class="stat-card"><small>Media Peso</small><big>${media} <small>kg</small></big></div>
-                <div class="stat-card"><small>Variazione</small><big>${delta > 0 ? '+' : ''}${delta} <small>kg</small></big></div>`;
+                <div class="stat-card" style="flex:1"><small>Media Peso</small><br><big>${media} kg</big></div>
+                <div class="stat-card" style="flex:1"><small>Variazione</small><br><big>${delta > 0 ? '+' : ''}${delta} kg</big></div>`;
         } else {
-            statsHTML = `<div class="stat-card" style="grid-column: span 2">Nessun dato peso nel periodo</div>`;
+            statsHTML = `<div class="stat-card" style="width:100%">Nessun dato peso nel periodo</div>`;
         }
     } else {
         const filtered = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && (sport === 'All' || r.type === sport));
         const totalMin = filtered.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
         const mediaMin = filtered.length > 0 ? (totalMin / filtered.length).toFixed(0) : 0;
         statsHTML = `
-            <div class="stat-card"><small>Sessioni</small><big>${filtered.length}</big></div>
-            <div class="stat-card"><small>Media Minuti</small><big>${mediaMin}'</big></div>`;
+            <div class="stat-card" style="flex:1"><small>Sessioni</small><br><big>${filtered.length}</big></div>
+            <div class="stat-card" style="flex:1"><small>Media Minuti</small><br><big>${mediaMin}'</big></div>`;
     }
 
-			const statsContainer = document.getElementById('analisiStats');
-		if (statsContainer) {
-		    statsContainer.innerHTML = statsHTML;
-		} else {
-		    console.warn("Elemento 'analisiStats' non trovato nell'HTML. Controlla gli ID.");
-		}
-    document.getElementById('analisiStats').innerHTML = statsHTML;
+    const statsContainer = document.getElementById('analisiStats');
+    if (statsContainer) {
+        statsContainer.style.display = "flex";
+        statsContainer.style.gap = "10px";
+        statsContainer.innerHTML = statsHTML;
+    }
 
-    // 2. GRAFICO (Dati dinamici)
+    // 2. LOGICA GRAFICO
     const dataSeries = labelsRaw.map(date => {
         const dayRecords = window.fitnessDB.filter(r => r.date === date);
         if (sport === 'Peso') {
-            // Seleziona l'ultima pesata del giorno se presente
-            const rec = dayRecords.find(r => r.peso && parseFloat(r.peso) > 0);
-            return rec ? parseFloat(rec.peso) : null;
-        } else if (sport === 'All') {
-            return dayRecords.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
+            const rec = dayRecords.find(r => r.weight && parseFloat(r.weight) > 0);
+            return rec ? parseFloat(rec.weight) : null;
         } else {
-            return dayRecords.filter(r => r.type === sport).reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
+            const f = sport === 'All' ? dayRecords : dayRecords.filter(r => r.type === sport);
+            return f.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
         }
     });
 
-    // Aggiornamento Chart.js
-    if (window.analysisChart) {
+    const ctx = document.getElementById('analysisChart').getContext('2d');
+    
+    // Inizializza il grafico se non esiste
+    if (!window.analysisChart) {
+        window.analysisChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: labelsFmt, datasets: [{ data: dataSeries, borderColor: '#a855f7', tension: 0.3 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+    } else {
         window.analysisChart.data.labels = labelsFmt;
         window.analysisChart.data.datasets[0].data = dataSeries;
-        window.analysisChart.data.datasets[0].label = sport === 'Peso' ? 'Peso Corporeo (kg)' : 'Minuti Allenamento';
-        // Opzione per saltare i punti nulli nel grafico del peso (linea continua)
+        window.analysisChart.data.datasets[0].label = sport === 'Peso' ? 'Peso (kg)' : 'Minuti';
         window.analysisChart.options.spanGaps = (sport === 'Peso');
         window.analysisChart.update();
     }
