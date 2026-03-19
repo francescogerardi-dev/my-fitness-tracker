@@ -580,7 +580,7 @@ window.renderRoutine = () => {
             }
         };
 
-window.renderAnalisi = () => {
+		window.renderAnalisi = () => {
     const sport = document.getElementById('sportFilter').value;
     const daysCount = parseInt(document.getElementById('periodFilter').value);
     const labelsRaw = []; const labelsFmt = [];
@@ -706,21 +706,6 @@ window.renderAnalisi = () => {
     }
 };
 
-    // 4. AGGIORNAMENTO TILE SPORT
-    const tc = document.getElementById('sportTiles');
-    if (tc) {
-        tc.innerHTML = '';
-        ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].forEach(s => {
-            const count = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === s).length;
-            tc.innerHTML += `
-                <div class="sport-tile ${sport === s ? 'active' : ''}" 
-                     style="cursor:pointer"
-                     onclick="document.getElementById('sportFilter').value='${s}'; renderAnalisi();">
-                    <span style="font-size:1.2rem">${icons[s] || ''}</span><br><b>${count}</b>
-                </div>`;
-        });
-    }
-};
         window.renderHistory = () => {
             const list = document.getElementById('historyList');
             list.innerHTML = window.fitnessDB.slice().reverse().map(r => `
