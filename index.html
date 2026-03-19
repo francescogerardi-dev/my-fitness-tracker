@@ -204,7 +204,8 @@
                     window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderChart();
                     renderHeatmap();
-					updateSuggestion();
+					// Forza l'aggiornamento del suggerimento
+				    if (window.updateSuggestion) window.updateSuggestion();
 					window.updateDoc = updateDoc;
 					window.doc = doc;
 					window.db = db;
@@ -214,8 +215,9 @@
 					const qRoutine = query(collection(db, "users", user.uid, "routine"), orderBy("order", "asc"));
 					onSnapshot(qRoutine, (snapshot) => {
 					    window.routineDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-						updateSuggestion();
-					    if(document.getElementById('routine').classList.contains('active')) renderRoutine();
+						if(document.getElementById('routine').classList.contains('active')) renderRoutine();
+					    // Forza l'aggiornamento del suggerimento perché la routine influenza i consigli
+					    if (window.updateSuggestion) window.updateSuggestion();
 });
                 });
             } else {
@@ -272,6 +274,14 @@
         }
 
 window.updateSuggestion = () => {
+	const sugEl = document.getElementById('suggestion');
+    if (!sugEl) return; // Protezione se l'elemento non esiste nel DOM
+
+    // Se i dati non sono ancora arrivati, mostra un caricamento neutro invece di nulla
+    if (!window.fitnessDB || window.fitnessDB.length === 0) {
+        sugEl.innerHTML = "Analisi dati in corso...";
+        return;
+    }
     const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'];
     const today = new Date();
     let streaks = {};
