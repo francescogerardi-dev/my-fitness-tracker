@@ -624,7 +624,7 @@ window.renderRoutine = () => {
 				// 2. Logica Specifica se l'utente seleziona "Peso" dal filtro o se vogliamo vederlo sempre
     			if (sport === 'Peso') {
 					let extraStats = "";
-        i			if (recordsConPeso.length > 0) {
+        			if (recordsConPeso.length > 0) {
 		            const pesi = recordsConPeso.map(r => parseFloat(r.peso));
 		            const minP = Math.min(...pesi);
 		            const maxP = Math.max(...pesi);
