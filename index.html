@@ -580,11 +580,12 @@ window.renderRoutine = () => {
             }
         };
 
-  window.renderAnalisi = () => {
+ window.renderAnalisi = () => {
     const sport = document.getElementById('sportFilter').value;
     const daysCount = parseInt(document.getElementById('periodFilter').value);
     const labelsRaw = []; const labelsFmt = [];
     
+    // Generazione asse temporale
     for(let i=daysCount-1; i>=0; i--) {
         let d = new Date(); d.setDate(d.getDate()-i);
         const raw = formatDateLocal(d);
@@ -592,94 +593,120 @@ window.renderRoutine = () => {
         labelsFmt.push(raw.split('-').reverse().slice(0,2).join('/'));
     }
 
-    // 1. STATISTICHE (I BOX IN ALTO)
-    let statsHTML = "";
-    if (sport === 'Peso') {
-        const recordsPeso = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.weight && parseFloat(r.weight) > 0);
-        if (recordsPeso.length > 0) {
-            const val = recordsPeso.map(r => parseFloat(r.weight));
-            const media = (val.reduce((a, b) => a + b, 0) / val.length).toFixed(1);
-            const delta = (val[val.length-1] - val[0]).toFixed(1);
-            statsHTML = `
-                <div class="stat-card" style="flex:1"><small>Media Peso</small><br><big>${media} kg</big></div>
-                <div class="stat-card" style="flex:1"><small>Variazione</small><br><big>${delta > 0 ? '+' : ''}${delta} kg</big></div>`;
-        } else {
-            statsHTML = `<div class="stat-card" style="width:100%">Nessun dato peso nel periodo</div>`;
-        }
-    } else {
-        const filtered = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && (sport === 'All' || r.type === sport));
-        const totalMin = filtered.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
-        const mediaMin = filtered.length > 0 ? (totalMin / filtered.length).toFixed(0) : 0;
-        statsHTML = `
-            <div class="stat-card" style="flex:1"><small>Sessioni</small><br><big>${filtered.length}</big></div>
-            <div class="stat-card" style="flex:1"><small>Media Minuti</small><br><big>${mediaMin}'</big></div>`;
-    }
-
+    // 1. BOX STATISTICHE
     const statsContainer = document.getElementById('analisiStats');
     if (statsContainer) {
-        statsContainer.style.display = "flex";
-        statsContainer.style.gap = "10px";
+        let statsHTML = "";
+        if (sport === 'Peso') {
+            const recordsPeso = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.weight > 0);
+            if (recordsPeso.length > 0) {
+                const val = recordsPeso.map(r => parseFloat(r.weight));
+                const media = (val.reduce((a, b) => a + b, 0) / val.length).toFixed(1);
+                const delta = (val[val.length-1] - val[0]).toFixed(1);
+                statsHTML = `<div class="stat-card" style="flex:1"><small>Media</small><br><big>${media}kg</big></div>
+                             <div class="stat-card" style="flex:1"><small>Delta</small><br><big>${delta > 0 ? '+' : ''}${delta}kg</big></div>`;
+            }
+        } else {
+            const filtered = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === sport);
+            const totalMin = filtered.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
+            statsHTML = `<div class="stat-card" style="flex:1"><small>Sessioni</small><br><big>${filtered.length}</big></div>
+                         <div class="stat-card" style="flex:1"><small>Totale</small><br><big>${totalMin} min</big></div>`;
+        }
         statsContainer.innerHTML = statsHTML;
     }
 
-    // 2. LOGICA GRAFICO
+    // 2. PREPARAZIONE DATI GRAFICO
+    const isPeso = (sport === 'Peso');
     const dataSeries = labelsRaw.map(date => {
         const dayRecords = window.fitnessDB.filter(r => r.date === date);
-        if (sport === 'Peso') {
-            const rec = dayRecords.find(r => r.weight && parseFloat(r.weight) > 0);
+        if (isPeso) {
+            const rec = dayRecords.find(r => r.weight > 0);
             return rec ? parseFloat(rec.weight) : null;
         } else {
-            const f = sport === 'All' ? dayRecords : dayRecords.filter(r => r.type === sport);
-            return f.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
+            // Per lo sport, restituiamo 1 se c'è stata attività, 0 se no (per posizionare l'icona)
+            return dayRecords.some(r => r.type === sport) ? 1 : null;
         }
     });
 
     const ctx = document.getElementById('analysisChart').getContext('2d');
-    
-    // --- MODIFICA INTEGRATA QUI ---
-    // Distruggi il grafico se esiste già per evitare errori di "undefined" o sovrapposizioni
-    if (window.analysisChart && typeof window.analysisChart.destroy === 'function') {
-        window.analysisChart.destroy();
-    }
+    if (window.analysisChart) window.analysisChart.destroy();
 
-    // Crea ex novo il grafico
     window.analysisChart = new Chart(ctx, {
-        type: 'line',
-        data: { 
-            labels: labelsFmt, 
-            datasets: [{ 
-                label: sport === 'Peso' ? 'Peso (kg)' : 'Minuti',
-                data: dataSeries, 
-                borderColor: '#a855f7', 
-                backgroundColor: 'rgba(168, 85, 247, 0.1)',
-                fill: true,
-                tension: 0.3,
-                spanGaps: (sport === 'Peso') // Unisce i punti se mancano pesi
-            }] 
+        type: isPeso ? 'line' : 'scatter', // Scatter ci permette di mettere icone senza linee
+        data: {
+            labels: labelsFmt,
+            datasets: [{
+                data: dataSeries,
+                borderColor: isPeso ? '#a855f7' : 'transparent',
+                backgroundColor: isPeso ? 'rgba(168, 85, 247, 0.1)' : 'transparent',
+                fill: isPeso,
+                showLine: isPeso, // Nasconde la linea se è uno sport
+                pointRadius: isPeso ? 4 : 0, // I punti dello sport li disegniamo noi come icone
+                spanGaps: isPeso
+            }]
         },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false, 
-            plugins: { legend: { display: false } },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                // Plugin custom per disegnare le icone al posto dei punti
+                afterDraw: (chart) => {
+                    if (isPeso) return; // Se è peso, non disegnare icone
+                    const { ctx, scales: { x, y } } = chart;
+                    chart.data.datasets[0].data.forEach((val, i) => {
+                        if (val !== null) {
+                            const xPos = x.getPixelForValue(i);
+                            const yPos = y.getPixelForValue(1); // Mettiamo le icone a metà altezza
+                            ctx.font = "24px serif";
+                            ctx.textAlign = "center";
+                            ctx.fillText(icons[sport] || '🔹', xPos, yPos);
+                        }
+                    });
+                }
+            },
             scales: {
                 y: {
-                    beginAtZero: sport !== 'Peso',
-                    // Se è peso, adatta la scala ai valori reali per vedere i delta
-                    min: sport === 'Peso' ? Math.floor(Math.min(...dataSeries.filter(v => v > 0)) - 1) : undefined
-                }
+                    display: isPeso, // Nascondi l'asse Y se è uno sport (non serve scala 0-1)
+                    min: isPeso ? Math.floor(Math.min(...dataSeries.filter(v => v > 0)) - 1) : 0,
+                    max: isPeso ? Math.ceil(Math.max(...dataSeries.filter(v => v > 0)) + 1) : 2
+                },
+                x: { grid: { display: false } }
             }
-        }
+        },
+        // Inseriamo il plugin direttamente qui per sicurezza
+        plugins: [{
+            id: 'iconDrawer',
+            afterDraw: (chart) => {
+                const sport = document.getElementById('sportFilter').value;
+                if (sport === 'Peso') return;
+                const { ctx, scales: { x, y } } = chart;
+                chart.data.datasets[0].data.forEach((val, i) => {
+                    if (val === 1) {
+                        const xPos = x.getPixelForValue(i);
+                        const yPos = y.getPixelForValue(1);
+                        ctx.save();
+                        ctx.font = "22px Arial";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText(icons[sport] || '📍', xPos, yPos);
+                        ctx.restore();
+                    }
+                });
+            }
+        }]
     });
-    // --- FINE MODIFICA ---
 
+    // 3. TILE AGGIORNATI
     const tc = document.getElementById('sportTiles');
     if (tc) {
         tc.innerHTML = '';
         ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].forEach(s => {
             const count = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === s).length;
             tc.innerHTML += `
-                <div class="sport-tile ${sport === s ? 'active' : ''}" style="cursor:pointer" onclick="document.getElementById('sportFilter').value='${s}'; renderAnalisi();">
-                    <span>${icons[s] || ''}</span><br><b>${count}</b>
+                <div class="sport-tile ${sport === s ? 'active' : ''}" 
+                     onclick="document.getElementById('sportFilter').value='${s}'; renderAnalisi();">
+                    <span style="font-size:1.2rem">${icons[s]}</span><br><b>${count}</b>
                 </div>`;
         });
     }
