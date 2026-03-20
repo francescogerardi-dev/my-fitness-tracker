@@ -63,15 +63,14 @@ export function updateSuggestion() {
 
     // 3. IL FIX: Controlla se oggi hai fatto uno SPORT REALE
     // Ignora i record che sono solo "Riposo" o dove non c'è attività sportiva
-     console.log("Dati Fitness Caricati:", r.date);
-    const haFattoSportOggi = window.fitnessDB.some(r => 
-        r.date === oggiString && 
-        sports.includes(r.type) // Deve essere uno dei tipi in 'sports'
-    );
+    //const haFattoSportOggi = window.fitnessDB.some(r => 
+    //    r.date === oggiString && 
+    //    sports.includes(r.type) // Deve essere uno dei tipi in 'sports'
+    //);
 
-    if (haFattoSportOggi) {
-        suggestion = "✅ Obiettivo sportivo centrato per oggi!";
-    }
+    //if (haFattoSportOggi) {
+    //    suggestion = "✅ Obiettivo sportivo centrato per oggi!";
+    //}
 
     const sugEl = document.getElementById('suggestionText');
     if(sugEl) sugEl.innerText = suggestion;
