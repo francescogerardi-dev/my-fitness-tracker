@@ -61,7 +61,7 @@ export function updateSuggestion() {
         const oldestSport = sortedByLast[0][0];
         suggestion = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}?`;
     }*/
-    }else {
+    else {
         const sortedByLast = Object.entries(lastSeen).sort((a, b) => a[1] - b[1]);
         const oldestSport = sortedByLast[0][0];
         const diffDays = Math.floor((oggi  - sortedByLast[0][1]) / (1000 * 60 * 60 * 24));
