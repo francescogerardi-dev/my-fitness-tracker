@@ -1,14 +1,13 @@
 import { auth, db, provider } from './config.js';
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// Aggiungi queste righe in cima a js/app.js
-import './charts.js';
-import './coach.js';
-import './routine.js'; // Se hai creato anche quello per la routine
-// Importiamo le funzioni dagli altri moduli per inizializzarle
+
+// IMPORTANTE: Questi devono essere caricati SUBITO
 import './ui.js';
 import './database.js';
-// Qui importerai anche charts.js e coach.js quando pronti
+import './charts.js';
+import './coach.js';
+import './routine.js';
 
 window.login = () => signInWithPopup(auth, provider);
 window.logout = () => signOut(auth);
@@ -23,10 +22,12 @@ onAuthStateChanged(auth, (user) => {
         const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
         onSnapshot(q, (snapshot) => {
             window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            if(window.renderChart) window.renderChart();
-            if(window.renderHeatmap) window.renderHeatmap();
-            if(window.updateSuggestion) window.updateSuggestion();
-            if(document.getElementById('analisi').classList.contains('active')) window.renderAnalisi();
+            console.log("Dati Fitness Caricati:", window.fitnessDB.length); // Verifica in console
+
+            // Chiama le funzioni solo se sono state caricate dai moduli
+            if (typeof window.renderChart === 'function') window.renderChart();
+            if (typeof window.updateSuggestion === 'function') window.updateSuggestion();
+            if (typeof window.renderHeatmap === 'function') window.renderHeatmap();
         });
 
         // Listener Routine
