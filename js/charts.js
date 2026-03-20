@@ -236,7 +236,11 @@ export function renderAnalisi() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    if (window.analysisChart) window.analysisChart.destroy();
+    // FIX: Controllo ultra-sicuro per la distruzione
+    if (window.analysisChart instanceof Chart) {
+        window.analysisChart.destroy();
+    }
+    window.analysisChart = null; // Reset totale prima di ricreare
     
     window.analysisChart = new Chart(ctx, {
         type: 'line', 
