@@ -164,7 +164,7 @@ export function renderAnalisi() {
                 const val = recs.map(r => parseFloat(r.weight));
                 const media = (val.reduce((a, b) => a + b, 0) / val.length).toFixed(1);
                 const delta = (val[val.length-1] - val[0]).toFixed(1);
-                const last = val[0]).toFixed(1);
+                const last = val[val.length-1];
                 statsHTML = `
                     <div class="stat-card" style="flex:1"><small>Media</small><br><big>${media}kg</big></div>
                     <div class="stat-card" style="flex:1"><small>Ultimo</small><br><big>${last}kg</big></div>
