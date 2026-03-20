@@ -196,7 +196,8 @@ export function renderAnalisi() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    if (window.analysisChart) {
+   // 1. Controllo distruzione istanza precedente in modo sicuro
+    if (window.analysisChart && typeof window.analysisChart.destroy === 'function') {
         window.analysisChart.destroy();
     }
 
