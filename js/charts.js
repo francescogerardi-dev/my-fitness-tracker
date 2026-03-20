@@ -131,12 +131,15 @@ export function renderHeatmap() {
 /**
  * Disegna il grafico di Analisi Storica (Peso e Volume)
  */
+
 export function renderAnalisi() {
     const ctx = document.getElementById('analisiChart')?.getContext('2d');
     if (!ctx || !window.fitnessDB) return;
 
+    // Distruggi il grafico precedente se esiste (fondamentale per evitare sovrapposizioni)
     if (analisiChart) analisiChart.destroy();
 
+    // Ordina i dati cronologicamente per il grafico storico
     const data = [...window.fitnessDB].sort((a,b) => new Date(a.date) - new Date(b.date));
 
     analisiChart = new Chart(ctx, {
@@ -146,29 +149,52 @@ export function renderAnalisi() {
             datasets: [
                 {
                     label: 'Peso (kg)',
-                    data: data.map(d => d.weight),
+                    data: data.map(d => d.weight || null), // Mostra il peso se presente
                     borderColor: '#38bdf8',
+                    backgroundColor: '#38bdf8',
                     yAxisID: 'y',
-                    spanGaps: true
+                    spanGaps: true, // Unisce i punti anche se mancano pesate intermedie
+                    tension: 0.3
                 },
                 {
-                    label: 'Minuti/Km',
-                    data: data.map(d => d.min || d.km),
+                    label: 'Volume (Min/Km)',
+                    data: data.map(d => d.min || d.km || 0),
+                    backgroundColor: 'rgba(251, 191, 36, 0.2)',
                     borderColor: '#fbbf24',
+                    borderWidth: 1,
                     yAxisID: 'y1',
-                    type: 'bar'
+                    type: 'bar' // Visualizzazione a barre per il volume
                 }
             ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
-                y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Peso' } },
-                y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Volume' } }
+                y: { 
+                    type: 'linear', 
+                    display: true, 
+                    position: 'left',
+                    title: { display: true, text: 'Peso (kg)', color: '#94a3b8' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                y1: { 
+                    type: 'linear', 
+                    display: true, 
+                    position: 'right', 
+                    grid: { drawOnChartArea: false },
+                    title: { display: true, text: 'Minuti / Km', color: '#94a3b8' }
+                }
+            },
+            plugins: {
+                legend: { labels: { color: '#f8fafc' } }
             }
         }
     });
 }
+
+// Esponi la funzione globalmente
+window.renderAnalisi = renderAnalisi;
 
 // Esponi le funzioni a window per l'accesso dalle tab
 window.renderChart = renderChart;
