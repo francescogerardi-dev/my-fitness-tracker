@@ -46,9 +46,4 @@ onAuthStateChanged(auth, (user) => {
     } else {
         document.getElementById('loginOverlay').classList.remove('hidden');
     }
-
-    window.renderHistory = () => {
-    const list = document.getElementById('historyList');
-    if(list) list.innerHTML = "Caricamento storico...";
-};
 });
