@@ -69,29 +69,39 @@ export function renderHeatmap() {
     if (!container || !window.fitnessDB) return;
 
     container.innerHTML = '';
+    
+    // 1. Raggruppa i dati per data
     const stats = window.fitnessDB.reduce((acc, curr) => {
         acc[curr.date] = (acc[curr.date] || 0) + 1;
         return acc;
     }, {});
 
     const today = new Date();
-    const start = new Date(today.getFullYear(), 0, 1); // 1 Gennaio
+    const startOfYear = new Date(today.getFullYear(), 0, 1);
     
-    // Creiamo i quadratini per ogni giorno dell'anno
-    for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1) ) {
+    // 2. Genera i quadratini dal 1° Gennaio a oggi
+    for (let d = new Date(startOfYear); d <= today; d.setDate(d.getDate() + 1)) {
         const dayStr = d.toISOString().split('T')[0];
         const count = stats[dayStr] || 0;
         
         const dayEl = document.createElement('div');
         dayEl.className = 'heat-day';
         
-        // Intensità del colore in base all'attività
-        if (count > 0) dayEl.style.background = 'var(--primary)';
-        if (count > 1) dayEl.style.opacity = '1';
-        else if (count === 1) dayEl.style.opacity = '0.6';
-        else dayEl.style.background = 'rgba(255,255,255,0.05)';
+        // 3. Logica Colori (Verde per attività, Rosso per Riposo/Vuoto)
+        if (count > 0) {
+            // Se c'è almeno un'attività, colora di verde primario
+            dayEl.style.background = 'var(--primary)';
+            dayEl.style.opacity = count > 1 ? '1' : '0.6';
+            dayEl.style.boxShadow = '0 0 5px var(--primary)';
+        } else {
+            // Giorno vuoto
+            dayEl.style.background = 'rgba(255, 255, 255, 0.05)';
+        }
 
-        dayEl.title = `${dayStr}: ${count} attività`;
+        // 4. Tooltip nativo (al passaggio del mouse)
+        const dateFormatted = d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+        dayEl.title = `${dateFormatted}: ${count} attività`;
+        
         container.appendChild(dayEl);
     }
 }
