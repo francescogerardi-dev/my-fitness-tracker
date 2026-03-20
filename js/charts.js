@@ -70,42 +70,37 @@ export function renderHeatmap() {
 
     container.innerHTML = '';
     
-    // 1. Raggruppa i dati per data
-    const stats = window.fitnessDB.reduce((acc, curr) => {
-        acc[curr.date] = (acc[curr.date] || 0) + 1;
-        return acc;
-    }, {});
+    // Creiamo una mappa delle attività per un confronto rapido
+    // Usiamo un Set per le date uniche in cui c'è stata attività
+    const activeDates = new Set(window.fitnessDB.map(r => r.date));
 
     const today = new Date();
-    const startOfYear = new Date(today.getFullYear(), 0, 1);
+    const start = new Date(today.getFullYear(), 0, 1);
     
-    // 2. Genera i quadratini dal 1° Gennaio a oggi
-    for (let d = new Date(startOfYear); d <= today; d.setDate(d.getDate() + 1)) {
-        const dayStr = d.toISOString().split('T')[0];
-        const count = stats[dayStr] || 0;
+    // Ciclo originale che riempie i quadratini
+    for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+        // TRUCCO: Formattazione manuale per evitare problemi di fuso orario ISO
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateKey = `${y}-${m}-${day}`;
         
         const dayEl = document.createElement('div');
         dayEl.className = 'heat-day';
         
-        // 3. Logica Colori (Verde per attività, Rosso per Riposo/Vuoto)
-        if (count > 0) {
-            // Se c'è almeno un'attività, colora di verde primario
+        // Verifica presenza dati
+        if (activeDates.has(dateKey)) {
             dayEl.style.background = 'var(--primary)';
-            dayEl.style.opacity = count > 1 ? '1' : '0.6';
-            dayEl.style.boxShadow = '0 0 5px var(--primary)';
+            dayEl.style.opacity = '1';
+            dayEl.style.boxShadow = '0 0 4px var(--primary)';
         } else {
-            // Giorno vuoto
             dayEl.style.background = 'rgba(255, 255, 255, 0.05)';
         }
 
-        // 4. Tooltip nativo (al passaggio del mouse)
-        const dateFormatted = d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
-        dayEl.title = `${dateFormatted}: ${count} attività`;
-        
+        dayEl.title = dateKey;
         container.appendChild(dayEl);
     }
 }
-
 /**
  * Disegna il grafico di Analisi Storica (Peso e Volume)
  */
