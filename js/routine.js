@@ -1,20 +1,19 @@
 // js/routine.js
 import { db, auth } from './config.js';
-import { collection, addDoc, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"; // Nota: usa firestore
-import { formatDateLocal } from './utils.js';
-
-// Importiamo correttamente le funzioni da firestore
 import { 
-    addDoc as fireAdd, 
-    doc as fireDoc, 
-    deleteDoc as fireDel, 
-    updateDoc as fireUpd,
-    collection as fireColl 
+    collection, 
+    addDoc, 
+    doc, 
+    deleteDoc, 
+    query, 
+    orderBy, 
+    onSnapshot 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { formatDateLocal } from './utils.js';
 
 export async function addExercise() {
     const name = document.getElementById('exName').value;
-    if(!name) { alert("Nome obbligatorio"); return; }
+    if(!name) { alert("Nome esercizio obbligatorio"); return; }
     
     const exercise = {
         name: name,
@@ -25,28 +24,40 @@ export async function addExercise() {
         createdAt: new Date()
     };
     
-    await fireAdd(fireColl(db, "users", auth.currentUser.uid, "routine"), exercise);
-    document.getElementById('routineForm').querySelectorAll('input, textarea').forEach(i => i.value = '');
+    try {
+        await addDoc(collection(db, "users", auth.currentUser.uid, "routine"), exercise);
+        // Pulisce i campi dopo il salvataggio
+        document.getElementById('exName').value = '';
+        document.getElementById('exDuration').value = '';
+        document.getElementById('exImg').value = '';
+        document.getElementById('exNote').value = '';
+    } catch (e) {
+        console.error("Errore aggiunta esercizio:", e);
+    }
 }
 
 export async function completeRoutine() {
-    if(!window.routineDB || window.routineDB.length === 0) return alert("Routine vuota!");
+    if(!window.routineDB || window.routineDB.length === 0) return alert("La tua routine è vuota!");
     
-    if(confirm("Registrare il completamento? (Include Stretching)")) {
+    if(confirm("Vuoi registrare il completamento della routine? (Verrà aggiunto anche Stretching)")) {
         let lastW = null;
-        if(window.fitnessDB.length > 0) {
-            const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
+        if(window.fitnessDB && window.fitnessDB.length > 0) {
+            const last = [...window.fitnessDB]
+                .sort((a,b) => new Date(b.date) - new Date(a.date))
+                .find(r => r.weight > 0);
             if(last) lastW = last.weight;
         }
 
         const today = formatDateLocal(new Date());
-        const recordsRef = fireColl(db, "users", auth.currentUser.uid, "records");
+        const recordsRef = collection(db, "users", auth.currentUser.uid, "records");
 
-        await Promise.all([
-            fireAdd(recordsRef, { date: today, type: 'Routine', weight: lastW, km: 0, min: 0 }),
-            fireAdd(recordsRef, { date: today, type: 'Stretching', weight: lastW, km: 0, min: 10 })
-        ]);
-        window.showTab('main');
+        try {
+            await addDoc(recordsRef, { date: today, type: 'Routine', weight: lastW, km: 0, min: 0 });
+            await addDoc(recordsRef, { date: today, type: 'Stretching', weight: lastW, km: 0, min: 10 });
+            window.showTab('main');
+        } catch (e) {
+            console.error("Errore completamento routine:", e);
+        }
     }
 }
 
@@ -55,7 +66,7 @@ export function renderRoutine() {
     if (!list || !window.routineDB) return;
 
     if (window.routineDB.length === 0) {
-        list.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">Nessun esercizio salvato.</div>';
+        list.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">Nessun esercizio. Aggiungine uno sopra!</div>';
         return;
     }
 
@@ -70,20 +81,22 @@ export function renderRoutine() {
                 <b style="font-size:0.95rem; display:block; color:white;">${ex.name}</b>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     ${ex.duration ? `<small style="color:var(--primary); font-weight:bold;">${ex.duration}s</small>` : ''}
-                    ${ex.note ? `<small style="color:#94a3b8; font-style:italic;">${ex.note}</small>` : ''}
+                    ${ex.note ? `<small style="color:#94a3b8; font-style:italic; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${ex.note}</small>` : ''}
                 </div>
             </div>
-            <div style="display:flex; align-items:center; gap:5px;">
-                <button onclick="deleteEx('${ex.id}')" style="background:var(--danger); border:none; color:white; border-radius:6px; padding:8px 10px;">✕</button>
-            </div>
+            <button onclick="deleteEx('${ex.id}')" style="background:none; border:none; color:#ef4444; cursor:pointer; padding:5px;">
+                <span class="material-icons" style="font-size:18px;">delete</span>
+            </button>
         </div>
     `).join('');
 }
 
-// Esposizione globale
+// Funzioni globali per l'HTML
 window.addExercise = addExercise;
 window.completeRoutine = completeRoutine;
 window.renderRoutine = renderRoutine;
 window.deleteEx = async (id) => {
-    if(confirm("Eliminare?")) await fireDel(fireDoc(db, "users", auth.currentUser.uid, "routine", id));
+    if(confirm("Eliminare l'esercizio?")) {
+        await deleteDoc(doc(db, "users", auth.currentUser.uid, "routine", id));
+    }
 };
