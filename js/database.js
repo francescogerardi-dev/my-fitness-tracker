@@ -26,6 +26,17 @@ export async function quickSave(type, minutes) {
     window.showTab('main');
 }
 
+window.deleteRecord = async (id) => {
+    if (confirm("Vuoi davvero eliminare questo record?")) {
+        try {
+            await deleteDoc(doc(db, "fitness", id));
+            console.log("Record eliminato:", id);
+        } catch (e) {
+            console.error("Errore durante l'eliminazione:", e);
+        }
+    }
+}
+
 window.renderHistory = () => {
     const list = document.getElementById('historyList');
     if (!list || !window.fitnessDB) return;
