@@ -31,45 +31,41 @@ export function toggleFields() {
     if(minBox) minBox.classList.toggle('hidden', !['Corsa','Padel','Stretching','Routine'].includes(t));
 }
 
-// Funzione Render Storico (Logica 3.0)
-export function renderHistory() {
+window.renderHistory = () => {
     const list = document.getElementById('historyList');
-    if (!list) return;
-    if (!window.fitnessDB || window.fitnessDB.length === 0) {
-        list.innerHTML = '<p style="text-align:center; opacity:0.5;">Nessun dato presente</p>';
+    if (!list) {
+        console.error("ERRORE: Elemento 'historyList' non trovato nell'HTML");
         return;
     }
 
-    list.innerHTML = window.fitnessDB.slice().reverse().map(r => `
-        <div style="background:var(--card); padding:12px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #334155; color: white;">
-            <div style="flex: 1;">
-                <b style="color:var(--primary);">${r.date.split('-').reverse().join('/')}</b> - 
-                ${icons[r.type] || '📍'} ${r.type} 
-                ${r.weight ? ' | <span style="color:#a855f7;">' + r.weight + 'kg</span>' : ''}
+    if (!window.fitnessDB || window.fitnessDB.length === 0) {
+        list.innerHTML = "<p>Nessun dato caricato.</p>";
+        return;
+    }
+
+    console.log("Rendering storico in corso per", window.fitnessDB.length, "record...");
+
+    const html = window.fitnessDB.slice().reverse().map(r => {
+        // Fallback per icone e ID se mancano
+        const icona = (typeof icons !== 'undefined' && icons[r.type]) ? icons[r.type] : '📍';
+        const idRecord = r.id || 'no-id';
+        const dataFmt = r.date ? r.date.split('-').reverse().join('/') : '??/??/??';
+
+        return `
+            <div class="history-item" style="background:#1e293b; color:white; padding:15px; margin-bottom:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid #334155;">
+                <div>
+                    <strong>${dataFmt}</strong> - ${icona} ${r.type || 'Attività'}
+                </div>
+                <button onclick="handleDelete('${idRecord}')" 
+                        style="background:#ef4444 !important; color:white !important; border:none !important; padding:8px 12px !important; border-radius:5px !important; cursor:pointer !important; font-weight:bold !important; display:block !important; visibility:visible !important;">
+                    ELIMINA
+                </button>
             </div>
-            
-            <button onclick="handleDelete('${r.id}')" 
-                    style="
-                        all: unset !important;
-                        background-color: #ff4444 !important; 
-                        color: white !important; 
-                        padding: 5px 10px !important;
-                        border-radius: 4px !important;
-                        cursor: pointer !important;
-                        font-family: sans-serif !important;
-                        font-weight: bold !important;
-                        font-size: 14px !important;
-                        line-height: 1 !important;
-                        display: inline-block !important;
-                        min-width: 20px !important;
-                        text-align: center !important;
-                        z-index: 9999 !important;
-                        position: relative !important;
-                    ">
-                X
-            </button>
-        </div>`).join('');
-}
+        `;
+    }).join('');
+
+    list.innerHTML = html;
+};
 
 // Rendi tutto globale per l'HTML
 window.showTab = showTab;
