@@ -5,9 +5,6 @@ import { getMonday, formatDateLocal, getWeekNumber } from './utils.js';
 let mainChart = null;
 let analisiChart = null;
 
-// Mappa icone originale
-const icons = { 'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 'Pesi': '🏋️', 'Routine': '💪' };
-
 export function renderChart() {
     if (!window.fitnessDB || !document.getElementById('mainChart')) return;
     
