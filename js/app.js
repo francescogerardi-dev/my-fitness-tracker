@@ -35,4 +35,14 @@ onAuthStateChanged(auth, (user) => {
     } else {
         document.getElementById('loginOverlay').classList.remove('hidden');
     }
+
+    // js/app.js - Aggiungi in fondo temporaneamente
+    window.renderChart = () => console.log("Grafico in attesa di charts.js");
+    window.renderHeatmap = () => console.log("Heatmap in attesa di charts.js");
+    window.updateSuggestion = () => console.log("Coach in attesa di coach.js");
+    window.renderAnalisi = () => console.log("Analisi in attesa di charts.js");
+    window.renderHistory = () => {
+    const list = document.getElementById('historyList');
+    if(list) list.innerHTML = "Caricamento storico...";
+};
 });
