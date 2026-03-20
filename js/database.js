@@ -26,6 +26,17 @@ export async function quickSave(type, minutes) {
     window.showTab('main');
 }
 
+window.renderHistory = () => {
+    const list = document.getElementById('historyList');
+    if (!list || !window.fitnessDB) return;
+    
+    list.innerHTML = window.fitnessDB.map(r => `
+        <div style="padding:10px; border-bottom:1px solid #333;">
+            ${r.date} - ${r.type} ${r.weight ? `(${r.weight}kg)` : ''}
+        </div>
+    `).reverse().join('');
+};
+
 // Esponiamo a window per i bottoni HTML
 window.handleSave = handleSave;
 window.quickSave = quickSave;
