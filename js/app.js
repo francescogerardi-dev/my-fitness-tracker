@@ -2,7 +2,7 @@ import { auth, db, provider } from './config.js';
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 // Aggiungi queste righe in cima a js/app.js
-import './charts.js';
+import './chart.js';
 import './coach.js';
 import './routine.js'; // Se hai creato anche quello per la routine
 // Importiamo le funzioni dagli altri moduli per inizializzarle
