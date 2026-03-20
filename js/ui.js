@@ -40,21 +40,24 @@ window.renderHistory = () => {
         'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' 
     };
 
-    list.innerHTML = window.fitnessDB.slice().reverse().map(r => {
+    let html = "";
+    window.fitnessDB.slice().reverse().forEach(r => {
         const icon = iconsMap[r.type] || '📍';
-        const dateFmt = r.date.split('-').reverse().join('/');
+        const dateFmt = r.date ? r.date.split('-').reverse().join('/') : '??/??';
         
-        return `
-            <div class="history-item">
-                <div style="color: white; font-size: 0.95rem;">
-                    <b style="color:var(--primary);">${dateFmt}</b> - ${icon} ${r.type} 
+        html += `
+            <div style="background:#1e293b; padding:12px; border-radius:8px; margin-bottom:10px; display:flex !important; justify-content:space-between !important; align-items:center !important; border:1px solid #334155; width: 100%; box-sizing: border-box;">
+                <div style="color: white; flex-grow: 1;">
+                    <b style="color:#38bdf8;">${dateFmt}</b> - ${icon} ${r.type} 
                     ${r.weight ? ' | <span style="color:#a855f7;">' + r.weight + 'kg</span>' : ''}
                 </div>
-                <button class="btn-delete" onclick="handleDelete('${r.id}')">
+                <button onclick="window.handleDelete('${r.id}')" 
+                        style="background:#ef4444 !important; color:white !important; border:none !important; border-radius:4px !important; padding:5px 12px !important; cursor:pointer !important; font-weight:bold !important; min-width:30px !important; margin-left:10px !important; display:block !important;">
                     X
                 </button>
             </div>`;
-    }).join('');
+    });
+    list.innerHTML = html;
 };
 // Rendi tutto globale per l'HTML
 window.showTab = showTab;
