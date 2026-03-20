@@ -33,40 +33,44 @@ export function toggleFields() {
 
 window.renderHistory = () => {
     const list = document.getElementById('historyList');
-    if (!list) {
-        console.error("ERRORE: Elemento 'historyList' non trovato nell'HTML");
-        return;
-    }
+    if (!list || !window.fitnessDB) return;
 
-    if (!window.fitnessDB || window.fitnessDB.length === 0) {
-        list.innerHTML = "<p>Nessun dato caricato.</p>";
-        return;
-    }
+    // Mappa icone interna per evitare errori di riferimento
+    const iconsMap = { 
+        'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
+        'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' 
+    };
 
-    console.log("Rendering storico in corso per", window.fitnessDB.length, "record...");
-
-    const html = window.fitnessDB.slice().reverse().map(r => {
-        // Fallback per icone e ID se mancano
-        const icona = (typeof icons !== 'undefined' && icons[r.type]) ? icons[r.type] : '📍';
-        const idRecord = r.id || 'no-id';
-        const dataFmt = r.date ? r.date.split('-').reverse().join('/') : '??/??/??';
-
+    list.innerHTML = window.fitnessDB.slice().reverse().map(r => {
+        const icon = iconsMap[r.type] || '📍';
+        const dateFmt = r.date.split('-').reverse().join('/');
+        
         return `
-            <div class="history-item" style="background:#1e293b; color:white; padding:15px; margin-bottom:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid #334155;">
-                <div>
-                    <strong>${dataFmt}</strong> - ${icona} ${r.type || 'Attività'}
+            <div style="background:var(--card); padding:10px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #334155; color: white;">
+                <div style="font-size: 0.95rem;">
+                    <b style="color:var(--primary);">${dateFmt}</b> - ${icon} ${r.type} 
+                    ${r.weight ? ' | <span style="color:#a855f7;">' + r.weight + 'kg</span>' : ''}
                 </div>
-                <button onclick="handleDelete('${idRecord}')" 
-                        style="background:#ef4444 !important; color:white !important; border:none !important; padding:8px 12px !important; border-radius:5px !important; cursor:pointer !important; font-weight:bold !important; display:block !important; visibility:visible !important;">
-                    ELIMINA
+                
+                <button onclick="handleDelete('${r.id}')" 
+                        style="
+                            background: #ef4444; 
+                            color: white; 
+                            border: none; 
+                            border-radius: 4px; 
+                            padding: 2px 10px; 
+                            cursor: pointer; 
+                            font-weight: bold;
+                            font-size: 14px;
+                            transition: opacity 0.2s;
+                        "
+                        onmouseover="this.style.opacity='0.8'"
+                        onmouseout="this.style.opacity='1'">
+                    X
                 </button>
-            </div>
-        `;
+            </div>`;
     }).join('');
-
-    list.innerHTML = html;
 };
-
 // Rendi tutto globale per l'HTML
 window.showTab = showTab;
 window.toggleFields = toggleFields;
