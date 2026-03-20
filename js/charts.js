@@ -64,41 +64,70 @@ export function renderChart() {
 /**
  * Disegna la Heatmap Annuale della Costanza
  */
+// Importa l'utility necessaria se non è già presente in cima al file
+import { getWeekNumber } from './utils.js';
+
 export function renderHeatmap() {
     const container = document.getElementById('annualHeatmap');
     if (!container || !window.fitnessDB) return;
 
     container.innerHTML = '';
-    
-    // Creiamo una mappa delle attività per un confronto rapido
-    // Usiamo un Set per le date uniche in cui c'è stata attività
-    const activeDates = new Set(window.fitnessDB.map(r => r.date));
+    const currentYear = new Date().getFullYear();
 
-    const today = new Date();
-    const start = new Date(today.getFullYear(), 0, 1);
-    
-    // Ciclo originale che riempie i quadratini
-    for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
-        // TRUCCO: Formattazione manuale per evitare problemi di fuso orario ISO
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        const dateKey = `${y}-${m}-${day}`;
+    for (let w = 1; w <= 52; w++) {
+        let wScore = 0;
         
-        const dayEl = document.createElement('div');
-        dayEl.className = 'heat-day';
-        
-        // Verifica presenza dati
-        if (activeDates.has(dateKey)) {
-            dayEl.style.background = 'var(--primary)';
-            dayEl.style.opacity = '1';
-            dayEl.style.boxShadow = '0 0 4px var(--primary)';
-        } else {
-            dayEl.style.background = 'rgba(255, 255, 255, 0.05)';
-        }
+        // Filtra i record per l'anno corrente e per la settimana specifica
+        const records = window.fitnessDB.filter(r => { 
+            const d = new Date(r.date); 
+            return d.getFullYear() === currentYear && getWeekNumber(d) === w; 
+        });
 
-        dayEl.title = dateKey;
-        container.appendChild(dayEl);
+        const days = [...new Set(records.map(r => r.date))];
+        
+        days.forEach(d => {
+            const acts = records.filter(r => r.date === d);
+            // Logica Punteggio: 1 punto per sport, 0.5 per stretching
+            if(acts.some(r => !['Stretching', 'Riposo'].includes(r.type))) wScore += 1;
+            else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
+        });
+
+        const el = document.createElement('div'); 
+        el.className = 'heat-day';
+        
+        // Stile inline per mantenere il look originale
+        el.style.display = 'flex'; 
+        el.style.flexDirection = 'column'; 
+        el.style.lineHeight = '0.9';
+        el.style.alignItems = 'center';
+        el.style.justifyContent = 'center';
+        
+        el.innerHTML = `
+            <span style="font-size:0.55rem; opacity:0.5;">${w}</span>
+            <b style="font-size:0.75rem;">${wScore}</b>
+        `;
+
+        // Assegnazione classi colore basate sul punteggio settimanale
+        if(wScore >= 5) el.classList.add('heat-ultra');
+        else if(wScore >= 3.5) el.classList.add('heat-high');
+        else if(wScore >= 2) el.classList.add('heat-mid');
+        else if(wScore > 0) el.classList.add('heat-low');
+
+        // Funzionalità click per navigare nel grafico
+        el.onclick = () => {
+            let target = new Date(currentYear, 0, 4);
+            target.setDate(target.getDate() + (w - 1) * 7);
+            const day = target.getDay();
+            const diff = target.getDate() - day + (day === 0 ? -6 : 1);
+            const finalMonday = new Date(target.setDate(diff));
+            finalMonday.setHours(12, 0, 0, 0);
+            
+            window.referenceDate = finalMonday; 
+            if (typeof renderChart === 'function') renderChart(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        container.appendChild(el);
     }
 }
 /**
