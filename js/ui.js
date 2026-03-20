@@ -23,20 +23,33 @@ window.renderHistory = () => {
     const list = document.getElementById('historyList');
     if (!list || !window.fitnessDB) return;
 
-    // Logica originale: slice().reverse() per mostrare i più recenti in alto
     list.innerHTML = window.fitnessDB.slice().reverse().map(r => `
-        <div style="background:var(--card); padding:10px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; border:1px solid #334155; align-items:center;">
-            <div>
-                <b>${r.date.split('-').reverse().join('/')}</b> - 
+        <div style="background:var(--card); padding:12px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #334155; color: white;">
+            <div style="flex: 1;">
+                <b style="color:var(--primary);">${r.date.split('-').reverse().join('/')}</b> - 
                 ${icons[r.type] || '📍'} ${r.type} 
-                ${r.weight ? ' | ' + r.weight + 'kg' : ''}
+                ${r.weight ? ' | <span style="color:#a855f7;">' + r.weight + 'kg</span>' : ''}
             </div>
+            
             <button onclick="handleDelete('${r.id}')" 
-                    style="background:var(--danger); border:none; color:white; border-radius:4px; padding: 4px 10px; cursor:pointer; font-weight:bold;">
+                    style="
+                        background: #ef4444 !important; 
+                        color: white !important; 
+                        border: none !important; 
+                        border-radius: 6px !important; 
+                        padding: 6px 12px !important; 
+                        cursor: pointer !important; 
+                        font-weight: bold !important;
+                        font-size: 14px !important;
+                        min-width: 35px;
+                        display: block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                    ">
                 X
             </button>
         </div>`).join('');
-};
+};;
 
 // Rendila globale
 window.renderHistory = renderHistory;
