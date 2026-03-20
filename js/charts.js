@@ -61,6 +61,82 @@ export function renderChart() {
         }]
     });
 }
+/**
+ * Disegna la Heatmap Annuale della Costanza
+ */
+export function renderHeatmap() {
+    const container = document.getElementById('heatmap');
+    if (!container || !window.fitnessDB) return;
+
+    container.innerHTML = '';
+    const stats = window.fitnessDB.reduce((acc, curr) => {
+        acc[curr.date] = (acc[curr.date] || 0) + 1;
+        return acc;
+    }, {});
+
+    const today = new Date();
+    const start = new Date(today.getFullYear(), 0, 1); // 1 Gennaio
+    
+    // Creiamo i quadratini per ogni giorno dell'anno
+    for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1) ) {
+        const dayStr = d.toISOString().split('T')[0];
+        const count = stats[dayStr] || 0;
+        
+        const dayEl = document.createElement('div');
+        dayEl.className = 'heat-day';
+        
+        // Intensità del colore in base all'attività
+        if (count > 0) dayEl.style.background = 'var(--primary)';
+        if (count > 1) dayEl.style.opacity = '1';
+        else if (count === 1) dayEl.style.opacity = '0.6';
+        else dayEl.style.background = 'rgba(255,255,255,0.05)';
+
+        dayEl.title = `${dayStr}: ${count} attività`;
+        container.appendChild(dayEl);
+    }
+}
+
+/**
+ * Disegna il grafico di Analisi Storica (Peso e Volume)
+ */
+export function renderAnalisi() {
+    const ctx = document.getElementById('analisiChart')?.getContext('2d');
+    if (!ctx || !window.fitnessDB) return;
+
+    if (analisiChart) analisiChart.destroy();
+
+    const data = [...window.fitnessDB].sort((a,b) => new Date(a.date) - new Date(b.date));
+
+    analisiChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(d => d.date.split('-').reverse().slice(0,2).join('/')),
+            datasets: [
+                {
+                    label: 'Peso (kg)',
+                    data: data.map(d => d.weight),
+                    borderColor: '#38bdf8',
+                    yAxisID: 'y',
+                    spanGaps: true
+                },
+                {
+                    label: 'Minuti/Km',
+                    data: data.map(d => d.min || d.km),
+                    borderColor: '#fbbf24',
+                    yAxisID: 'y1',
+                    type: 'bar'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Peso' } },
+                y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Volume' } }
+            }
+        }
+    });
+}
 
 // Esponi le funzioni a window per l'accesso dalle tab
 window.renderChart = renderChart;
