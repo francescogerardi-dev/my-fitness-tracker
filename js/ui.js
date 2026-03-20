@@ -1,13 +1,22 @@
+// 1. Definiamo le icone (fondamentale, altrimenti il map si rompe)
+const icons = { 
+    'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
+    'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' 
+};
+
 export function showTab(id) {
-    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    // Rimuovi active da tutti i contenuti (usa .tab-content o .content a seconda del tuo HTML)
+    document.querySelectorAll('.tab-content, .content').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
     const targetContent = document.getElementById(id);
     if (targetContent) targetContent.classList.add('active');
 
+    // Trova il bottone che ha l'onclick corrispondente
     const targetBtn = document.querySelector(`button[onclick*="${id}"]`);
     if (targetBtn) targetBtn.classList.add('active');
 
+    // Trigger grafici e liste
     if(id === 'main' && window.renderChart) window.renderChart();
     if(id === 'analisi' && window.renderAnalisi) window.renderAnalisi();
     if(id === 'history' && window.renderHistory) window.renderHistory();
@@ -15,13 +24,21 @@ export function showTab(id) {
 
 export function toggleFields() {
     const t = document.getElementById('typeIn').value;
-    document.getElementById('kmBox').classList.toggle('hidden', t !== 'Corsa');
-    document.getElementById('minBox').classList.toggle('hidden', !['Corsa','Padel','Stretching','Routine'].includes(t));
+    const kmBox = document.getElementById('kmBox');
+    const minBox = document.getElementById('minBox');
+    
+    if(kmBox) kmBox.classList.toggle('hidden', t !== 'Corsa');
+    if(minBox) minBox.classList.toggle('hidden', !['Corsa','Padel','Stretching','Routine'].includes(t));
 }
 
-window.renderHistory = () => {
+// Funzione Render Storico (Logica 3.0)
+export function renderHistory() {
     const list = document.getElementById('historyList');
-    if (!list || !window.fitnessDB) return;
+    if (!list) return;
+    if (!window.fitnessDB || window.fitnessDB.length === 0) {
+        list.innerHTML = '<p style="text-align:center; opacity:0.5;">Nessun dato presente</p>';
+        return;
+    }
 
     list.innerHTML = window.fitnessDB.slice().reverse().map(r => `
         <div style="background:var(--card); padding:12px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #334155; color: white;">
@@ -41,18 +58,14 @@ window.renderHistory = () => {
                         cursor: pointer !important; 
                         font-weight: bold !important;
                         font-size: 14px !important;
-                        min-width: 35px;
                         display: block !important;
-                        visibility: visible !important;
-                        opacity: 1 !important;
                     ">
                 X
             </button>
         </div>`).join('');
-};;
+}
 
-// Rendila globale
-window.renderHistory = renderHistory;
-
+// Rendi tutto globale per l'HTML
 window.showTab = showTab;
 window.toggleFields = toggleFields;
+window.renderHistory = renderHistory;
