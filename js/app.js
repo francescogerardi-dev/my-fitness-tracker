@@ -28,6 +28,7 @@ onAuthStateChanged(auth, (user) => {
             if (window.renderChart) window.renderChart();
             if (window.updateSuggestion) window.updateSuggestion();
             if (window.renderHeatmap) window.renderHeatmap();
+            if (window.renderHistory) window.renderHistory();
             
             // Aggiorna l'analisi solo se la tab è attiva
             if (document.getElementById('analisi').classList.contains('active') && window.renderAnalisi) {
