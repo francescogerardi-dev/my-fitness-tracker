@@ -38,7 +38,29 @@
         .heat-high { background: rgba(74, 222, 128, 0.7) !important; }
         .heat-ultra { background: rgba(168, 85, 247, 0.8) !important; border-color: var(--ultra) !important; }
         .btn-save { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; color: #0f172a; cursor: pointer; }
-		#historyList * {visibility: visible !important;opacity: 1 !important;display: flex !important; /* o block, a seconda dell'elemento */}
+		/* Rimuovi le vecchie regole #historyList * e sostituiscile con queste */
+		.history-item {
+		    background: var(--card);
+		    padding: 12px;
+		    border-radius: 8px;
+		    margin-bottom: 10px;
+		    display: flex;
+		    justify-content: space-between;
+		    align-items: center;
+		    border: 1px solid #334155;
+		}
+		
+		.btn-delete {
+		    background: var(--danger) !important;
+		    color: white !important;
+		    border: none !important;
+		    border-radius: 6px !important;
+		    padding: 6px 12px !important;
+		    cursor: pointer !important;
+		    font-weight: bold !important;
+		    display: block !important;
+		    min-width: 35px;
+		}
 		#historyList button {display: block !important;background: red !important;color: white !important;}
         input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
         .hidden { display: none !important; }
