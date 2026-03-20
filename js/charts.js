@@ -195,11 +195,14 @@ export function renderAnalisi() {
     const canvas = document.getElementById('analysisChart'); // Verifica che l'ID nell'HTML sia questo!
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-
+    
     if (window.analysisChart) {
         window.analysisChart.destroy();
     }
 
+    // Forza la pulizia nel caso il controllo sopra fallisca
+    window.analysisChart = null;
+    
     window.analysisChart = new Chart(ctx, {
         type: 'line', 
         data: {
