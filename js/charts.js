@@ -65,7 +65,7 @@ export function renderChart() {
  * Disegna la Heatmap Annuale della Costanza
  */
 export function renderHeatmap() {
-    const container = document.getElementById('heatmap');
+    const container = document.getElementById('annualHeatmap');
     if (!container || !window.fitnessDB) return;
 
     container.innerHTML = '';
