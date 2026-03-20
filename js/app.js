@@ -22,12 +22,17 @@ onAuthStateChanged(auth, (user) => {
         const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
         onSnapshot(q, (snapshot) => {
             window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            console.log("Dati Fitness Caricati:", window.fitnessDB.length); // Verifica in console
-
-            // Chiama le funzioni solo se sono state caricate dai moduli
-            if (typeof window.renderChart === 'function') window.renderChart();
-            if (typeof window.updateSuggestion === 'function') window.updateSuggestion();
-            if (typeof window.renderHeatmap === 'function') window.renderHeatmap();
+            console.log("Dati Fitness Caricati:", window.fitnessDB.length);
+        
+            // Esegui i rendering solo se le funzioni sono disponibili
+            if (window.renderChart) window.renderChart();
+            if (window.updateSuggestion) window.updateSuggestion();
+            if (window.renderHeatmap) window.renderHeatmap();
+            
+            // Aggiorna l'analisi solo se la tab è attiva
+            if (document.getElementById('analisi').classList.contains('active') && window.renderAnalisi) {
+                window.renderAnalisi();
+            }
         });
 
         // Listener Routine
@@ -41,11 +46,6 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('loginOverlay').classList.remove('hidden');
     }
 
-    // js/app.js - Aggiungi in fondo temporaneamente
-    window.renderChart = () => console.log("Grafico in attesa di charts.js");
-    window.renderHeatmap = () => console.log("Heatmap in attesa di charts.js");
-    window.updateSuggestion = () => console.log("Coach in attesa di coach.js");
-    window.renderAnalisi = () => console.log("Analisi in attesa di charts.js");
     window.renderHistory = () => {
     const list = document.getElementById('historyList');
     if(list) list.innerHTML = "Caricamento storico...";
