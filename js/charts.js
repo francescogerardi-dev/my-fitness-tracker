@@ -135,7 +135,6 @@ export function renderHeatmap() {
 
 
 
-
 export function renderAnalisi() {
     // 1. Recupero Filtri
     const sport = document.getElementById('sportFilter')?.value || 'Peso';
@@ -143,7 +142,7 @@ export function renderAnalisi() {
     const labelsRaw = []; 
     const labelsFmt = [];
     
-    // 2. Generazione asse temporale
+    // 2. Generazione asse temporale (Giorni scorsi)
     for(let i=daysCount-1; i>=0; i--) {
         let d = new Date(); 
         d.setDate(d.getDate()-i);
@@ -153,9 +152,9 @@ export function renderAnalisi() {
     }
 
     const isPeso = (sport === 'Peso');
-    
-    // 3. Calcolo Statistiche (Media/Delta o Sessioni/Totale)
     const statsContainer = document.getElementById('analisiStats');
+    
+    // 3. Calcolo Statistiche (Peso vs Sport/Streak)
     if (statsContainer) {
         let statsHTML = "";
         if (isPeso) {
@@ -173,16 +172,55 @@ export function renderAnalisi() {
                 statsHTML = `<div class="stat-card" style="flex:1; opacity:0.5;">Nessun dato peso nel periodo</div>`;
             }
         } else {
+            // --- LOGICA STREAK 3.0 ---
+            const allDates = [...new Set(window.fitnessDB
+                .filter(r => r.type === sport)
+                .map(r => r.date))].sort();
+
+            let curStreak = 0, bestStreak = 0;
+            if (allDates.length > 0) {
+                // Calcolo Best Streak
+                let temp = 1;
+                for (let i = 0; i < allDates.length - 1; i++) {
+                    const d1 = new Date(allDates[i] + 'T00:00:00');
+                    const d2 = new Date(allDates[i+1] + 'T00:00:00');
+                    if ((d2 - d1) / 86400000 === 1) temp++;
+                    else { bestStreak = Math.max(bestStreak, temp); temp = 1; }
+                }
+                bestStreak = Math.max(bestStreak, temp);
+
+                // Calcolo Current Streak
+                const oggi = new Date(); oggi.setHours(0,0,0,0);
+                const lastRec = new Date(allDates[allDates.length-1] + 'T00:00:00');
+                if ((oggi - lastRec) / 86400000 <= 1) {
+                    curStreak = 1;
+                    for (let i = allDates.length-1; i > 0; i--) {
+                        const d1 = new Date(allDates[i] + 'T00:00:00');
+                        const d2 = new Date(allDates[i-1] + 'T00:00:00');
+                        if ((d1 - d2) / 86400000 === 1) curStreak++;
+                        else break;
+                    }
+                }
+            }
+
             const filtered = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === sport);
             const totalMin = filtered.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
+            
             statsHTML = `
-                <div class="stat-card" style="flex:1"><small>Sessioni</small><br><big>${filtered.length}</big></div>
-                <div class="stat-card" style="flex:1"><small>Totale</small><br><big>${totalMin}'</big></div>`;
+                <div class="stat-card" style="flex:1; border-left:4px solid #eab308">
+                    <small>Serie 🔥</small><br><big>${curStreak}</big>
+                </div>
+                <div class="stat-card" style="flex:1; border-left:4px solid #22c55e">
+                    <small>Record 🏆</small><br><big>${bestStreak}</big>
+                </div>
+                <div class="stat-card" style="flex:1">
+                    <small>Totale</small><br><big>${totalMin}'</big>
+                </div>`;
         }
         statsContainer.innerHTML = statsHTML;
     }
 
-    // 4. Mappatura serie dati
+    // 4. Mappatura serie dati per il grafico
     const dataSeries = labelsRaw.map(date => {
         const dayRecords = window.fitnessDB.filter(r => r.date === date);
         if (isPeso) {
@@ -193,18 +231,12 @@ export function renderAnalisi() {
         }
     });
 
-    // 5. Gestione Canvas e Istanza Chart
-    const canvas = document.getElementById('analysisChart'); // Verifica che l'ID nell'HTML sia questo!
+    // 5. Gestione Canvas e Grafico
+    const canvas = document.getElementById('analysisChart');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-   // 1. Controllo distruzione istanza precedente in modo sicuro
-    if (window.analysisChart && typeof window.analysisChart.destroy === 'function') {
-        window.analysisChart.destroy();
-    }
-
-    // Forza la pulizia nel caso il controllo sopra fallisca
-    window.analysisChart = null;
+    if (window.analysisChart) window.analysisChart.destroy();
     
     window.analysisChart = new Chart(ctx, {
         type: 'line', 
@@ -230,7 +262,6 @@ export function renderAnalisi() {
             scales: {
                 y: {
                     display: isPeso,
-                    // Evita errori se non ci sono pesate (min/max)
                     min: (isPeso && dataSeries.some(v => v !== null)) ? Math.floor(Math.min(...dataSeries.filter(v => v > 0)) - 1) : 0,
                     max: (isPeso && dataSeries.some(v => v !== null)) ? Math.ceil(Math.max(...dataSeries.filter(v => v > 0)) + 1) : 2
                 },
@@ -260,7 +291,7 @@ export function renderAnalisi() {
         }]
     });
 
-    // 6. Aggiornamento Tile Sport (Interazione originale)
+    // 6. Aggiornamento Tile Sport
     const tc = document.getElementById('sportTiles');
     if (tc) {
         tc.innerHTML = '';
@@ -270,7 +301,8 @@ export function renderAnalisi() {
             tile.className = `sport-tile ${sport === s ? 'active' : ''}`;
             tile.innerHTML = `<span>${icons[s] || ''}</span><br><b>${count}</b>`;
             tile.onclick = () => {
-                document.getElementById('sportFilter').value = s;
+                const filter = document.getElementById('sportFilter');
+                if(filter) filter.value = s;
                 renderAnalisi();
             };
             tc.appendChild(tile);
