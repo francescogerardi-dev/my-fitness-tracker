@@ -132,66 +132,149 @@ export function renderHeatmap() {
  * Disegna il grafico di Analisi Storica (Peso e Volume)
  */
 
+import { formatDateLocal } from './utils.js';
+
+// Mappa icone originale
+const icons = { 'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 'Pesi': '🏋️', 'Routine': '💪' };
+
 export function renderAnalisi() {
-    const ctx = document.getElementById('analisiChart')?.getContext('2d');
-    if (!ctx || !window.fitnessDB) return;
+    // 1. Recupero Filtri
+    const sport = document.getElementById('sportFilter')?.value || 'Peso';
+    const daysCount = parseInt(document.getElementById('periodFilter')?.value || 30);
+    const labelsRaw = []; 
+    const labelsFmt = [];
+    
+    // 2. Generazione asse temporale
+    for(let i=daysCount-1; i>=0; i--) {
+        let d = new Date(); 
+        d.setDate(d.getDate()-i);
+        const raw = formatDateLocal(d);
+        labelsRaw.push(raw);
+        labelsFmt.push(raw.split('-').reverse().slice(0,2).join('/'));
+    }
 
-    // Distruggi il grafico precedente se esiste (fondamentale per evitare sovrapposizioni)
-    if (analisiChart) analisiChart.destroy();
+    const isPeso = (sport === 'Peso');
+    
+    // 3. Calcolo Statistiche (Media/Delta o Sessioni/Totale)
+    const statsContainer = document.getElementById('analisiStats');
+    if (statsContainer) {
+        let statsHTML = "";
+        if (isPeso) {
+            const recs = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.weight > 0);
+            if (recs.length > 0) {
+                const val = recs.map(r => parseFloat(r.weight));
+                const media = (val.reduce((a, b) => a + b, 0) / val.length).toFixed(1);
+                const delta = (val[val.length-1] - val[0]).toFixed(1);
+                statsHTML = `
+                    <div class="stat-card" style="flex:1"><small>Media</small><br><big>${media}kg</big></div>
+                    <div class="stat-card" style="flex:1"><small>Delta</small><br><big>${delta > 0 ? '+' : ''}${delta}kg</big></div>`;
+            } else {
+                statsHTML = `<div class="stat-card" style="flex:1; opacity:0.5;">Nessun dato peso nel periodo</div>`;
+            }
+        } else {
+            const filtered = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === sport);
+            const totalMin = filtered.reduce((sum, r) => sum + (parseInt(r.min) || 0), 0);
+            statsHTML = `
+                <div class="stat-card" style="flex:1"><small>Sessioni</small><br><big>${filtered.length}</big></div>
+                <div class="stat-card" style="flex:1"><small>Totale</small><br><big>${totalMin}'</big></div>`;
+        }
+        statsContainer.innerHTML = statsHTML;
+    }
 
-    // Ordina i dati cronologicamente per il grafico storico
-    const data = [...window.fitnessDB].sort((a,b) => new Date(a.date) - new Date(b.date));
+    // 4. Mappatura serie dati
+    const dataSeries = labelsRaw.map(date => {
+        const dayRecords = window.fitnessDB.filter(r => r.date === date);
+        if (isPeso) {
+            const rec = dayRecords.find(r => r.weight > 0);
+            return rec ? parseFloat(rec.weight) : null;
+        } else {
+            return dayRecords.some(r => r.type === sport) ? 1 : null;
+        }
+    });
 
-    analisiChart = new Chart(ctx, {
-        type: 'line',
+    // 5. Gestione Canvas e Istanza Chart
+    const canvas = document.getElementById('analysisChart'); // Verifica che l'ID nell'HTML sia questo!
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    if (window.analysisChart) {
+        window.analysisChart.destroy();
+    }
+
+    window.analysisChart = new Chart(ctx, {
+        type: 'line', 
         data: {
-            labels: data.map(d => d.date.split('-').reverse().slice(0,2).join('/')),
-            datasets: [
-                {
-                    label: 'Peso (kg)',
-                    data: data.map(d => d.weight || null), // Mostra il peso se presente
-                    borderColor: '#38bdf8',
-                    backgroundColor: '#38bdf8',
-                    yAxisID: 'y',
-                    spanGaps: true, // Unisce i punti anche se mancano pesate intermedie
-                    tension: 0.3
-                },
-                {
-                    label: 'Volume (Min/Km)',
-                    data: data.map(d => d.min || d.km || 0),
-                    backgroundColor: 'rgba(251, 191, 36, 0.2)',
-                    borderColor: '#fbbf24',
-                    borderWidth: 1,
-                    yAxisID: 'y1',
-                    type: 'bar' // Visualizzazione a barre per il volume
-                }
-            ]
+            labels: labelsFmt,
+            datasets: [{
+                data: dataSeries,
+                borderColor: isPeso ? '#a855f7' : 'transparent',
+                backgroundColor: isPeso ? 'rgba(168, 85, 247, 0.1)' : 'transparent',
+                fill: isPeso,
+                showLine: isPeso,
+                pointRadius: isPeso ? 4 : 0, 
+                spanGaps: isPeso
+            }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: {
-                y: { 
-                    type: 'linear', 
-                    display: true, 
-                    position: 'left',
-                    title: { display: true, text: 'Peso (kg)', color: '#94a3b8' },
-                    grid: { color: 'rgba(255,255,255,0.05)' }
-                },
-                y1: { 
-                    type: 'linear', 
-                    display: true, 
-                    position: 'right', 
-                    grid: { drawOnChartArea: false },
-                    title: { display: true, text: 'Minuti / Km', color: '#94a3b8' }
-                }
+            plugins: { 
+                legend: { display: false },
+                tooltip: { enabled: isPeso }
             },
-            plugins: {
-                legend: { labels: { color: '#f8fafc' } }
+            scales: {
+                y: {
+                    display: isPeso,
+                    // Evita errori se non ci sono pesate (min/max)
+                    min: (isPeso && dataSeries.some(v => v !== null)) ? Math.floor(Math.min(...dataSeries.filter(v => v > 0)) - 1) : 0,
+                    max: (isPeso && dataSeries.some(v => v !== null)) ? Math.ceil(Math.max(...dataSeries.filter(v => v > 0)) + 1) : 2
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { autoSkip: true, maxRotation: 0 }
+                }
             }
-        }
+        },
+        plugins: [{
+            id: 'iconDrawer',
+            afterDraw: (chart) => {
+                if (sport === 'Peso') return;
+                const { ctx, scales: { x, y } } = chart;
+                chart.data.datasets[0].data.forEach((val, i) => {
+                    if (val === 1) {
+                        const xPos = x.getPixelForValue(chart.data.labels[i], i);
+                        const yPos = y.getPixelForValue(1); 
+                        ctx.save();
+                        ctx.font = "24px Arial";
+                        ctx.textAlign = "center";
+                        ctx.fillText(icons[sport] || '📍', xPos, yPos);
+                        ctx.restore();
+                    }
+                });
+            }
+        }]
     });
+
+    // 6. Aggiornamento Tile Sport (Interazione originale)
+    const tc = document.getElementById('sportTiles');
+    if (tc) {
+        tc.innerHTML = '';
+        ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'].forEach(s => {
+            const count = window.fitnessDB.filter(r => labelsRaw.includes(r.date) && r.type === s).length;
+            const tile = document.createElement('div');
+            tile.className = `sport-tile ${sport === s ? 'active' : ''}`;
+            tile.innerHTML = `<span>${icons[s] || ''}</span><br><b>${count}</b>`;
+            tile.onclick = () => {
+                document.getElementById('sportFilter').value = s;
+                renderAnalisi();
+            };
+            tc.appendChild(tile);
+        });
+    }
 }
+
+// Esponi per l'uso globale
+window.renderAnalisi = renderAnalisi;
 
 // Esponi la funzione globalmente
 window.renderAnalisi = renderAnalisi;
