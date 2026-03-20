@@ -5,6 +5,9 @@ import { getMonday, formatDateLocal, getWeekNumber } from './utils.js';
 let mainChart = null;
 let analisiChart = null;
 
+// Mappa icone originale
+const icons = { 'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 'Pesi': '🏋️', 'Routine': '💪' };
+
 export function renderChart() {
     if (!window.fitnessDB || !document.getElementById('mainChart')) return;
     
@@ -132,10 +135,9 @@ export function renderHeatmap() {
  * Disegna il grafico di Analisi Storica (Peso e Volume)
  */
 
-import { formatDateLocal } from './utils.js';
 
-// Mappa icone originale
-const icons = { 'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 'Pesi': '🏋️', 'Routine': '💪' };
+
+
 
 export function renderAnalisi() {
     // 1. Recupero Filtri
