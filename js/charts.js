@@ -64,8 +64,6 @@ export function renderChart() {
 /**
  * Disegna la Heatmap Annuale della Costanza
  */
-// Importa l'utility necessaria se non è già presente in cima al file
-import { getWeekNumber } from './utils.js';
 
 export function renderHeatmap() {
     const container = document.getElementById('annualHeatmap');
