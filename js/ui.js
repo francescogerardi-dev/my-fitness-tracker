@@ -35,7 +35,6 @@ window.renderHistory = () => {
     const list = document.getElementById('historyList');
     if (!list || !window.fitnessDB) return;
 
-    // Mappa icone interna per evitare errori di riferimento
     const iconsMap = { 
         'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
         'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' 
@@ -46,26 +45,12 @@ window.renderHistory = () => {
         const dateFmt = r.date.split('-').reverse().join('/');
         
         return `
-            <div style="background:var(--card); padding:10px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #334155; color: white;">
-                <div style="font-size: 0.95rem;">
+            <div class="history-item">
+                <div style="color: white; font-size: 0.95rem;">
                     <b style="color:var(--primary);">${dateFmt}</b> - ${icon} ${r.type} 
                     ${r.weight ? ' | <span style="color:#a855f7;">' + r.weight + 'kg</span>' : ''}
                 </div>
-                
-                <button onclick="handleDelete('${r.id}')" 
-                        style="
-                            background: #ef4444; 
-                            color: white; 
-                            border: none; 
-                            border-radius: 4px; 
-                            padding: 2px 10px; 
-                            cursor: pointer; 
-                            font-weight: bold;
-                            font-size: 14px;
-                            transition: opacity 0.2s;
-                        "
-                        onmouseover="this.style.opacity='0.8'"
-                        onmouseout="this.style.opacity='1'">
+                <button class="btn-delete" onclick="handleDelete('${r.id}')">
                     X
                 </button>
             </div>`;
