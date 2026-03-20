@@ -53,8 +53,9 @@ export function updateSuggestion() {
     const activeStreaks = Object.entries(streaks).filter(([s, val]) => val === maxVal && val >= 2);
 
     if (activeStreaks.length > 0) {
-        const topSports = activeStreaks.map(x => `${icons[x[0]] || ''} ${x[0]} (${x[1]}g 🔥)`);
-        suggestion = `Serie attiva! Continua con: ${topSports.join(' e ')}`;
+        const topSports = activeStreaks.map(x => `${icons[x[0]] || ''} ${x[0]} (${x[1]} giorni 🔥)`);
+        suggestion = `Serie attiva! Non mollare: ${topSports.join(' e ')}`;
+    } 
     /*} else {
         const sortedByLast = Object.entries(lastSeen).sort((a, b) => a[1] - b[1]);
         const oldestSport = sortedByLast[0][0];
