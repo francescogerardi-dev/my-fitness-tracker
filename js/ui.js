@@ -36,42 +36,36 @@ window.renderHistory = () => {
     if (!list) return;
 
     if (!window.fitnessDB || window.fitnessDB.length === 0) {
-        list.innerHTML = '<div style="text-align:center; padding:20px; opacity:0.5;">Nessun dato trovato.</div>';
+        list.innerHTML = "Nessun dato caricato nel database.";
         return;
     }
 
-    const iconsMap = { 
-        'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
-        'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' 
-    };
+    console.log("LOG: Avvio rendering di", window.fitnessDB.length, "elementi");
 
-    // Creiamo l'HTML un pezzo alla volta per evitare crash totali
-    let finalHTML = "";
-
-    window.fitnessDB.slice().reverse().forEach(r => {
-        try {
-            const icon = iconsMap[r.type] || '📍';
-            // Protezione per la data: se manca o è strana, non rompiamo tutto
-            const dateFmt = r.date ? r.date.split('-').reverse().join('/') : 'Data n.d.';
-            const weightText = r.weight ? ` | <span style="color:#a855f7;">${r.weight}kg</span>` : '';
-            const recordId = r.id || Math.random().toString(36); // Fallback ID
-
-            finalHTML += `
-                <div style="background:#1e293b; padding:12px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #334155; width:100%; box-sizing:border-box;">
-                    <div style="color:white; font-size:0.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                        <b style="color:#38bdf8;">${dateFmt}</b> - ${icon} ${r.type} ${weightText}
-                    </div>
-                    <button onclick="window.handleDelete('${recordId}')" 
-                            style="background:#ef4444 !important; color:white !important; border:none !important; border-radius:6px !important; padding:6px 12px !important; cursor:pointer !important; font-weight:bold !important; font-size:14px !important; margin-left:10px !important; flex-shrink:0 !important; display:block !important;">
-                        X
-                    </button>
-                </div>`;
-        } catch (err) {
-            console.error("Errore nel rendering di un record:", err, r);
+    let html = "";
+    window.fitnessDB.slice().reverse().forEach((r, index) => {
+        // Se un record è corrotto, lo segnaliamo in console ma andiamo avanti
+        if (!r.type || !r.date) {
+            console.warn(`Record ${index} incompleto:`, r);
         }
+
+        const idSafe = r.id || 'no-id-' + index;
+        const tipoSafe = r.type || 'Attività';
+        const dataSafe = r.date ? r.date.split('-').reverse().join('/') : '??/??';
+
+        html += `
+            <div style="background:#1e293b; padding:12px; margin-bottom:8px; border-radius:8px; border:1px solid #334155; display:flex !important; justify-content:space-between !important; align-items:center !important;">
+                <div style="color:white;">
+                    <b>${dataSafe}</b> - ${tipoSafe}
+                </div>
+                <button onclick="window.handleDelete('${idSafe}')" 
+                        style="background:#ef4444 !important; color:white !important; border:none !important; border-radius:4px !important; padding:4px 10px !important; cursor:pointer !important; display:block !important; min-width:30px !important;">
+                    X
+                </button>
+            </div>`;
     });
 
-    list.innerHTML = finalHTML;
+    list.innerHTML = html;
 };
 // Rendi tutto globale per l'HTML
 window.showTab = showTab;
