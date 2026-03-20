@@ -50,15 +50,21 @@ export function renderHistory() {
             
             <button onclick="handleDelete('${r.id}')" 
                     style="
-                        background: #ef4444 !important; 
+                        all: unset !important;
+                        background-color: #ff4444 !important; 
                         color: white !important; 
-                        border: none !important; 
-                        border-radius: 6px !important; 
-                        padding: 6px 12px !important; 
-                        cursor: pointer !important; 
+                        padding: 5px 10px !important;
+                        border-radius: 4px !important;
+                        cursor: pointer !important;
+                        font-family: sans-serif !important;
                         font-weight: bold !important;
                         font-size: 14px !important;
-                        display: block !important;
+                        line-height: 1 !important;
+                        display: inline-block !important;
+                        min-width: 20px !important;
+                        text-align: center !important;
+                        z-index: 9999 !important;
+                        position: relative !important;
                     ">
                 X
             </button>
