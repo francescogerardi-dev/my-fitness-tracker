@@ -64,6 +64,8 @@ export function renderChart() {
 
 // Esponi le funzioni a window per l'accesso dalle tab
 window.renderChart = renderChart;
+window.renderHeatmap = renderHeatmap; // <--- Assicurati che ci sia!
+window.renderAnalisi = renderAnalisi; // <--- Assicurati che ci sia!
 window.changeWeek = (days) => { 
     if(!window.referenceDate) window.referenceDate = new Date();
     window.referenceDate.setDate(window.referenceDate.getDate() + days); 
