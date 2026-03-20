@@ -52,5 +52,29 @@ window.renderHistory = () => {
 window.handleSave = handleSave;
 window.quickSave = quickSave;
 window.handleDelete = async (id) => {
-    if (confirm("Eliminare?")) await deleteDoc(doc(db, "users", auth.currentUser.uid, "records", id));
+    // 1. Chiedi conferma all'utente (Logica 3.0)
+    if (!confirm("Vuoi eliminare definitivamente questo record?")) return;
+
+    try {
+        // 2. Recupera l'utente corrente (necessario per il percorso del database)
+        const user = window.currentUser;
+        if (!user) {
+            alert("Errore: Utente non autenticato.");
+            return;
+        }
+
+        // 3. Punta al documento specifico e cancellalo
+        // Il percorso deve essere lo stesso usato in app.js: users -> UID -> records -> ID_DOC
+        const docRef = doc(db, "users", user.uid, "records", id);
+        await deleteDoc(docRef);
+        
+        console.log("Record eliminato con successo:", id);
+        
+        // NOTA: Non serve chiamare manualmente renderHistory(). 
+        // Il listener onSnapshot in app.js rileverà la modifica e aggiornerà l'interfaccia da solo.
+        
+    } catch (error) {
+        console.error("Errore durante l'eliminazione:", error);
+        alert("Si è verificato un errore durante l'eliminazione.");
+    }
 };
