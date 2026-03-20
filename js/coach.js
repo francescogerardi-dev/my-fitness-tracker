@@ -61,13 +61,13 @@ export function updateSuggestion() {
         const oldestSport = sortedByLast[0][0];
         suggestion = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}?`;
     }*/
-    else {
-        const sortedByLast = Object.entries(lastSeen).sort((a, b) => a[1] - b[1]);
-        const oldestSport = sortedByLast[0][0];
-        const diffDays = Math.floor((oggi  - sortedByLast[0][1]) / (1000 * 60 * 60 * 24));
-        const missingTime = diffDays > 365 ? "molto tempo" : `${diffDays} giorni`;
-        suggestion = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}? (Manca da ${missingTime})`;
-    }
+    
+    const sortedByLast = Object.entries(lastSeen).sort((a, b) => a[1] - b[1]);
+    const oldestSport = sortedByLast[0][0];
+    const diffDays = Math.floor((oggi  - sortedByLast[0][1]) / (1000 * 60 * 60 * 24));
+    const missingTime = diffDays > 365 ? "molto tempo" : `${diffDays} giorni`;
+    suggestion2 = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}? (Manca da ${missingTime})`;
+    
 
     // 3. IL FIX: Controlla se oggi hai fatto uno SPORT REALE
     // Ignora i record che sono solo "Riposo" o dove non c'è attività sportiva
@@ -82,6 +82,8 @@ export function updateSuggestion() {
 
     const sugEl = document.getElementById('suggestionText');
     if(sugEl) sugEl.innerText = suggestion;
+    const sugE2 = document.getElementById('suggestionText2');
+    if(sugE2) sugE2.innerText = suggestion2;
 }
 
 // Rendila globale per app.js
