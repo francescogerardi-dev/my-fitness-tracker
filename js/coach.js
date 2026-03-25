@@ -54,7 +54,7 @@ export function updateSuggestion() {
     
     if (activeStreaks.length > 0) {
         const topSports = activeStreaks.map(x => `${icons[x[0]] || ''} ${x[0]} (${x[1]} giorni 🔥)`);
-        suggestion = `Serie attiva! Non mollare: ${topSports.join(' e ')}`;
+        suggestion = `Coach: Serie attiva! Non mollare: ${topSports.join(' e ')}`;
     } else {
         suggestion = "";
     }
@@ -74,7 +74,7 @@ export function updateSuggestion() {
     let suggestion3 = "";
     if(window.fitnessDB.length > 0) {
         const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type = 'Peso');
-        suggestion3 = `Ultimo peso ${last.weight} del ${last.date}`;
+        suggestion3 = `Fit Coach: Ultimo peso ${last.weight} del ${last.date}`;
     }
     
     
