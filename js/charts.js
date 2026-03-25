@@ -34,9 +34,25 @@ export function renderChart() {
     document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
     
-    if(score >= 3.5) { icon.innerText = '🔥'; card.style.borderLeftColor = 'var(--success)'; msg.innerText = "Obiettivo raggiunto!"; }
-    else if(score < 2) { icon.innerText = '⚠️'; card.style.borderLeftColor = 'var(--danger)'; msg.innerText = "Serve una scossa!"; }
-    else { icon.innerText = '⚖️'; card.style.borderLeftColor = 'var(--warning)'; msg.innerText = "Continua così!"; }
+    if(score >= 3.5 && score <= 4.5) { 
+            icon.innerText = '🔥'; 
+            card.style.borderLeftColor = 'var(--success)'; 
+            msg.innerText = "Ciamo!"; 
+    }
+    else if(score < 2) { 
+            icon.innerText = '⚠️'; 
+            card.style.borderLeftColor = 'var(--danger)'; 
+            msg.innerText = "Serve una scossa!"; 
+    }else if(score > 4.5){
+            icon.innerText = '🔝'; 
+            card.style.borderLeftColor = 'var(--danger)'; 
+            msg.innerText = "Booooom!"; 
+    }
+    else { 
+            icon.innerText = '⚖️'; 
+            card.style.borderLeftColor = 'var(--warning)'; 
+            msg.innerText = "Non mollareeeee"; 
+    }
 
     const ctx = document.getElementById('mainChart').getContext('2d');
     if(mainChart) mainChart.destroy();
