@@ -71,7 +71,13 @@ export function updateSuggestion() {
     const missingTime = diffDays > 365 ? "molto tempo" : `${diffDays} giorni`;
     suggestion2 = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}? (Manca da ${missingTime})`;
     
-
+    const last = null;
+    if(window.fitnessDB.length > 0) {
+        const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
+        if(last) lastW = last.weight;
+    }
+    console.log("Data ultimo peso", last.date);
+    
     // 3. IL FIX: Controlla se oggi hai fatto uno SPORT REALE
     // Ignora i record che sono solo "Riposo" o dove non c'è attività sportiva
     //const haFattoSportOggi = window.fitnessDB.some(r => 
