@@ -54,7 +54,7 @@ export function updateSuggestion() {
     
     if (activeStreaks.length > 0) {
         const topSports = activeStreaks.map(x => `${icons[x[0]] || ''} ${x[0]} (${x[1]} giorni 🔥)`);
-        suggestion = `Coach: Serie attiva! Non mollare: ${topSports.join(' e ')}`;
+        suggestion = `🧮 Coach: Serie attiva! Non mollare: ${topSports.join(' e ')}`;
     } else {
         suggestion = "";
     }
@@ -69,12 +69,12 @@ export function updateSuggestion() {
     const oldestSport = sortedByLast[0][0];
     const diffDays = Math.floor((oggi  - sortedByLast[0][1]) / (1000 * 60 * 60 * 24));
     const missingTime = diffDays > 365 ? "molto tempo" : `${diffDays} giorni`;
-    suggestion2 = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}? (Manca da ${missingTime})`;
+    suggestion2 = `⏪Left Behind: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}? (Manca da ${missingTime})`;
 
     let suggestion3 = "";
     if(window.fitnessDB.length > 0) {
         const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type = 'Peso');
-        suggestion3 = `Fit Coach: Ultimo peso ${last.weight} del ${last.date}`;
+        suggestion3 = `🧳Fit Coach: Ultimo peso ${last.weight} del ${last.date}`;
     }
     
     
