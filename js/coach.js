@@ -74,7 +74,7 @@ export function updateSuggestion() {
     let suggestion3 = "";
     if(window.fitnessDB.length > 0) {
         const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type = 'Peso');
-        suggestion3 = `Fit Coach: Ultimo peso ${last.weight} del ${last.date}`;
+        suggestion3 = `Fit Coach: Ultimo peso <b>${last.weight}</b> del ${last.date}`;
     }
     
     
