@@ -22,7 +22,6 @@ onAuthStateChanged(auth, (user) => {
         const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
         onSnapshot(q, (snapshot) => {
             window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            console.log("Dati Fitness Caricati:", window.fitnessDB.length);
         
             // Esegui i rendering solo se le funzioni sono disponibili
             if (window.renderChart) window.renderChart();
