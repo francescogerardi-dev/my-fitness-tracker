@@ -50,7 +50,7 @@ export function updateSuggestion() {
     // 2. Determina il suggerimento base
     let suggestion = "";
     const maxVal = Math.max(...Object.values(streaks));
-    const activeStreaks = Object.entries(streaks).filter(([s, val]) => val === maxVal && val >= 2);
+    const activeStreaks = Object.entries(streaks).filter(([s, val]) => val === maxVal && val > 2);
     console.log("Streaks", activeStreaks);
     
     if (activeStreaks.length > 0) {
