@@ -70,11 +70,12 @@ export function updateSuggestion() {
     const diffDays = Math.floor((oggi  - sortedByLast[0][1]) / (1000 * 60 * 60 * 24));
     const missingTime = diffDays > 365 ? "molto tempo" : `${diffDays} giorni`;
     suggestion2 = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}? (Manca da ${missingTime})`;
-    
+
+    let suggestion3 = "";
     if(window.fitnessDB.length > 0) {
         const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type = 'Peso');
-        console.log("Data ultimo peso", window.fitnessDB);
-        console.log("Data ultimo peso", last);
+        suggestion3 = `Ultimo peso ${last.weight} del ${last.date}`;
+        console.log("Data ultimo peso", suggestion3);
     }
     
     
