@@ -51,7 +51,8 @@ export function updateSuggestion() {
     let suggestion = "";
     const maxVal = Math.max(...Object.values(streaks));
     const activeStreaks = Object.entries(streaks).filter(([s, val]) => val === maxVal && val >= 2);
-
+    console.log("Streaks", activeStreaks);
+    
     if (activeStreaks.length > 0) {
         const topSports = activeStreaks.map(x => `${icons[x[0]] || ''} ${x[0]} (${x[1]} giorni 🔥)`);
         suggestion = `Serie attiva! Non mollare: ${topSports.join(' e ')}`;
@@ -94,6 +95,8 @@ export function updateSuggestion() {
     if(sugEl) sugEl.innerText = suggestion;
     const sugE2 = document.getElementById('suggestionText2');
     if(sugE2) sugE2.innerText = suggestion2;
+    const sugE2 = document.getElementById('suggestionText3');
+    if(sugE2) sugE2.innerText = suggestion3;
 }
 
 // Rendila globale per app.js
