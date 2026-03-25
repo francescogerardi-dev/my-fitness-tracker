@@ -208,10 +208,10 @@ export function renderAnalisi() {
             
             statsHTML = `
                 <div class="stat-card" style="flex:1; border-left:4px solid #eab308">
-                    <small>Serie 🔥</small><br><big>${curStreak}</big>
+                    <small>Serie Attiva🔥</small><br><big>${curStreak}</big>
                 </div>
                 <div class="stat-card" style="flex:1; border-left:4px solid #22c55e">
-                    <small>Record 🏆</small><br><big>${bestStreak}</big>
+                    <small>Serie Record 🏆</small><br><big>${bestStreak}</big>
                 </div>
                 <div class="stat-card" style="flex:1">
                     <small>Totale</small><br><big>${totalMin}'</big>
