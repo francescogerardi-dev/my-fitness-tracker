@@ -51,7 +51,6 @@ export function updateSuggestion() {
     let suggestion = "";
     const maxVal = Math.max(...Object.values(streaks));
     const activeStreaks = Object.entries(streaks).filter(([s, val]) => val === maxVal && val > 2);
-    console.log("Streaks", activeStreaks);
     
     if (activeStreaks.length > 0) {
         const topSports = activeStreaks.map(x => `${icons[x[0]] || ''} ${x[0]} (${x[1]} giorni 🔥)`);
@@ -76,7 +75,6 @@ export function updateSuggestion() {
     if(window.fitnessDB.length > 0) {
         const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type = 'Peso');
         suggestion3 = `Ultimo peso ${last.weight} del ${last.date}`;
-        console.log("Data ultimo peso", suggestion3);
     }
     
     
