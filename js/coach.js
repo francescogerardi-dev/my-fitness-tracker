@@ -75,7 +75,7 @@ export function updateSuggestion() {
     if(window.fitnessDB.length > 0) {
         const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
     }
-    console.log("Data ultimo peso", last.date);
+    console.log("Data ultimo peso", last);
     
     // 3. IL FIX: Controlla se oggi hai fatto uno SPORT REALE
     // Ignora i record che sono solo "Riposo" o dove non c'è attività sportiva
