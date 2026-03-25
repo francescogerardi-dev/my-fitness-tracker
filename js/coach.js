@@ -95,8 +95,8 @@ export function updateSuggestion() {
     if(sugEl) sugEl.innerText = suggestion;
     const sugE2 = document.getElementById('suggestionText2');
     if(sugE2) sugE2.innerText = suggestion2;
-    const sugE2 = document.getElementById('suggestionText3');
-    if(sugE2) sugE2.innerText = suggestion3;
+    const sugE3 = document.getElementById('suggestionText3');
+    if(sugE2) sugE3.innerText = suggestion3;
 }
 
 // Rendila globale per app.js
