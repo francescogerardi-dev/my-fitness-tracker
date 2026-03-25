@@ -47,11 +47,12 @@ export async function completeRoutine() {
     if(confirm("Registrare il completamento? (Aggiungerà Routine e 10m Stretching)")) {
         let lastW = null;
         /*fix ultimo peso in quick save riportata anche qui*/
+        /*
         if(window.fitnessDB && window.fitnessDB.length > 0) {
             const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
             if(last) lastW = last.weight;
         }
-
+        */
         const today = formatDateLocal(new Date());
         const ref = collection(db, "users", auth.currentUser.uid, "records");
 
