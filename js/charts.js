@@ -37,7 +37,7 @@ export function renderChart() {
     if(score >= 3.5 && score <= 4.5) { 
             icon.innerText = '🔥'; 
             card.style.borderLeftColor = 'var(--success)'; 
-            msg.innerText = "Ciamo!"; 
+            msg.innerText = "Ci siamo! Forza!"; 
     }
     else if(score < 2) { 
             icon.innerText = '⚠️'; 
