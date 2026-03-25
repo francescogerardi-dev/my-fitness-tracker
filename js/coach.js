@@ -73,7 +73,7 @@ export function updateSuggestion() {
     
     if(window.fitnessDB.length > 0) {
         const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type = 'Peso');
-        console.log("Data ultimo peso", last);
+        console.log("Data ultimo peso", window.fitnessDB);
     }
     
     
