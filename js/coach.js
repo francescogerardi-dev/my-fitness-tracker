@@ -54,9 +54,9 @@ export function updateSuggestion() {
     
     if (activeStreaks.length > 0) {
         const topSports = activeStreaks.map(x => `${icons[x[0]] || ''} ${x[0]} (${x[1]} giorni 🔥)`);
-        suggestion = `🧮 Coach: Serie attiva! Non mollare: ${topSports.join(' e ')}`;
+        suggestion = `Coach: Serie attiva! Non mollare: ${topSports.join(' e ')}`;
     } else {
-        suggestion = "";
+        suggestion = "Coach: No streaks!";
     }
     /*} else {
         const sortedByLast = Object.entries(lastSeen).sort((a, b) => a[1] - b[1]);
