@@ -24,7 +24,6 @@ export function showTab(id) {
 
 // 2. La funzione di rendering
 window.renderHistory = function() {
-    console.log("--- ESECUZIONE RENDER HISTORY ---"); // Questo DEVE apparire
     const list = document.getElementById('historyList');
     if (!list || !window.fitnessDB) return;
 
