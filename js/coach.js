@@ -72,7 +72,7 @@ export function updateSuggestion() {
     suggestion2 = `Coach: Riprendiamo con ${icons[oldestSport] || ''} ${oldestSport}? (Manca da ${missingTime})`;
     
     if(window.fitnessDB.length > 0) {
-        const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type = 'Peso');
+        const last = [...window.fitnessDB].sort((a,b)=>new Date(a.date)-new Date(b.date)).find(r=>r.type = 'Peso');
         console.log("Data ultimo peso", window.fitnessDB);
     }
     
