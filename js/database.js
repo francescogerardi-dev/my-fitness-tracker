@@ -16,10 +16,13 @@ export async function handleSave() {
 
 export async function quickSave(type, minutes) {
     let lastW = null;
+    /*Elimino l'inserimento dell'ultimo peso su quick save perchè altera la gestione del peso*/
+    /*
     if(window.fitnessDB.length > 0) {
         const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.weight > 0);
         if(last) lastW = last.weight;
     }
+    */
     await addDoc(collection(db, "users", auth.currentUser.uid, "records"), {
         date: formatDateLocal(new Date()), type: type, weight: lastW, km: 0, min: minutes
     });
