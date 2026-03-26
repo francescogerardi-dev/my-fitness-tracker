@@ -21,5 +21,6 @@ export function days2today(d) {
     console.log(today);
     differenza = today-d;
     differenza = Math.floor(differenza/86400000);
+    console.log(differenza);
     return differenza;
 }
