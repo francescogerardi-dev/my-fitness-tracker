@@ -18,6 +18,6 @@ export function days2today(d) {
     var differenza;
     var today = new Date();
     differenza = today-d;
-    differenza = Math.ceil(differenza/86400000);
+    differenza = Math.floor(differenza/86400000);
     return differenza;
 }
