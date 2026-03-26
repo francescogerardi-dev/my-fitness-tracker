@@ -18,4 +18,5 @@ export function days2today(d) {
     var differenza;
     var today = new Date();
     differenza = today-d;
+    return differenza;
 }
