@@ -17,5 +17,5 @@ export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
 export const icons = { 
     'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
-    'Pesi': '🏋️', 'Routine': '📋', 'Riposo': '💤', 'Addominali': '🧱' 
+    'Pesi': '🏋️', 'Routine': '📋', 'Riposo': '💤', 'Addominali': '🧱' ,'Peso': '🐖'
 };
