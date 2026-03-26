@@ -13,3 +13,8 @@ export function getWeekNumber(d) {
     var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
     return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
 }
+
+export function days2today(d) {
+    var differenza;
+    
+}
