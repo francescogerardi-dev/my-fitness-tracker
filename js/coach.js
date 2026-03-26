@@ -3,7 +3,7 @@ import {days2today } from './utils.js';
 
 const icons = { 
     'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
-    'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' 
+    'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' ,'Peso': '🐖' 
 };
 
 export function updateSuggestion() {
