@@ -70,7 +70,7 @@ export function renderChart() {
                     const {x, y} = meta.data[i]; const acts = grouped[labels[i]]?.activities || [];
                     acts.forEach((a, idx) => { 
                         chart.ctx.font = '14px serif'; 
-                        console.log('test');
+                        console.log(icons[a]);
                         chart.ctx.fillText(icons[a] || '⚪', x-7, y - 20 - (idx*16)); 
                     });
                 });
