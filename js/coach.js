@@ -30,6 +30,7 @@ export function updateSuggestion() {
             const lastDate = new Date(sortedDesc[0]);
             lastDate.setHours(0, 0, 0, 0);
 
+            console.log(lastDate);
             console.log(days2today(lastDate));
             
             const diffDays = Math.floor((oggi - lastDate) / (1000 * 60 * 60 * 24));
