@@ -29,11 +29,8 @@ export function updateSuggestion() {
             const sortedDesc = [...sDates].sort((a,b) => new Date(b) - new Date(a));
             const lastDate = new Date(sortedDesc[0]);
             lastDate.setHours(0, 0, 0, 0);
-
-            console.log(lastDate);
-            console.log(days2today(lastDate));
             
-            const diffDays = Math.floor((oggi - lastDate) / (1000 * 60 * 60 * 24));
+            const diffDays = days2today(lastDate);
 
             if (diffDays <= 1) {
                 currentStreak = 1;
@@ -79,7 +76,7 @@ export function updateSuggestion() {
     let suggestion3 = "";
     if(window.fitnessDB.length > 0) {
         const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type = 'Peso');
-        suggestion3 = `Fit Coach: Ultimo peso ${last.weight} del ${last.date.split('-').reverse().join('.')}`;
+        suggestion3 = `Fit Coach: Ultimo peso ${last.weight} di ${days2today(last.date)} giorni fa`;
     }
     
     
