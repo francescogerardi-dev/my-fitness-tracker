@@ -10,6 +10,7 @@ export async function handleSave() {
         km: parseFloat(document.getElementById('kmIn').value) || 0,
         min: parseInt(document.getElementById('minIn').value) || 0
     };
+    console.log(entry);
     await addDoc(collection(db, "users", auth.currentUser.uid, "records"), entry);
     window.showTab('main');
 }
