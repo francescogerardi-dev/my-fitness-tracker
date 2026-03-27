@@ -5,7 +5,6 @@ import { icons} from './config.js';
 
 export function updateSuggestion() {
     if (!window.fitnessDB || window.fitnessDB.length === 0) return;
-    console.log('Coachjs update suggestion')
 
     const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'];
     const oggi = new Date();
