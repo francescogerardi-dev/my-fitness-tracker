@@ -98,8 +98,8 @@ export function renderChart() {
                     acts.forEach((a, idx) => { 
                         chart.ctx.font = '14px serif'; 
                         chart.ctx.fillText(icons[a], x-7, y - 20 - (idx*16)); 
-                        console.log('ciclo');
-                        console.log(acts);
+                        //console.log('ciclo');
+                        //console.log(acts);
                     });
                 });
             }
