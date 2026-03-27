@@ -26,11 +26,11 @@ export function renderChart() {
         if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
         if(curr.type !== 'Riposo'){ 
             acc[curr.date].activities.push(curr.type);
-            counter2++;
+            counter2 += 1;
         }
         if(curr.type === 'Riposo'){
             acc[curr.date].activities.push('Peso');
-            counter1++;
+            counter1 += 1;
         }
         if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
     }, {});
