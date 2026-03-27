@@ -1,7 +1,7 @@
 // 1. Definiamo le icone (fondamentale, altrimenti il map si rompe)
 const icons = { 
     'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
-    'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' 
+    'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' ,'Peso': '🐖' 
 };
 
 export function showTab(id) {
