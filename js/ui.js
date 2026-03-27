@@ -5,6 +5,7 @@ const icons = {
 };
 
 export function showTab(id) {
+    console.log('Passo per showTab con id');
     // Rimuovi active da tutti i contenuti (usa .tab-content o .content a seconda del tuo HTML)
     document.querySelectorAll('.tab-content, .content').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -44,6 +45,7 @@ window.renderHistory = function() {
 
 // 3. Funzioni Tab (esportate correttamente)
 window.showTab = function(id) {
+    console.log('Passo per showTab esportato');
     document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
