@@ -7,6 +7,8 @@ let analisiChart = null;
 
 export function renderChart() {
     if (!window.fitnessDB || !document.getElementById('mainChart')) return;
+    console.log('Sono in render chart');
+    console.log(window.fitnessDB);
     
     const monday = getMonday(window.referenceDate || new Date());
     const labels = [];
