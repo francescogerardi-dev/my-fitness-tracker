@@ -166,7 +166,6 @@ export function renderHeatmap() {
 
 export function renderAnalisi() {
     // 1. Recupero Filtri
-    console.log('----> charts.js  render analisi');
     const sport = document.getElementById('sportFilter')?.value || 'Peso';
     const daysCount = parseInt(document.getElementById('periodFilter')?.value || 30);
     const labelsRaw = []; 
