@@ -1,10 +1,7 @@
 // js/coach.js
 import {days2today } from './utils.js';
 
-const icons = { 
-    'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
-    'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' ,'Peso': '🐖' 
-};
+import { icons} from './config.js';
 
 export function updateSuggestion() {
     if (!window.fitnessDB || window.fitnessDB.length === 0) return;
