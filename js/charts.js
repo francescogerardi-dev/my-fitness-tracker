@@ -8,7 +8,6 @@ let analisiChart = null;
 export function renderChart() {
     if (!window.fitnessDB || !document.getElementById('mainChart')) return;
     
-    // 1. Prepariamo le date della settimana
     const monday = getMonday(window.referenceDate || new Date());
     const labels = [];
     for(let i=0; i<7; i++) { 
@@ -18,34 +17,43 @@ export function renderChart() {
     }
 
     const labelSettimana = document.getElementById('currentWeekLabel');
-    if(labelSettimana) {
-        labelSettimana.innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
-    }
+    if(labelSettimana) labelSettimana.innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
 
-    // 2. Raggruppamento dati (VERSIONE STABILE CORRETTA)
+    // 1. RAGGRUPPAMENTO (Senza modificare curr!)
     const grouped = window.fitnessDB.reduce((acc, curr) => {
+        // Creiamo la chiave della data se non esiste
         if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
         
-        // Se NON è riposo e NON è peso, aggiungiamo l'attività
-        if(curr.type !== 'Riposo' && curr.type !== 'Peso') { 
-            acc[curr.date].activities.push(curr.type);
+        // LEGGIAMO SOLTANTO: non scriviamo mai curr.type = ...
+        const currentType = curr.type;
+
+        // Se è un'attività reale (non riposo e non record puramente di peso)
+        if(currentType !== 'Riposo' && currentType !== 'Peso') { 
+            // Verifichiamo che non sia già nell'array per quel giorno
+            if (!acc[curr.date].activities.includes(currentType)) {
+                acc[curr.date].activities.push(currentType);
+            }
         }
         
-        // Se il record ha un peso, lo salviamo per la linea del grafico
+        // Se il record ha un valore peso, lo associamo alla data
         if(curr.weight) acc[curr.date].weight = curr.weight; 
+        
         return acc;
     }, {});
 
-    // 3. Calcolo Punteggio Costanza (VERSIONE ORIGINALE)
+    // 2. CALCOLO COSTANZA (Sola lettura)
     let score = 0;
     labels.forEach(day => {
-        const acts = window.fitnessDB.filter(r => r.date === day);
-        // Usiamo i tipi originali senza mutarli
-        if(acts.some(r => !['Stretching', 'Riposo', 'Peso'].includes(r.type))) score += 1;
-        else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
+        const dayRecords = window.fitnessDB.filter(r => r.date === day);
+        // Controlliamo i tipi senza modificarli
+        const hasSport = dayRecords.some(r => !['Stretching', 'Riposo', 'Peso'].includes(r.type));
+        const hasStretch = dayRecords.some(r => r.type === 'Stretching');
+
+        if(hasSport) score += 1;
+        else if(hasStretch) score += 0.5;
     });
 
-    // 4. Aggiornamento UI
+    // UI Updates
     const costanzaEl = document.getElementById('costanzaVal');
     if(costanzaEl) costanzaEl.innerText = `${score} / 7 Punti`;
     
@@ -54,17 +62,14 @@ export function renderChart() {
           card = document.getElementById('mainStatCard');
 
     if(icon && msg && card) {
-        if(score >= 3.5) { 
-            icon.innerText = '🔥'; card.style.borderLeftColor = 'var(--success)'; msg.innerText = "Obiettivo raggiunto!"; 
-        } else if(score < 2) { 
-            icon.innerText = '⚠️'; card.style.borderLeftColor = 'var(--danger)'; msg.innerText = "Serve una scossa!"; 
-        } else { 
-            icon.innerText = '⚖️'; card.style.borderLeftColor = 'var(--warning)'; msg.innerText = "Continua così!"; 
-        }
+        if(score >= 3.5) { icon.innerText = '🔥'; card.style.borderLeftColor = 'var(--success)'; msg.innerText = "Obiettivo raggiunto!"; }
+        else if(score < 2) { icon.innerText = '⚠️'; card.style.borderLeftColor = 'var(--danger)'; msg.innerText = "Serve una scossa!"; }
+        else { icon.innerText = '⚖️'; card.style.borderLeftColor = 'var(--warning)'; msg.innerText = "Continua così!"; }
     }
 
-    // 5. Disegno Chart
+    // 3. DISEGNO CHART
     const canvas = document.getElementById('mainChart');
+    if(!canvas) return;
     const ctx = canvas.getContext('2d');
     if(mainChart) mainChart.destroy();
     
@@ -91,8 +96,8 @@ export function renderChart() {
                     const meta = chart.getDatasetMeta(0); 
                     if(!meta || !meta.data[i]) return;
                     const {x, y} = meta.data[i]; 
-                    const acts = grouped[labels[i]]?.activities || [];
-                    acts.forEach((a, idx) => { 
+                    const dayActs = grouped[labels[i]]?.activities || [];
+                    dayActs.forEach((a, idx) => { 
                         chart.ctx.font = '14px serif'; 
                         chart.ctx.fillText(icons[a] || '📍', x-7, y - 20 - (idx*16)); 
                     });
