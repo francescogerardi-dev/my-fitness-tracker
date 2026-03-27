@@ -6,8 +6,11 @@ let mainChart = null;
 let analisiChart = null;
 
 export function renderChart() {
-    if (!window.fitnessDB || !document.getElementById('mainChart')) return;
+    // 1. Check rapido: se non c'è il DB o il canvas, esci subito senza far danni
+    const canvas = document.getElementById('mainChart');
+    if (!window.fitnessDB || !canvas) return;
     
+    // 2. Prepariamo l'asse temporale (Settimana)
     const monday = getMonday(window.referenceDate || new Date());
     const labels = [];
     for(let i=0; i<7; i++) { 
@@ -16,44 +19,42 @@ export function renderChart() {
         labels.push(formatDateLocal(d));
     }
 
+    // Aggiornamento etichetta settimana (con check esistenza)
     const labelSettimana = document.getElementById('currentWeekLabel');
-    if(labelSettimana) labelSettimana.innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
+    if(labelSettimana) {
+        labelSettimana.innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
+    }
 
-    // 1. RAGGRUPPAMENTO (Senza modificare curr!)
-    const grouped = window.fitnessDB.reduce((acc, curr) => {
-        // Creiamo la chiave della data se non esiste
-        if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
-        
-        // LEGGIAMO SOLTANTO: non scriviamo mai curr.type = ...
-        const currentType = curr.type;
+    // 3. RAGGRUPPAMENTO DATI: La zona "Safe"
+    // Creiamo un oggetto nuovo dove estraiamo solo i VALORI, non i riferimenti ai record
+    const grouped = {};
+    labels.forEach(date => { grouped[date] = { weight: null, activities: [] }; });
 
-        // Se è un'attività reale (non riposo e non record puramente di peso)
-        if(currentType !== 'Riposo' && currentType !== 'Peso') { 
-            // Verifichiamo che non sia già nell'array per quel giorno
-            if (!acc[curr.date].activities.includes(currentType)) {
-                acc[curr.date].activities.push(currentType);
+    window.fitnessDB.forEach(curr => {
+        if (grouped[curr.date]) {
+            // Estraiamo il peso se esiste
+            if (curr.weight) grouped[curr.date].weight = parseFloat(curr.weight);
+            
+            // Estraiamo il tipo: lo trattiamo come stringa pura per evitare mutazioni
+            const t = String(curr.type);
+            if (t !== 'Riposo' && t !== 'Peso' && !grouped[curr.date].activities.includes(t)) {
+                grouped[curr.date].activities.push(t);
             }
         }
-        
-        // Se il record ha un valore peso, lo associamo alla data
-        if(curr.weight) acc[curr.date].weight = curr.weight; 
-        
-        return acc;
-    }, {});
+    });
 
-    // 2. CALCOLO COSTANZA (Sola lettura)
+    // 4. CALCOLO COSTANZA: Logica originale blindata
     let score = 0;
     labels.forEach(day => {
         const dayRecords = window.fitnessDB.filter(r => r.date === day);
-        // Controlliamo i tipi senza modificarli
-        const hasSport = dayRecords.some(r => !['Stretching', 'Riposo', 'Peso'].includes(r.type));
-        const hasStretch = dayRecords.some(r => r.type === 'Stretching');
+        const hasSport = dayRecords.some(r => !['Stretching', 'Riposo', 'Peso'].includes(String(r.type)));
+        const hasStretch = dayRecords.some(r => String(r.type) === 'Stretching');
 
         if(hasSport) score += 1;
         else if(hasStretch) score += 0.5;
     });
 
-    // UI Updates
+    // Aggiornamento Punteggio e Icone
     const costanzaEl = document.getElementById('costanzaVal');
     if(costanzaEl) costanzaEl.innerText = `${score} / 7 Punti`;
     
@@ -62,25 +63,29 @@ export function renderChart() {
           card = document.getElementById('mainStatCard');
 
     if(icon && msg && card) {
-        if(score >= 3.5) { icon.innerText = '🔥'; card.style.borderLeftColor = 'var(--success)'; msg.innerText = "Obiettivo raggiunto!"; }
-        else if(score < 2) { icon.innerText = '⚠️'; card.style.borderLeftColor = 'var(--danger)'; msg.innerText = "Serve una scossa!"; }
-        else { icon.innerText = '⚖️'; card.style.borderLeftColor = 'var(--warning)'; msg.innerText = "Continua così!"; }
+        if(score >= 3.5) { 
+            icon.innerText = '🔥'; card.style.borderLeftColor = '#22c55e'; msg.innerText = "Obiettivo raggiunto!"; 
+        } else if(score < 2) { 
+            icon.innerText = '⚠️'; card.style.borderLeftColor = '#ef4444'; msg.innerText = "Serve una scossa!"; 
+        } else { 
+            icon.innerText = '⚖️'; card.style.borderLeftColor = '#eab308'; msg.innerText = "Continua così!"; 
+        }
     }
 
-    // 3. DISEGNO CHART
-    const canvas = document.getElementById('mainChart');
-    if(!canvas) return;
+    // 5. DISEGNO DEL GRAFICO (Chart.js)
     const ctx = canvas.getContext('2d');
-    if(mainChart) mainChart.destroy();
+    if(window.mainChart instanceof Chart) window.mainChart.destroy();
     
-    mainChart = new Chart(ctx, {
+    window.mainChart = new Chart(ctx, {
         type: 'line',
         data: { 
             labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), 
             datasets: [{ 
                 data: labels.map(l => grouped[l]?.weight || null), 
                 borderColor: '#38bdf8', 
+                backgroundColor: 'rgba(56, 189, 248, 0.1)',
                 tension: 0.3, 
+                fill: true,
                 spanGaps: true 
             }] 
         },
@@ -88,18 +93,27 @@ export function renderChart() {
             responsive: true, 
             maintainAspectRatio: false, 
             plugins: { legend: { display: false } }, 
-            scales: { y: { min: 73, max: 81 } } 
+            scales: { 
+                y: { min: 73, max: 81, ticks: { stepSize: 1 } },
+                x: { grid: { display: false } }
+            } 
         },
         plugins: [{ 
+            id: 'activityIcons',
             afterDraw: chart => { 
+                const { ctx } = chart;
                 chart.data.datasets[0].data.forEach((v, i) => {
                     const meta = chart.getDatasetMeta(0); 
                     if(!meta || !meta.data[i]) return;
                     const {x, y} = meta.data[i]; 
-                    const dayActs = grouped[labels[i]]?.activities || [];
+                    const dateKey = labels[i];
+                    const dayActs = grouped[dateKey]?.activities || [];
+                    
                     dayActs.forEach((a, idx) => { 
-                        chart.ctx.font = '14px serif'; 
-                        chart.ctx.fillText(icons[a] || '📍', x-7, y - 20 - (idx*16)); 
+                        ctx.font = '16px serif'; 
+                        ctx.textAlign = 'center';
+                        // Usiamo l'icona mappata nel tuo config.js
+                        ctx.fillText(icons[a] || '📍', x, y - 25 - (idx * 18)); 
                     });
                 });
             }
