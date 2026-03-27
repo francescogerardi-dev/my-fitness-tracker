@@ -19,10 +19,14 @@ export function renderChart() {
     }
 
     document.getElementById('currentWeekLabel').innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
-    
+
+    console.log('Creo i dati da inserire nel chart');
     const grouped = window.fitnessDB.reduce((acc, curr) => {
         if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
-        if(curr.type !== 'Riposo') acc[curr.date].activities.push(curr.type);
+        if(curr.type !== 'Riposo'){ 
+            acc[curr.date].activities.push(curr.type);
+            console.log('Tipo diverso da Riposo');
+        };
         if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
     }, {});
 
