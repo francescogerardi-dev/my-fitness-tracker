@@ -19,19 +19,24 @@ export function renderChart() {
     }
 
     document.getElementById('currentWeekLabel').innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
-
+    var counter1 = 0;
+    var counter2 = 0;
     console.log('Creo i dati da inserire nel chart');
     const grouped = window.fitnessDB.reduce((acc, curr) => {
         if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
         if(curr.type !== 'Riposo'){ 
             acc[curr.date].activities.push(curr.type);
+            counter2++;
         }
         if(curr.type === 'Riposo'){
-             acc[curr.date].activities.push('Peso');
+            acc[curr.date].activities.push('Peso');
+            counter1++;
         }
         if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
     }, {});
 
+    console.log('Riposo-->'||counter1);
+    console.log('Riposo-->'||counter2);
     // Calcolo Punteggio Costanza
     let score = 0;
     labels.forEach(day => {
