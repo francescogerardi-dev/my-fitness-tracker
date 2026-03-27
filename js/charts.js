@@ -94,7 +94,6 @@ export function renderChart() {
  */
 
 export function renderHeatmap() {
-    console.log('----> charts.js  render heatmap');
     const container = document.getElementById('annualHeatmap');
     if (!container || !window.fitnessDB) return;
 
