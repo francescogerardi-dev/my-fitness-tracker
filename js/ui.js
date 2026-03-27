@@ -2,7 +2,6 @@
 import { icons } from './config.js';
 
 export function showTab(id) {
-    console.log('ui.js showTab');
     // Rimuovi active da tutti i contenuti (usa .tab-content o .content a seconda del tuo HTML)
     document.querySelectorAll('.tab-content, .content').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
