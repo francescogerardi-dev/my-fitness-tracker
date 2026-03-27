@@ -25,7 +25,7 @@ export function renderChart() {
         if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
         if(curr.type !== 'Riposo'){ 
             acc[curr.date].activities.push(curr.type);
-        };
+        }
         if(curr.type === 'Riposo'){
             colole.log(curr.type);
         }
