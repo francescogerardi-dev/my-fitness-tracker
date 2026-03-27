@@ -38,6 +38,9 @@ export function renderChart() {
         if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
     }, {});
 
+    console.log('prima del calcolo della costanza');
+    console.log('window.fitnessDB');
+    
     console.log('-----I-----');
     console.log(counter1);
     console.log(counter2);
