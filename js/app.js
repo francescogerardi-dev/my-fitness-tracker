@@ -20,19 +20,14 @@ onAuthStateChanged(auth, (user) => {
         
         // Listener Records
         const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
-        console.log('----> app.js v 16:26');
         //console.log('----> eseguo query');
         onSnapshot(q, (snapshot) => {
             window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             //console.log(fitnessDB);
             // Esegui i rendering solo se le funzioni sono disponibili
-            console.log('-RENDER CHART');
             if (window.renderChart) window.renderChart();
-            console.log('-UPD SUGGESTION');
             if (window.updateSuggestion) window.updateSuggestion();
-            console.log('-RENDER HEATMAP');
             if (window.renderHeatmap) window.renderHeatmap();
-            console.log('-RENDER HISTORY');
             if (window.renderHistory) window.renderHistory();
             
             // Aggiorna l'analisi solo se la tab è attiva
