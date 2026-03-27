@@ -7,9 +7,8 @@ let analisiChart = null;
 
 export function renderChart() {
     if (!window.fitnessDB || !document.getElementById('mainChart')) return;
-    console.log('Sono in render chart');
+    console.log('----> charts.js  render chart');
     //console.log(window.fitnessDB);
-    console.log(window.fitnessDB);
     //etichette del chart
     const monday = getMonday(window.referenceDate || new Date());
     const labels = [];
@@ -109,6 +108,7 @@ export function renderChart() {
  */
 
 export function renderHeatmap() {
+    console.log('----> charts.js  render heatmap');
     const container = document.getElementById('annualHeatmap');
     if (!container || !window.fitnessDB) return;
 
@@ -180,6 +180,7 @@ export function renderHeatmap() {
 
 export function renderAnalisi() {
     // 1. Recupero Filtri
+    console.log('----> charts.js  render analisi');
     const sport = document.getElementById('sportFilter')?.value || 'Peso';
     const daysCount = parseInt(document.getElementById('periodFilter')?.value || 30);
     const labelsRaw = []; 
@@ -357,16 +358,10 @@ export function renderAnalisi() {
     }
 }
 
-// Esponi per l'uso globale
-window.renderAnalisi = renderAnalisi;
-
-// Esponi la funzione globalmente
-window.renderAnalisi = renderAnalisi;
-
 // Esponi le funzioni a window per l'accesso dalle tab
 window.renderChart = renderChart;
 window.renderHeatmap = renderHeatmap; // <--- Assicurati che ci sia!
-window.renderAnalisi = renderAnalisi; // <--- Assicurati che ci sia!
+window.renderAnalisi = renderAnalisi;
 window.changeWeek = (days) => { 
     if(!window.referenceDate) window.referenceDate = new Date();
     window.referenceDate.setDate(window.referenceDate.getDate() + days); 
