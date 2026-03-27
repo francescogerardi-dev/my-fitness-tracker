@@ -39,7 +39,7 @@ export function renderChart() {
     }, {});
 
     console.log('prima del calcolo della costanza');
-    console.log('window.fitnessDB');
+    console.log(window.fitnessDB);
     
     console.log('-----I-----');
     console.log(counter1);
