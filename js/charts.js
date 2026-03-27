@@ -8,8 +8,9 @@ let analisiChart = null;
 export function renderChart() {
     if (!window.fitnessDB || !document.getElementById('mainChart')) return;
     console.log('Sono in render chart');
-    console.log(window.fitnessDB);
-    
+    //console.log(window.fitnessDB);
+
+    //etichette del chart
     const monday = getMonday(window.referenceDate || new Date());
     const labels = [];
     for(let i=0; i<7; i++) { 
@@ -22,6 +23,7 @@ export function renderChart() {
     const grouped = window.fitnessDB.reduce((acc, curr) => {
         if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
         if(curr.type !== 'Riposo') acc[curr.date].activities.push(curr.type);
+        console.log(curr.type);
         if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
     }, {});
 
@@ -29,10 +31,12 @@ export function renderChart() {
     let score = 0;
     labels.forEach(day => {
         const acts = window.fitnessDB.filter(r => r.date === day);
-        if(acts.some(r => !['Stretching', 'Riposo'].includes(r.type))) score += 1;
+        if(acts.some(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) score += 1;
         else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
     });
 
+    //Disegno blocco div costanza
+    
     document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
     
