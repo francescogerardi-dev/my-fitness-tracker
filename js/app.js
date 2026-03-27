@@ -20,7 +20,7 @@ onAuthStateChanged(auth, (user) => {
         
         // Listener Records
         const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
-        console.log('----> app.js v 15:44');
+        console.log('----> app.js v 15:51');
         //console.log('----> eseguo query');
         onSnapshot(q, (snapshot) => {
             window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
