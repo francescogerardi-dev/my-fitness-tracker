@@ -18,7 +18,11 @@ export function showTab(id) {
     if (targetBtn) targetBtn.classList.add('active');
 
     // Trigger grafici e liste
-    if(id === 'main' && window.renderChart) window.renderChart();
+    if(id === 'main' && window.renderChart) {
+        window.renderChart();
+        window.updateSuggestion();
+        window.renderHeatmap();
+    }
     if(id === 'analisi' && window.renderAnalisi) window.renderAnalisi();
     if(id === 'history' && window.renderHistory) window.renderHistory();
 }
