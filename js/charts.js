@@ -27,7 +27,7 @@ export function renderChart() {
             acc[curr.date].activities.push(curr.type);
         }
         if(curr.type === 'Riposo'){
-            console.log(curr.type);
+             acc[curr.date].activities.push('Peso');
         }
         if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
     }, {});
