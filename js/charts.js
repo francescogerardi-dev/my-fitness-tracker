@@ -26,6 +26,8 @@ export function renderChart() {
         if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
         if(curr.type !== 'Riposo'){ 
             acc[curr.date].activities.push(curr.type);
+            console.log('diverso da Riposo');
+            console.log(curr.type);
             counter2 += 1;
         }
         if(curr.type === 'Riposo'){
