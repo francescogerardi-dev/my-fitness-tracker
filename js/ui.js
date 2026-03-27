@@ -1,8 +1,5 @@
 // 1. Definiamo le icone (fondamentale, altrimenti il map si rompe)
-const icons = { 
-    'Corsa': '🏃', 'Padel': '🎾', 'Stretching': '🧘', 
-    'Pesi': '🏋️', 'Routine': '💪', 'Riposo': '😴' ,'Peso': '🐖' 
-};
+import { icons } from './config.js';
 
 export function showTab(id) {
     console.log('ui.js showTab');
