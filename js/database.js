@@ -3,6 +3,8 @@ import { collection, addDoc, doc, deleteDoc, updateDoc } from "https://www.gstat
 import { formatDateLocal } from './utils.js';
 
 export async function handleSave() {
+    console.log(document.getElementById('dateIn').value);
+    console.log(document.getElementById('typeIn').value);
     const entry = {
         date: document.getElementById('dateIn').value,
         type: document.getElementById('typeIn').value,
