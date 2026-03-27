@@ -8,6 +8,7 @@ const icons = {
 
 export function updateSuggestion() {
     if (!window.fitnessDB || window.fitnessDB.length === 0) return;
+    console.log('Sono in updatesuggestion qui le icone ci sono tutte')
 
     const sports = ['Corsa', 'Padel', 'Stretching', 'Pesi', 'Routine'];
     const oggi = new Date();
