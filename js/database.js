@@ -3,8 +3,6 @@ import { collection, addDoc, doc, deleteDoc, updateDoc } from "https://www.gstat
 import { formatDateLocal } from './utils.js';
 
 export async function handleSave() {
-    console.log(document.getElementById('dateIn').value);
-    console.log(document.getElementById('typeIn').value);
     var entry = {
         date: document.getElementById('dateIn').value,
         type: document.getElementById('typeIn').value,
@@ -12,7 +10,6 @@ export async function handleSave() {
         km: parseFloat(document.getElementById('kmIn').value) || 0,
         min: parseInt(document.getElementById('minIn').value) || 0
     };
-    console.log('----->'||entry.type);
     await addDoc(collection(db, "users", auth.currentUser.uid, "records"), {
         date: document.getElementById('dateIn').value,
         type: document.getElementById('typeIn').value,
@@ -76,7 +73,6 @@ window.handleDelete = async (id) => {
         // Il listener onSnapshot in app.js rileverà la modifica e aggiornerà l'interfaccia da solo.
         
     } catch (error) {
-        console.error("Errore durante l'eliminazione:", error);
         alert("Si è verificato un errore durante l'eliminazione.");
     }
 };
