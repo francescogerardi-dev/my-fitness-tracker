@@ -9,7 +9,7 @@ export function renderChart() {
     if (!window.fitnessDB || !document.getElementById('mainChart')) return;
     console.log('Sono in render chart');
     //console.log(window.fitnessDB);
-
+    console.log(window.fitnessDB);
     //etichette del chart
     const monday = getMonday(window.referenceDate || new Date());
     const labels = [];
@@ -40,11 +40,9 @@ export function renderChart() {
 
     console.log('prima del calcolo della costanza');
     console.log(window.fitnessDB);
+
+    console.log('Qui è già PESO');
     
-    console.log('-----I-----');
-    console.log(counter1);
-    console.log(counter2);
-    console.log('-----F------');
     // Calcolo Punteggio Costanza
     let score = 0;
     labels.forEach(day => {
