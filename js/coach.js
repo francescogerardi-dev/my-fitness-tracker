@@ -73,7 +73,7 @@ export function updateSuggestion() {
 
     let suggestion3 = "";
     if(window.fitnessDB.length > 0) {
-        const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type === 'Peso');
+        const last = [...window.fitnessDB].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(r=>r.type == 'Peso');
         suggestion3 = `Fit Coach: Ultimo peso ${last.weight} di ${days2today(new Date(last.date))} giorni fa`;
     }
     
