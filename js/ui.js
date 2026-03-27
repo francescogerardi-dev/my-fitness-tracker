@@ -44,6 +44,7 @@ window.renderHistory = function() {
 };
 
 // 3. Funzioni Tab (esportate correttamente)
+/*
 window.showTab = function(id) {
     console.log('Passo per showTab esportato');
     document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
@@ -58,7 +59,7 @@ window.showTab = function(id) {
     // Trigger immediato al cambio tab
     if(id === 'history' && window.renderHistory) window.renderHistory();
 };
-
+*/
 window.toggleFields = function() {
     const t = document.getElementById('typeIn').value;
     const kmBox = document.getElementById('kmBox');
