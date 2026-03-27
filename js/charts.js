@@ -26,14 +26,14 @@ export function renderChart() {
         if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
         if(curr.type !== 'Riposo'){ 
             acc[curr.date].activities.push(curr.type);
-            console.log('diverso da Riposo');
-            console.log(curr.type);
-            console.log(curr.id);
-            counter2 += 1;
+            //console.log('diverso da Riposo');
+            //console.log(curr.type);
+            //console.log(curr.id);
+            //counter2 += 1;
         }
         if(curr.type === 'Riposo'){
             acc[curr.date].activities.push('Peso');
-            counter1 += 1;
+            //counter1 += 1;
         }
         if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
     }, {});
