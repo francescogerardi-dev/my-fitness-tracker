@@ -28,6 +28,7 @@ export function renderChart() {
             acc[curr.date].activities.push(curr.type);
             console.log('diverso da Riposo');
             console.log(curr.type);
+            console.log(curr.id);
             counter2 += 1;
         }
         if(curr.type === 'Riposo'){
@@ -53,7 +54,8 @@ export function renderChart() {
     
     document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
-    
+
+    //calcolo dell'icona
     if(score >= 3.5 && score <= 4.5) { 
             icon.innerText = '🔥'; 
             card.style.borderLeftColor = 'var(--success)'; 
@@ -74,8 +76,10 @@ export function renderChart() {
             msg.innerText = "Non mollareeeee"; 
     }
 
+    
     const ctx = document.getElementById('mainChart').getContext('2d');
     if(mainChart) mainChart.destroy();
+    //crea il chart
     mainChart = new Chart(ctx, {
         type: 'line',
         data: { 
@@ -91,6 +95,8 @@ export function renderChart() {
                     acts.forEach((a, idx) => { 
                         chart.ctx.font = '14px serif'; 
                         chart.ctx.fillText(icons[a], x-7, y - 20 - (idx*16)); 
+                        console.log('ciclo');
+                        console.log(acts);
                     });
                 });
             }
