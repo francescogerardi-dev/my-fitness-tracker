@@ -35,8 +35,10 @@ export function renderChart() {
         if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
     }, {});
 
+    console.log('-----I-----');
     console.log(counter1);
     console.log(counter2);
+    console.log('-----F------');
     // Calcolo Punteggio Costanza
     let score = 0;
     labels.forEach(day => {
