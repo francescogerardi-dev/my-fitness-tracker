@@ -5,7 +5,7 @@ import { formatDateLocal } from './utils.js';
 export async function handleSave() {
     console.log(document.getElementById('dateIn').value);
     console.log(document.getElementById('typeIn').value);
-    const entry = {
+    var entry = {
         date: document.getElementById('dateIn').value,
         type: document.getElementById('typeIn').value,
         weight: parseFloat(document.getElementById('weightIn').value) || null,
@@ -13,7 +13,14 @@ export async function handleSave() {
         min: parseInt(document.getElementById('minIn').value) || 0
     };
     console.log('----->'||entry.type);
-    await addDoc(collection(db, "users", auth.currentUser.uid, "records"), entry);
+    await addDoc(collection(db, "users", auth.currentUser.uid, "records"), {
+        date: document.getElementById('dateIn').value,
+        type: document.getElementById('typeIn').value,
+        weight: parseFloat(document.getElementById('weightIn').value) || null,
+        km: parseFloat(document.getElementById('kmIn').value) || 0,
+        min: parseInt(document.getElementById('minIn').value) || 0
+    });
+
     window.showTab('main');
 }
 
