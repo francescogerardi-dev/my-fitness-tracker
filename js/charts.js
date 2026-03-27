@@ -25,8 +25,10 @@ export function renderChart() {
         if(!acc[curr.date]) acc[curr.date] = { weight: null, activities: [] };
         if(curr.type !== 'Riposo'){ 
             acc[curr.date].activities.push(curr.type);
-            console.log('Tipo diverso da Riposo');
         };
+        if(curr.type === 'Riposo'){
+            colole.log(curr.type);
+        }
         if(curr.weight) acc[curr.date].weight = curr.weight; return acc;
     }, {});
 
