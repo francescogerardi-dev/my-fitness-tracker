@@ -40,7 +40,7 @@ export function renderChart() {
     //console.log('prima del calcolo della costanza');
     //console.log(window.fitnessDB);
 
-    console.log('Qui è già PESO');
+    //console.log('Qui è già PESO');
     
     // Calcolo Punteggio Costanza
     let score = 0;
