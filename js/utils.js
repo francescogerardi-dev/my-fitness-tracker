@@ -19,8 +19,6 @@ export function days2todayUp(d) {
     var today = new Date();
     d.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
-    console.log(d);
-    console.log(today);
     differenza = today-d;
     differenza = Math.ceil(differenza/86400000)+1;
     return differenza;
