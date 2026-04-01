@@ -1,6 +1,6 @@
 // js/charts.js
 import { icons, db, auth } from './config.js';
-import { getMonday, formatDateLocal, getWeekNumber,days2today } from './utils.js';
+import { getMonday, formatDateLocal, getWeekNumber,days2today,days2todayUp } from './utils.js';
 
 let mainChart = null;
 let analisiChart = null;
@@ -45,7 +45,7 @@ export function renderChart() {
 
     console.log(getMonday(new Date()));
 
-    console.log(days2today(getMonday(new Date())));
+    console.log(days2todayUp(getMonday(new Date())));
     
     //calcolo dell'icona
     if(score >= 3.5 && score <= 4.5) { 
