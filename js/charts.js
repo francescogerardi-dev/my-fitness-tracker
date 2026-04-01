@@ -74,24 +74,23 @@ export function renderChart() {
     }
     */
     //logica nuova
-    if(perc >= 0.4 && perc <= 0.65) { 
+    if(perc < 0.25) { 
+            icon.innerText = '⚠️'; 
+            card.style.borderLeftColor = 'var(--danger)'; 
+            msg.innerText = "Serve una scossa!"; 
+    }else if(perc >= 0.25 && perc <0.4) { 
+            icon.innerText = '⚖️'; 
+            card.style.borderLeftColor = 'var(--warning)'; 
+            msg.innerText = "Non mollareeeee"; 
+    }else if(perc >= 0.4 && perc <= 0.65) { 
             icon.innerText = '🔥'; 
             card.style.borderLeftColor = 'var(--success)'; 
             msg.innerText = "Ci siamo! Forza!"; 
     }
-    else if(perc < 0.25) { 
-            icon.innerText = '⚠️'; 
-            card.style.borderLeftColor = 'var(--danger)'; 
-            msg.innerText = "Serve una scossa!"; 
-    }else if(perc > 0.65){
+    else if(perc > 0.65){
             icon.innerText = '🔝'; 
             card.style.borderLeftColor = 'var(--danger)'; 
             msg.innerText = "Booooom!"; 
-    }
-    else { 
-            icon.innerText = '⚖️'; 
-            card.style.borderLeftColor = 'var(--warning)'; 
-            msg.innerText = "Non mollareeeee"; 
     }
     
     const ctx = document.getElementById('mainChart').getContext('2d');
