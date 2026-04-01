@@ -43,6 +43,8 @@ export function renderChart() {
     document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
 
+    console.log(getMonday(new Date()));
+    
     //calcolo dell'icona
     if(score >= 3.5 && score <= 4.5) { 
             icon.innerText = '🔥'; 
