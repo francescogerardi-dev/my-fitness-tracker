@@ -96,7 +96,7 @@ export function renderChart() {
             labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), 
             datasets: [{ data: labels.map(l => grouped[l]?.weight || null), borderColor: '#38bdf8', tension: 0.3, spanGaps: true }] 
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false },title: {display: true,text: 'Weekly Chart',fontsize: '18px'} }, scales: { y: { min: 73, max: 81 } } },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false },title: {display: true,text: 'Weekly Chart',fontsize: 18} }, scales: { y: { min: 73, max: 81 } } },
         plugins: [{ 
             afterDraw: chart => { 
                 chart.data.datasets[0].data.forEach((v, i) => {
