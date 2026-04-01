@@ -44,6 +44,8 @@ export function renderChart() {
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
 
     console.log(getMonday(new Date()));
+
+    console.log(diff2today(getMonday(new Date())));
     
     //calcolo dell'icona
     if(score >= 3.5 && score <= 4.5) { 
