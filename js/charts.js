@@ -1,6 +1,6 @@
 // js/charts.js
 import { icons, db, auth } from './config.js';
-import { getMonday, formatDateLocal, getWeekNumber } from './utils.js';
+import { getMonday, formatDateLocal, getWeekNumber,days2today } from './utils.js';
 
 let mainChart = null;
 let analisiChart = null;
