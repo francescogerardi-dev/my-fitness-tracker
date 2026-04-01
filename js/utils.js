@@ -22,7 +22,7 @@ export function days2todayUp(d) {
     console.log(d);
     console.log(today);
     differenza = today-d;
-    differenza = Math.ceil(differenza/86400000);
+    differenza = Math.ceil(differenza/86400000)+1;
     return differenza;
 }
 
