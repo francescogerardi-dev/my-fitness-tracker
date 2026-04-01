@@ -14,6 +14,14 @@ export function getWeekNumber(d) {
     return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
 }
 
+export function days2todayUp(d) {
+    var differenza;
+    var today = new Date();
+    differenza = today-d;
+    differenza = Math.ceil(differenza/86400000);
+    return differenza;
+}
+
 export function days2today(d) {
     var differenza;
     var today = new Date();
