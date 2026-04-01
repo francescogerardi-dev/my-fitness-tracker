@@ -96,8 +96,8 @@ export function renderChart() {
             labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), 
             datasets: [{ data: labels.map(l => grouped[l]?.weight || null), borderColor: '#38bdf8', tension: 0.3, spanGaps: true }] 
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false },title: {display: true,text: 'Weekly Chart',color: '#FFFFFF',font: {
-                size: 18, // 'size' invece di 'fontsize'
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, align: left,title: {display: true,text: 'Weekly Chart',color: '#FFFFFF',font: {
+                size: 20, // 'size' invece di 'fontsize'
                 weight: 'bold' // facoltativo, per farlo risaltare
             }} }, scales: { y: { min: 73, max: 81 } } },
         plugins: [{ 
