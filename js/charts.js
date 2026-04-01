@@ -46,6 +46,10 @@ export function renderChart() {
     console.log(getMonday(new Date()));
 
     console.log(days2todayUp(getMonday(new Date())));
+
+    const perc = score/days2todayUp(getMonday(new Date()));
+
+    console.log(perc);
     
     //calcolo dell'icona
     if(score >= 3.5 && score <= 4.5) { 
