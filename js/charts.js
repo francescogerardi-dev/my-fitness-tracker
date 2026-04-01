@@ -51,7 +51,8 @@ export function renderChart() {
 
     console.log(perc);
     
-    //calcolo dell'icona
+    //calcolo dell'icona logica vecchia
+    /*
     if(score >= 3.5 && score <= 4.5) { 
             icon.innerText = '🔥'; 
             card.style.borderLeftColor = 'var(--success)'; 
@@ -71,7 +72,27 @@ export function renderChart() {
             card.style.borderLeftColor = 'var(--warning)'; 
             msg.innerText = "Non mollareeeee"; 
     }
-
+    */
+    //logica nuova
+    if(perc >= 0.4 && perc <= 0.65) { 
+            icon.innerText = '🔥'; 
+            card.style.borderLeftColor = 'var(--success)'; 
+            msg.innerText = "Ci siamo! Forza!"; 
+    }
+    else if(perc < 0.25) { 
+            icon.innerText = '⚠️'; 
+            card.style.borderLeftColor = 'var(--danger)'; 
+            msg.innerText = "Serve una scossa!"; 
+    }else if(perc > 0.65){
+            icon.innerText = '🔝'; 
+            card.style.borderLeftColor = 'var(--danger)'; 
+            msg.innerText = "Booooom!"; 
+    }
+    else { 
+            icon.innerText = '⚖️'; 
+            card.style.borderLeftColor = 'var(--warning)'; 
+            msg.innerText = "Non mollareeeee"; 
+    }
     
     const ctx = document.getElementById('mainChart').getContext('2d');
     if(mainChart) mainChart.destroy();
