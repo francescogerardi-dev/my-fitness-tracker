@@ -17,7 +17,7 @@ export function getWeekNumber(d) {
 export function days2todayUp(d) {
     var differenza;
     var today = new Date();
-    differenza = today-d;
+    differenza = d-today;
     differenza = Math.ceil(differenza/86400000);
     return differenza;
 }
