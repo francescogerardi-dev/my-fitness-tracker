@@ -45,7 +45,7 @@ export function renderChart() {
 
     console.log(getMonday(new Date()));
 
-    console.log(diff2today(getMonday(new Date())));
+    console.log(days2today(getMonday(new Date())));
     
     //calcolo dell'icona
     if(score >= 3.5 && score <= 4.5) { 
