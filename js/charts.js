@@ -43,13 +43,7 @@ export function renderChart() {
     document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
 
-    console.log(getMonday(new Date()));
-
-    console.log(days2todayUp(getMonday(new Date())));
-
     const perc = score/days2todayUp(getMonday(new Date()));
-
-    console.log(perc);
     
     //calcolo dell'icona logica vecchia
     /*
