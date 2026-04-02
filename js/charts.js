@@ -50,7 +50,7 @@ export function renderChart() {
     
     document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard'),pmsg = document.getElementById('percMessage');
-    pmsg.innerText = perc*100+`% `; 
+    pmsg.innerText = perc.toFixed(2)*100+`% `; 
     //const perc = score/days2todayUp(getMonday(new Date()));
 
     //console.log(perc);
