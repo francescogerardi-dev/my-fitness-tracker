@@ -45,7 +45,7 @@ export function renderChart() {
 
     const perc = score/days2todayUp(getMonday(new Date()));
 
-    cosole.log(perc);
+    console.log(perc);
     
     //calcolo dell'icona logica vecchia
     /*
