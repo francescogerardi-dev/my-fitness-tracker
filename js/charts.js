@@ -39,13 +39,14 @@ export function renderChart() {
     });
 
     //Disegno blocco div costanza
+    const perc = score/days2todayUp(getMonday(new Date()));
     
-    document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
+    document.getElementById('costanzaVal').innerText = `${score} / 7 Punti (${perc*100}%)`;
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
 
-    const perc = score/days2todayUp(getMonday(new Date()));
+    //const perc = score/days2todayUp(getMonday(new Date()));
 
-    console.log(perc);
+    //console.log(perc);
     
     //calcolo dell'icona logica vecchia
     /*
