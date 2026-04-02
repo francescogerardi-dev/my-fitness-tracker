@@ -74,11 +74,11 @@ export function renderChart() {
             icon.innerText = '⚠️'; 
             card.style.borderLeftColor = 'var(--danger)'; 
             msg.innerText = "Serve una scossa!"; 
-    }else if(perc >= 0.25 && perc <0.4) { 
+    }else if(perc >= 0.25 && perc <=0.5) { 
             icon.innerText = '⚖️'; 
             card.style.borderLeftColor = 'var(--warning)'; 
             msg.innerText = "Non mollareeeee"; 
-    }else if(perc >= 0.4 && perc <= 0.65) { 
+    }else if(perc > 0.5 && perc <= 0.65) { 
             icon.innerText = '🔥'; 
             card.style.borderLeftColor = 'var(--success)'; 
             msg.innerText = "Ci siamo! Forza!"; 
