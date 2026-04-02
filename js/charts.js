@@ -44,6 +44,8 @@ export function renderChart() {
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
 
     const perc = score/days2todayUp(getMonday(new Date()));
+
+    cosole.log(perc);
     
     //calcolo dell'icona logica vecchia
     /*
