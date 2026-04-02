@@ -31,3 +31,16 @@ export function days2today(d) {
     differenza = Math.floor(differenza/86400000);
     return differenza;
 }
+
+/**
+ * Verifica se la settimana di riferimento è quella attuale
+ * @returns {boolean}
+ */
+export function isCurrentWeek() {
+    // 1. Prendi il lunedì della settimana che stai guardando
+    const refMonday = getMonday(window.referenceDate || new Date());
+    // 2. Prendi il lunedì di "oggi"
+    const todayMonday = getMonday(new Date());
+    // 3. Confronta le date (formattate come stringhe per sicurezza)
+    return refMonday.toDateString() === todayMonday.toDateString();
+}
