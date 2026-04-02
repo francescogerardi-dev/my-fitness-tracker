@@ -41,9 +41,9 @@ export function renderChart() {
     //Disegno blocco div costanza
     const perc = score/days2todayUp(getMonday(new Date()));
     
-    document.getElementById('costanzaVal').innerText = `${score} / 7 Punti (${perc*100}%)`;
-    const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard');
-
+    document.getElementById('costanzaVal').innerText = `${score} / 7 Punti`;
+    const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), card = document.getElementById('mainStatCard'),pmsg = document.getElementById('percMessage');
+    pmsg.innerText = "(${perc*100}%)"; 
     //const perc = score/days2todayUp(getMonday(new Date()));
 
     //console.log(perc);
