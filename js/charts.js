@@ -16,6 +16,8 @@ export function renderChart() {
         labels.push(formatDateLocal(d));
     }
 
+    console.log(iscurrenteweek());
+    
     document.getElementById('currentWeekLabel').innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
     var counter1 = 0;
     var counter2 = 0;
