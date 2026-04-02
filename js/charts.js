@@ -73,7 +73,7 @@ export function renderChart() {
     if(perc < 0.25) { 
             icon.innerText = '⚠️'; 
             card.style.borderLeftColor = 'var(--danger)'; 
-            msg.innerText = "Serve una scossa!"; 
+            msg.innerText = "Alzati pigrone!"; 
     }else if(perc >= 0.25 && perc <=0.5) { 
             icon.innerText = '⚖️'; 
             card.style.borderLeftColor = 'var(--warning)'; 
