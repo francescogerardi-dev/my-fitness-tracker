@@ -41,7 +41,7 @@ export function renderChart() {
     });
 
     //Disegno blocco div costanza
-    const perc = 0;
+    var perc = 0;
     if(isCurrentWeek()){
         perc = score/days2todayUp(getMonday(new Date()));
     }else{
