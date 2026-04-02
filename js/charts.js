@@ -70,23 +70,32 @@ export function renderChart() {
     }
     */
     //logica nuova
+    //lower
     if(perc < 0.25) { 
             icon.innerText = '⚠️'; 
             card.style.borderLeftColor = 'var(--danger)'; 
             msg.innerText = "Alzati pigrone!"; 
+    //mid lower
     }else if(perc >= 0.25 && perc <=0.5) { 
             icon.innerText = '⚖️'; 
             card.style.borderLeftColor = 'var(--warning)'; 
             msg.innerText = "Non mollareeeee"; 
+    //mid high
     }else if(perc > 0.5 && perc < 0.7) { 
             icon.innerText = '🔥'; 
             card.style.borderLeftColor = 'var(--success)'; 
             msg.innerText = "Ci siamo! Forza!"; 
     }
+    //high
     else if(perc >= 0.7){
             icon.innerText = '🔝'; 
             card.style.borderLeftColor = 'var(--danger)'; 
             msg.innerText = "Booooom!"; 
+    //top
+    }else if(perc = 1){
+        icon.innerText = '🏆'; 
+            card.style.borderLeftColor = 'var(--danger)'; 
+            msg.innerText = "Master!"; 
     }
     
     const ctx = document.getElementById('mainChart').getContext('2d');
