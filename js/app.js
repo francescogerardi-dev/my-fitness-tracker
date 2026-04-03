@@ -34,7 +34,6 @@ onAuthStateChanged(auth, (user) => {
                 if (document.getElementById('analisi').classList.contains('active') && window.renderAnalisi) {
                     window.renderAnalisi();
                 }
-            }
         });
 
         // Listener Routine
