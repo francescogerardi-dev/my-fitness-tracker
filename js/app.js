@@ -18,7 +18,6 @@ onAuthStateChanged(auth, (user) => {
         window.currentUser = user;
         document.getElementById('loginOverlay').classList.add('hidden');
 
-        if(user.email= 'francesco.gerardi@gmail.com'){
             // Listener Records
             const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
             //console.log('----> eseguo query');
@@ -36,7 +35,6 @@ onAuthStateChanged(auth, (user) => {
                     window.renderAnalisi();
                 }
             }
-        }
         });
 
         // Listener Routine
