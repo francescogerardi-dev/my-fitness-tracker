@@ -17,25 +17,23 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         window.currentUser = user;
         document.getElementById('loginOverlay').classList.add('hidden');
+        // Listener Records
+        const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
+        //console.log('----> eseguo query');
+        onSnapshot(q, (snapshot) => {
+            window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            //console.log(fitnessDB);
+            // Esegui i rendering solo se le funzioni sono disponibili
+            if (window.renderChart) window.renderChart();
+            if (window.updateSuggestion) window.updateSuggestion();
+            if (window.renderHeatmap) window.renderHeatmap();
+            if (window.renderHistory) window.renderHistory();
+            
+            // Aggiorna l'analisi solo se la tab è attiva
+            if (document.getElementById('analisi').classList.contains('active') && window.renderAnalisi) {
+                window.renderAnalisi();
+            }
 
-            if(user.email==='francesco.gerardi@gmail.com'){
-                // Listener Records
-                const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "asc"));
-                //console.log('----> eseguo query');
-                onSnapshot(q, (snapshot) => {
-                    window.fitnessDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    //console.log(fitnessDB);
-                    // Esegui i rendering solo se le funzioni sono disponibili
-                    if (window.renderChart) window.renderChart();
-                    if (window.updateSuggestion) window.updateSuggestion();
-                    if (window.renderHeatmap) window.renderHeatmap();
-                    if (window.renderHistory) window.renderHistory();
-                    
-                    // Aggiorna l'analisi solo se la tab è attiva
-                    if (document.getElementById('analisi').classList.contains('active') && window.renderAnalisi) {
-                        window.renderAnalisi();
-                    }
-                } 
         });
 
         // Listener Routine
