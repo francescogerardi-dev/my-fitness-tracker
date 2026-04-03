@@ -36,6 +36,7 @@ onAuthStateChanged(auth, (user) => {
                     window.renderAnalisi();
                 }
             }
+        }
         });
 
         // Listener Routine
