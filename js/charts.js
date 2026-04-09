@@ -45,7 +45,7 @@ export function renderChart() {
         const totalacts = window.fitnessDB.filter(r => r.date === day);
         //console.log(totalacts);
         totalacts.forEach(r => {
-            console.log(r);
+            console.log(r.type);
         //if(totalacts.forEach(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) fullscore += 1;
         //totalacts.forEach(r => {if(r.type !=='Stretching') fullscore += 1)});
         //else if(totalacts.forEach(r => r.type === 'Stretching')) fullscore += 0.5;
