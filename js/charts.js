@@ -15,8 +15,6 @@ export function renderChart() {
         let d = new Date(monday); d.setDate(monday.getDate() + i); 
         labels.push(formatDateLocal(d));
     }
-
-    console.log(isCurrentWeek());
     
     document.getElementById('currentWeekLabel').innerText = `Sett. ${monday.getDate()}/${monday.getMonth()+1}`;
     var counter1 = 0;
@@ -47,7 +45,6 @@ export function renderChart() {
         totalacts.forEach(r => {
             if(r.type === 'Stretching') fullscore +=0.5;
             if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching') fullscore +=1;
-            console.log(fullscore);
         //if(totalacts.forEach(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) fullscore += 1;
         //totalacts.forEach(r => {if(r.type !=='Stretching') fullscore += 1)});
         //else if(totalacts.forEach(r => r.type === 'Stretching')) fullscore += 0.5;
