@@ -46,8 +46,7 @@ export function renderChart() {
         if(totalacts.forEach(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) fullscore += 1;
         else if(totalacts.forEach(r => r.type === 'Stretching')) fullscore += 0.5;
         else {
-         fullscore+=1;
-         console.log('Dentro');
+         console(r.type);
         }
     });
     console.log('Fullscore');
