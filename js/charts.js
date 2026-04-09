@@ -70,6 +70,7 @@ export function renderChart() {
         card = document.getElementById('mainStatCard'),pmsg = document.getElementById('percMessage'), 
         tmsg = document.getElementById('totalMessage');
     pmsg.innerText = perc.toFixed(2)*100+`% `; 
+    tmsg.innerText = 'Fullscore'+fullscore;
     //const perc = score/days2todayUp(getMonday(new Date()));
 
     //console.log(perc);
