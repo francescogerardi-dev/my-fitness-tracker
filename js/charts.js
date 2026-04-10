@@ -66,7 +66,7 @@ export function renderChart() {
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), 
         card = document.getElementById('mainStatCard'),pmsg = document.getElementById('percMessage'), 
         tmsg = document.getElementById('totalMessage');
-    pmsg.innerText = 'Costanza perc. attuale: 'perc.toFixed(2)*100+`% `; 
+    pmsg.innerText = 'Costanza perc. attuale: '+perc.toFixed(2)*100+`% `; 
     tmsg.innerText = 'Full score: '+fullscore;
     //const perc = score/days2todayUp(getMonday(new Date()));
 
