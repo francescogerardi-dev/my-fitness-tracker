@@ -45,9 +45,6 @@ export function renderChart() {
         totalacts.forEach(r => {
             if(r.type === 'Stretching') fullscore +=0.5;
             if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching') fullscore +=1;
-        //if(totalacts.forEach(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) fullscore += 1;
-        //totalacts.forEach(r => {if(r.type !=='Stretching') fullscore += 1)});
-        //else if(totalacts.forEach(r => r.type === 'Stretching')) fullscore += 0.5;
     });
         //if(totalacts.forEach(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) fullscore += 1;
         //totalacts.forEach(r => {if(r.type !=='Stretching') fullscore += 1)});
@@ -163,6 +160,7 @@ export function renderHeatmap() {
 
     for (let w = 1; w <= 52; w++) {
         let wScore = 0;
+        let tScore = 0;
         
         // Filtra i record per l'anno corrente e per la settimana specifica
         const records = window.fitnessDB.filter(r => { 
@@ -179,6 +177,21 @@ export function renderHeatmap() {
             else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
         });
 
+        days.forEach(d => {
+            const acts = records.filter(r => r.date === d);
+            // Logica Punteggio: 1 punto per sport, 0.5 per stretching
+            if(acts.some(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) wScore += 1;
+            else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
+        });
+
+        days.forEach(d => {
+            const totalacts = records.filter(r => r.date === d);
+            //console.log(totalacts);
+            totalacts.forEach(r => {
+                if(r.type === 'Stretching') tScore +=0.5;
+                if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching') tScore +=1;
+        });
+        
         const el = document.createElement('div'); 
         el.className = 'heat-day';
         
@@ -191,7 +204,7 @@ export function renderHeatmap() {
         
         el.innerHTML = `
             <span style="font-size:0.55rem; opacity:0.5;">${w}</span>
-            <b style="font-size:0.75rem;">${wScore}</b>
+            <b style="font-size:0.75rem;">${wScore} - ${tScore}</b>
         `;
 
         // Assegnazione classi colore basate sul punteggio settimanale
