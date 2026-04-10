@@ -62,7 +62,7 @@ export function renderChart() {
         perc = score/7;
     }
     //aggiornamento messaggi
-    document.getElementById('costanzaVal').innerText = 'Costanza:'+`${score} / 7 Punti`;
+    document.getElementById('costanzaVal').innerText = 'Costanza: '+`${score} / 7 Punti`;
     const icon = document.getElementById('moodIcon'), msg = document.getElementById('statusMessage'), 
         card = document.getElementById('mainStatCard'),pmsg = document.getElementById('percMessage'), 
         tmsg = document.getElementById('totalMessage');
