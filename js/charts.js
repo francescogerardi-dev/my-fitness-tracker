@@ -178,19 +178,13 @@ export function renderHeatmap() {
         });
 
         days.forEach(d => {
-            const acts = records.filter(r => r.date === d);
-            // Logica Punteggio: 1 punto per sport, 0.5 per stretching
-            if(acts.some(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) wScore += 1;
-            else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
-        });
-
-        days.forEach(d => {
             const totalacts = records.filter(r => r.date === d);
             //console.log(totalacts);
             totalacts.forEach(r => {
                 if(r.type === 'Stretching') tScore +=0.5;
                 if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching') tScore +=1;
-        });
+            })
+        };
         
         const el = document.createElement('div'); 
         el.className = 'heat-day';
