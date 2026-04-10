@@ -184,7 +184,7 @@ export function renderHeatmap() {
                 if(r.type === 'Stretching') tScore +=0.5;
                 if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching') tScore +=1;
             })
-        };
+        });
         
         const el = document.createElement('div'); 
         el.className = 'heat-day';
