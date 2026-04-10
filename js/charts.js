@@ -198,7 +198,7 @@ export function renderHeatmap() {
         
         el.innerHTML = `
             <span style="font-size:0.55rem; opacity:0.5;">${w}</span>
-            <b style="font-size:0.75rem;">${wScore} - ${tScore}</b>
+            <b style="font-size:0.75rem;">${wScore}(${tScore})</b>
         `;
 
         // Assegnazione classi colore basate sul punteggio settimanale
