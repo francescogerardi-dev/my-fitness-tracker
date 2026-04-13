@@ -173,8 +173,9 @@ export function renderHeatmap() {
         days.forEach(d => {
             const acts = records.filter(r => r.date === d);
             // Logica Punteggio: 1 punto per sport, 0.5 per stretching
-            if(acts.some(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) wScore += 1;
+            if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) wScore += 1;
             else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
+            else if(acts.some(r => r.type === 'Routine')) wScore += 1;
         });
 
         days.forEach(d => {
