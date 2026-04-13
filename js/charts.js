@@ -182,7 +182,8 @@ export function renderHeatmap() {
             //console.log(totalacts);
             totalacts.forEach(r => {
                 if(r.type === 'Stretching') tScore +=0.5;
-                if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching') tScore +=1;
+                if(r.type === 'Routine') tScore +=0.5;
+                if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching'&&r.type !== 'Routine') tScore +=1;
             })
         });
         
