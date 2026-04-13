@@ -34,8 +34,9 @@ export function renderChart() {
     let score = 0;
     labels.forEach(day => {
         const acts = window.fitnessDB.filter(r => r.date === day);
-        if(acts.some(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) score += 1;
+        if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
         else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
+        else if(acts.some(r => r.type === 'Routine')) score += 0.5;
     });
 
     let fullscore = 0;
@@ -44,7 +45,8 @@ export function renderChart() {
         //console.log(totalacts);
         totalacts.forEach(r => {
             if(r.type === 'Stretching') fullscore +=0.5;
-            if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching') fullscore +=1;
+            if(r.type === 'Routine') fullscore +=0.5;
+            if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching'&&r.type !== 'Routine') fullscore +=1;
     });
         //if(totalacts.forEach(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) fullscore += 1;
         //totalacts.forEach(r => {if(r.type !=='Stretching') fullscore += 1)});
