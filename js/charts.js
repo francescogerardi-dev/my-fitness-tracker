@@ -39,6 +39,7 @@ export function renderChart() {
         else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) score += 1;
         else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
         test = calcolaCostanza(acts);
+        console.log('Costanza');
         console.log(test);
     });
 
