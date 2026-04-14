@@ -1,5 +1,5 @@
 // js/charts.js
-import { icons, db, auth } from './config.js';
+import { icons, db, auth,calcolaCostanza } from './config.js';
 import { getMonday, formatDateLocal, getWeekNumber,days2today,days2todayUp,isCurrentWeek } from './utils.js';
 
 let mainChart = null;
@@ -32,11 +32,14 @@ export function renderChart() {
 
     // Calcolo Punteggio Costanza
     let score = 0;
+    let test = 0;
     labels.forEach(day => {
         const acts = window.fitnessDB.filter(r => r.date === day);
         if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
         else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) score += 1;
         else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
+        test = calcolaCostanza(acts);
+        console.log(test);
     });
 
     //fullscore
