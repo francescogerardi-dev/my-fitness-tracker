@@ -35,12 +35,13 @@ export function renderChart() {
     let test = 0;
     labels.forEach(day => {
         const acts = window.fitnessDB.filter(r => r.date === day);
-        if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
-        else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) score += 1;
-        else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
-        test = calcolaCostanza(acts);
-        console.log('Costanza');
-        console.log(test);
+        //if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
+        //else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) score += 1;
+        //else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
+        //test = calcolaCostanza(acts);
+        score = calcolaCostanza(acts);
+        //console.log('Costanza');
+        //console.log(test);
     });
 
     //fullscore
