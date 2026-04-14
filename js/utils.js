@@ -33,7 +33,7 @@ export function days2today(d) {
 }
 
 export function calcolaCostanza(acts) {
-    var score;
+    let score = 0;
     if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
     else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) score += 1;
     else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
