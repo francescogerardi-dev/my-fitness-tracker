@@ -1,6 +1,6 @@
 // js/charts.js
-import { icons, db, auth,calcolaCostanza } from './config.js';
-import { getMonday, formatDateLocal, getWeekNumber,days2today,days2todayUp,isCurrentWeek } from './utils.js';
+import { icons, db, auth } from './config.js';
+import { getMonday, formatDateLocal, getWeekNumber,days2today,days2todayUp,isCurrentWeek,calcolaCostanza } from './utils.js';
 
 let mainChart = null;
 let analisiChart = null;
