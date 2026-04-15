@@ -1,6 +1,6 @@
 // js/charts.js
 import { icons, db, auth } from './config.js';
-import { getMonday, formatDateLocal, getWeekNumber,days2today,days2todayUp,isCurrentWeek,calcolaCostanza } from './utils.js';
+import { getMonday, formatDateLocal, getWeekNumber,days2today,days2todayUp,isCurrentWeek,calcolaCostanza,calcolafullscore } from './utils.js';
 
 let mainChart = null;
 let analisiChart = null;
@@ -32,7 +32,6 @@ export function renderChart() {
 
     // Calcolo Punteggio Costanza
     let score = 0;
-    let test = 0;
     //test = calcolaCostanza(labels);
     score = calcolaCostanza(labels);
     //console.log('Test');
@@ -51,6 +50,8 @@ export function renderChart() {
     */
     //fullscore
     let fullscore = 0;
+    fullscore = calcolafullscore(labels);
+    /*
     labels.forEach(day => {
         const totalacts = window.fitnessDB.filter(r => r.date === day);
         //console.log(totalacts);
@@ -63,6 +64,7 @@ export function renderChart() {
         //totalacts.forEach(r => {if(r.type !=='Stretching') fullscore += 1)});
         //else if(totalacts.forEach(r => r.type === 'Stretching')) fullscore += 0.5;
     });
+    */
     
     //Disegno blocco div costanza
     var perc = 0;
