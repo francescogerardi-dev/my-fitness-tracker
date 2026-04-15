@@ -184,7 +184,13 @@ export function renderHeatmap() {
         });
 
         const days = [...new Set(records.map(r => r.date))];
-        
+
+        let wScore = 0;
+        wScore = calcolafullscore(days);
+
+        let tScore = 0;
+        tScore = calcolafullscore(days);
+        /*
         days.forEach(d => {
             const acts = records.filter(r => r.date === d);
             // Logica Punteggio: 1 punto per sport, 0.5 per stretching
@@ -192,7 +198,8 @@ export function renderHeatmap() {
             else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) wScore += 1;
             else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
         });
-
+        */
+        /*
         days.forEach(d => {
             const totalacts = records.filter(r => r.date === d);
             //console.log(totalacts);
@@ -202,7 +209,7 @@ export function renderHeatmap() {
                 if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching'&&r.type !== 'Routine') tScore +=1;
             })
         });
-        
+        */
         const el = document.createElement('div'); 
         el.className = 'heat-day';
         
