@@ -34,37 +34,9 @@ export function renderChart() {
     let score = 0;
     //test = calcolaCostanza(labels);
     score = calcolaCostanza(labels);
-    //console.log('Test');
-    //console.log(test);
-    /*
-    labels.forEach(day => {
-        const acts = window.fitnessDB.filter(r => r.date === day);
-        if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
-        else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) score += 1;
-        else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
-        //test = calcolaCostanza(acts);
-        //score = calcolaCostanza(acts);
-        //console.log('Costanza');
-        //console.log(test);
-    });
-    */
     //fullscore
     let fullscore = 0;
     fullscore = calcolafullscore(labels);
-    /*
-    labels.forEach(day => {
-        const totalacts = window.fitnessDB.filter(r => r.date === day);
-        //console.log(totalacts);
-        totalacts.forEach(r => {
-            if(r.type === 'Stretching') fullscore +=0.5;
-            if(r.type === 'Routine') fullscore +=0.5;
-            if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching'&&r.type !== 'Routine') fullscore +=1;
-    });
-        //if(totalacts.forEach(r => !['Stretching', 'Riposo','Peso'].includes(r.type))) fullscore += 1;
-        //totalacts.forEach(r => {if(r.type !=='Stretching') fullscore += 1)});
-        //else if(totalacts.forEach(r => r.type === 'Stretching')) fullscore += 0.5;
-    });
-    */
     
     //Disegno blocco div costanza
     var perc = 0;
@@ -82,30 +54,6 @@ export function renderChart() {
     tmsg.innerText = 'Full score: '+fullscore;
     //const perc = score/days2todayUp(getMonday(new Date()));
 
-    //console.log(perc);
-    
-    //calcolo dell'icona logica vecchia
-    /*
-    if(score >= 3.5 && score <= 4.5) { 
-            icon.innerText = '🔥'; 
-            card.style.borderLeftColor = 'var(--success)'; 
-            msg.innerText = "Ci siamo! Forza!"; 
-    }
-    else if(score < 2) { 
-            icon.innerText = '⚠️'; 
-            card.style.borderLeftColor = 'var(--danger)'; 
-            msg.innerText = "Serve una scossa!"; 
-    }else if(score > 4.5){
-            icon.innerText = '🔝'; 
-            card.style.borderLeftColor = 'var(--danger)'; 
-            msg.innerText = "Booooom!"; 
-    }
-    else { 
-            icon.innerText = '⚖️'; 
-            card.style.borderLeftColor = 'var(--warning)'; 
-            msg.innerText = "Non mollareeeee"; 
-    }
-    */
     //logica nuova
     //lower
     if(perc < 0.25) { 
@@ -190,26 +138,7 @@ export function renderHeatmap() {
 
         tScore = 0;
         tScore = calcolafullscore(days);
-        /*
-        days.forEach(d => {
-            const acts = records.filter(r => r.date === d);
-            // Logica Punteggio: 1 punto per sport, 0.5 per stretching
-            if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) wScore += 1;
-            else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) wScore += 1;
-            else if(acts.some(r => r.type === 'Stretching')) wScore += 0.5;
-        });
-        */
-        /*
-        days.forEach(d => {
-            const totalacts = records.filter(r => r.date === d);
-            //console.log(totalacts);
-            totalacts.forEach(r => {
-                if(r.type === 'Stretching') tScore +=0.5;
-                if(r.type === 'Routine') tScore +=0.5;
-                if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching'&&r.type !== 'Routine') tScore +=1;
-            })
-        });
-        */
+       
         const el = document.createElement('div'); 
         el.className = 'heat-day';
         
