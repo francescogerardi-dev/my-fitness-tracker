@@ -39,10 +39,6 @@ export function calcolaCostanza(labels) {
         if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
         else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) score += 1;
         else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
-        //test = calcolaCostanza(acts);
-        //score = calcolaCostanza(acts);
-        //console.log('Costanza');
-        //console.log(test);
     });
     return score;
 }
