@@ -52,7 +52,8 @@ export function calcolafullscore(labels) {
             if(r.type === 'Stretching') fullscore +=0.5;
             if(r.type === 'Routine') fullscore +=0.5;
             if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching'&&r.type !== 'Routine') fullscore +=1;
-    });
+        });
+    }
     return fullscore;
 }
 
