@@ -33,6 +33,10 @@ export function renderChart() {
     // Calcolo Punteggio Costanza
     let score = 0;
     let test = 0;
+    test = calcolaCostanza(labels);
+    console.log('Test');
+    console.log(test);
+    
     labels.forEach(day => {
         const acts = window.fitnessDB.filter(r => r.date === day);
         if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
