@@ -35,8 +35,8 @@ export function renderChart() {
     let test = 0;
     //test = calcolaCostanza(labels);
     score = calcolaCostanza(labels);
-    console.log('Test');
-    console.log(test);
+    //console.log('Test');
+    //console.log(test);
     /*
     labels.forEach(day => {
         const acts = window.fitnessDB.filter(r => r.date === day);
