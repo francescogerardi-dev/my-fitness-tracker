@@ -186,7 +186,7 @@ export function renderHeatmap() {
         const days = [...new Set(records.map(r => r.date))];
 
         wScore = 0;
-        wScore = calcolafullscore(days);
+        wScore = calcolaCostanza(days);
 
         tScore = 0;
         tScore = calcolafullscore(days);
