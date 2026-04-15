@@ -43,6 +43,19 @@ export function calcolaCostanza(labels) {
     return score;
 }
 
+export function calcolafullscore(labels) {
+    let fullscore = 0;
+    labels.forEach(day => {
+        const totalacts = window.fitnessDB.filter(r => r.date === day);
+        //console.log(totalacts);
+        totalacts.forEach(r => {
+            if(r.type === 'Stretching') fullscore +=0.5;
+            if(r.type === 'Routine') fullscore +=0.5;
+            if(r.type !== 'Peso'&&r.type !== 'Riposo'&&r.type !== 'Stretching'&&r.type !== 'Routine') fullscore +=1;
+    });
+    return fullscore;
+}
+
 /**
  * Verifica se la settimana di riferimento è quella attuale
  * @returns {boolean}
