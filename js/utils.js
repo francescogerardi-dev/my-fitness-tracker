@@ -32,11 +32,18 @@ export function days2today(d) {
     return differenza;
 }
 
-export function calcolaCostanza(acts) {
+export function calcolaCostanza(labels) {
     let score = 0;
-    if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
-    else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) score += 1;
-    else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
+    labels.forEach(day => {
+        const acts = window.fitnessDB.filter(r => r.date === day);
+        if(acts.some(r => !['Stretching', 'Riposo','Peso','Routine'].includes(r.type))) score += 1;
+        else if(acts.some(r => r.type === 'Stretching')&&acts.some(r => r.type === 'Routine')) score += 1;
+        else if(acts.some(r => r.type === 'Stretching')) score += 0.5;
+        //test = calcolaCostanza(acts);
+        //score = calcolaCostanza(acts);
+        //console.log('Costanza');
+        //console.log(test);
+    });
     return score;
 }
 
